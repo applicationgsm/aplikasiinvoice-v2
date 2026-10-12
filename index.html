@@ -2328,14 +2328,11 @@ function getLatestCustPenawaran(custId, custName) {
   return docs[0]?.no || '';
 }
 
-function autoFillPnwRef() {
-  if (ST.docType !== 'invoice' && ST.docType !== 'proforma') return;
-  const fp = g('fPnwRef');
-  if (!fp) return;
-  const custId   = g('fCustSel').value;
-  const custName = g('fCustName')?.value || '';
-  fp.value = getLatestCustPenawaran(custId, custName);
-}
+// Ref. Penawaran TIDAK lagi terisi otomatis dari penawaran terakhir customer (sering salah
+// nyambung & mengisi sendiri di form baru). Sekarang hanya terisi lewat menu ⋮ "🧾 Buat Invoice"
+// pada baris Penawaran, atau diketik manual. Fungsi dibiarkan ada (dipanggil di beberapa tempat)
+// tapi tidak mengisi apa-apa.
+function autoFillPnwRef() { /* sengaja kosong */ }
 
 function onCustSel(){
   const id=g('fCustSel').value;
