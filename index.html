@@ -37,22 +37,52 @@ textarea.fi{resize:vertical;line-height:1.55;}
 .btn-d:hover{background:#fee2e2;}
 .btn-sm{padding:5px 12px;font-size:12.5px;border-radius:7px;}
 .btn-xs{padding:3px 9px;font-size:11.5px;border-radius:6px;}
-.badge{font-size:11px;font-weight:700;padding:2.5px 9px;border-radius:999px;letter-spacing:.02em;}
-.b-invoice{background:#e0f2fe;color:#0369a1;}
-.b-suratjalan{background:#dcfce7;color:#15803d;}
-.b-penawaran{background:#fef9c3;color:#854d0e;}
-.b-proforma{background:#ede9fe;color:#6d28d9;}
-.b-lunas{background:#dcfce7;color:#15803d;}
+.badge{display:inline-block;white-space:nowrap;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.02em;box-shadow:0 1px 2px rgba(0,0,0,.08);}
+/* Menu "⋮ Aksi lainnya" di baris Riwayat -- supaya kolom Aksi ramping (cuma
+   2 tombol + kebab) dan tabelnya muat tanpa perlu digeser ke samping. */
+.rowmenu{position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #e2e8f0;
+  border-radius:10px;box-shadow:0 10px 28px rgba(15,23,42,.16);min-width:190px;z-index:50;
+  overflow:hidden;padding:4px;}
+.rowmenu-item{display:block;width:100%;text-align:left;background:none;border:none;
+  padding:8px 10px;font-size:12.5px;font-weight:600;color:#334155;border-radius:7px;
+  cursor:pointer;white-space:nowrap;}
+.rowmenu-item:hover{background:#f1f5f9;}
+/* Badge jenis dokumen: warna PEKAT & kontras (bukan pastel), teks putih supaya tegas kebaca */
+.b-invoice{background:#2563eb;color:#fff;}      /* blue-600 */
+.b-suratjalan{background:#059669;color:#fff;}   /* emerald-600 */
+.b-penawaran{background:#d97706;color:#fff;}    /* amber-600 */
+.b-proforma{background:#7c3aed;color:#fff;}     /* violet-600 */
 .nie-inline{display:inline-flex;align-items:center;white-space:nowrap;}
-.b-belum_lunas{background:#fee2e2;color:#b91c1c;}
-.b-sebagian{background:#fef3c7;color:#92400e;}
-.b-batal{background:#f1f5f9;color:#64748b;}
-.b-draft{background:#f1f5f9;color:#64748b;}
+/* Badge status invoice: tetap pekat & kontras juga */
+.b-lunas{background:#16a34a;color:#fff;}        /* green-600 */
+.b-belum_lunas{background:#dc2626;color:#fff;}  /* red-600 */
+.b-sebagian{background:#d97706;color:#fff;}     /* amber-600 */
+.b-batal{background:#475569;color:#fff;}        /* slate-600 */
+.b-draft{background:#475569;color:#fff;}        /* slate-600 */
+/* Status operasional Surat Jalan -- sengaja warna LEMBUT (bukan pekat seperti
+   badge lain), ini bukan status tagihan, cukup penanda ringan progres kirim.
+   Default-nya ngikutin tanggal dokumen vs hari ini (lihat computeShipStatus()),
+   tapi field-nya tetap bisa dipilih manual di form -- lihat #fShipStatus. */
+.b-terkirim{background:#d1fae5;color:#065f46;}      /* hijau lembut: tanggal sudah lewat */
+.b-diproses{background:#dbeafe;color:#1e40af;}      /* biru lembut: tanggal = hari ini */
+.b-belum_dikirim{background:#f1f5f9;color:#475569;} /* abu lembut: tanggal masih di masa depan */
 .tbl{width:100%;border-collapse:collapse;}
 .tbl th{background:#f8fafc;color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:10px 14px;text-align:left;border-bottom:1.5px solid #e8edf3;white-space:nowrap;}
-.tbl td{padding:11px 14px;font-size:13.5px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+/* Padding vertikal dilonggarkan (11px -> 16px) supaya baris tidak terlalu
+   rapat -- lebih nyaman dipandang admin yang kerja berjam-jam di tabel ini. */
+.tbl td{padding:16px 14px;font-size:13.5px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
 .tbl tr:last-child td{border-bottom:none;}
-.tbl tr:hover td{background:#f8fbfc;}
+/* Hover TIDAK menimpa warna latar baris turunan (emerald lembut) -- cukup
+   menggelapkannya sedikit lewat overlay transparan, supaya grup tetap
+   kelihatan selaras saat kursor lewat. */
+/* Header tabel Riwayat "membeku" (freeze) saat di-scroll, seperti Google Sheets.
+   Tinggi header aplikasi + bar profil diukur lewat JS -> --riw-top (setRiwStickyTop). */
+.rinc-tg{cursor:pointer;color:#0e7490;font-weight:800;margin-right:6px;user-select:none;display:inline-block;width:12px;}
+.riw-date-view{cursor:pointer;border-bottom:1px dashed transparent;white-space:nowrap;}
+.riw-date-view:hover{border-bottom-color:#0e7490;color:#0e7490;}
+.riw-date-input{font-size:12.5px;padding:3px 6px;border:1.5px solid #0e7490;border-radius:6px;background:#fff;color:#0f172a;width:138px;}
+.riw-table>thead>tr>th{position:sticky;top:calc(var(--riw-top,112px) + var(--riw-bar-h,0px));z-index:15;box-shadow:0 1px 0 #e2e8f0;}
+.tbl tr:hover td{background:rgba(15,23,42,.025);}
 .it-cell{padding:2px 3px;}
 .it-cell input{width:100%;background:transparent;border:1.5px solid transparent;border-radius:6px;padding:4px 7px;font-size:13px;font-family:inherit;transition:all .12s;color:#1e293b;}
 .it-cell input:hover{border-color:#e2e8f0;background:#fafafa;}
@@ -73,7 +103,7 @@ input[type=number]{-moz-appearance:textfield;}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
 #_ac::-webkit-scrollbar{width:4px;}#_ac::-webkit-scrollbar-thumb{background:#a7f3d0;border-radius:4px;}
 .fade-in{animation:fadeIn .15s ease;}
-.qco-btn.active{background:#f0fdf9;border-color:#0e7490;color:#0e7490;font-weight:700;}
+.qco-btn.active{background:#0e7490!important;border-color:#0e7490!important;color:#fff!important;font-weight:700;box-shadow:0 2px 8px rgba(14,116,144,.35);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── AUTOCOMPLETE SUGGEST ── */
@@ -97,6 +127,7 @@ input[type=number]{-moz-appearance:textfield;}
     <div class="text-cyan-300 text-xs hidden sm:block truncate flex-1" id="headerCompany"></div>
     <span id="syncBadge" class="text-xs" style="color:#94a3b8;">• Lokal</span>
     <button onclick="fbSync()" title="Sync Supabase" class="text-white/40 hover:text-white/80 ml-1 text-sm transition">⟳</button>
+    <button onclick="runSbDiagnostics()" title="Diagnosa sync Supabase" class="text-white/40 hover:text-white/80 ml-1 text-sm transition">🩺</button>
     <nav class="flex gap-1 overflow-x-auto">
       <button class="nav-btn active" data-tab="form" onclick="gotoTab('form')">📝 Buat Dokumen</button>
       <button class="nav-btn" data-tab="customer" onclick="gotoTab('customer')">👥 Customer</button>
@@ -119,17 +150,19 @@ input[type=number]{-moz-appearance:textfield;}
     <!-- Label -->
     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Profil:</span>
 
-    <!-- Company buttons -->
+    <!-- Company buttons: elemen interaktif & kontras -- klik = pindah company aktif
+         DAN langsung buka panel buat-dokumen-baru hari ini (quick create), inline
+         di halaman yang sama (SPA), tanpa reload/tab baru. -->
     <button onclick="loadCompany('hnh')" data-co="hnh"
-      class="qco-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:border-cyan-400 hover:text-cyan-700 transition flex items-center gap-1.5">
+      class="qco-btn text-xs font-bold px-3 py-1.5 rounded-lg border-2 transition flex items-center gap-1.5" style="border-color:#06b6d4;background:#ecfeff;color:#0e7490;">
       <span class="co-icon" data-co-icon="hnh">🏥</span> H&amp;H Medical Supplies
     </button>
     <button onclick="loadCompany('glomed')" data-co="glomed"
-      class="qco-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:border-cyan-400 hover:text-cyan-700 transition flex items-center gap-1.5">
+      class="qco-btn text-xs font-bold px-3 py-1.5 rounded-lg border-2 transition flex items-center gap-1.5" style="border-color:#2563eb;background:#eff6ff;color:#1d4ed8;">
       <span class="co-icon" data-co-icon="glomed">💊</span> PT. Glomed Sukses Jaya
     </button>
     <button onclick="loadCompany('gracia')" data-co="gracia"
-      class="qco-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:border-cyan-400 hover:text-cyan-700 transition flex items-center gap-1.5">
+      class="qco-btn text-xs font-bold px-3 py-1.5 rounded-lg border-2 transition flex items-center gap-1.5" style="border-color:#059669;background:#ecfdf5;color:#047857;">
       <span class="co-icon" data-co-icon="gracia">🌿</span> PT. Gracia Sukses Medika
     </button>
     <button onclick="clearCompany()" id="btnAllCoQ"
@@ -185,6 +218,7 @@ input[type=number]{-moz-appearance:textfield;}
           <div>
             <label class="lbl">No. Dokumen</label>
             <input id="fNo" class="fi font-mono" placeholder="Otomatis" onblur="validateDocNoLive()">
+            <div id="seqHint" class="text-xs text-slate-500 mt-1" style="line-height:1.5;"></div>
           </div>
           <div>
             <label class="lbl">Tanggal</label>
@@ -206,6 +240,10 @@ input[type=number]{-moz-appearance:textfield;}
           <div id="wrapChannel" class="sm:col-span-2">
             <label class="lbl">Channel Penjualan</label>
             <input id="fChannel" class="fi" placeholder="Langsung / Shopee / Tokopedia / dll.">
+          </div>
+          <div id="wrapPnwRef">
+            <label class="lbl">Ref. Penawaran</label>
+            <input id="fPnwRef" class="fi" placeholder="Otomatis atau isi manual">
           </div>
         </div>
       </div>
@@ -299,6 +337,19 @@ input[type=number]{-moz-appearance:textfield;}
             <input id="fPlate" class="fi" placeholder="B 1234 XYZ">
           </div>
         </div>
+        <!-- Status Pengiriman: otomatis disesuaikan dengan Tanggal dokumen SJ
+             (tanggal besok = Belum Dikirim, hari ini = Diproses, sebelum hari
+             ini = Terkirim) -- TAPI tetap field pilihan biasa yang bisa diganti
+             manual kapan saja kalau kondisi sebenarnya beda dari tebakan otomatis. -->
+        <div class="mt-4 pt-4 border-t border-slate-100">
+          <label class="lbl">Status Pengiriman</label>
+          <select id="fShipStatus" class="fi">
+            <option value="belum_dikirim">⚪ Belum Dikirim</option>
+            <option value="diproses">🔵 Diproses</option>
+            <option value="terkirim">✅ Terkirim</option>
+          </select>
+          <p class="text-xs text-slate-400 mt-1">Otomatis mengikuti Tanggal dokumen, tapi bisa diganti manual.</p>
+        </div>
         <!-- COD Pengiriman: khusus Surat Jalan. Terpisah dari "Metode Pembayaran" di Invoice
              karena konteksnya beda — ini soal APAKAH KURIR akan menagih ongkir/COD saat
              barang diantar, bukan status pembayaran invoice. -->
@@ -352,6 +403,8 @@ input[type=number]{-moz-appearance:textfield;}
             </div>
             <button id="btnNie" onclick="toggleNie()" title="Tampilkan/sembunyikan kolom NIE (khusus PT Gracia & Glomed)"
               class="btn btn-s btn-sm text-xs hidden flex-shrink-0" style="color:#64748b">☐ NIE</button>
+            <button id="btnPriceFmt" onclick="togglePriceFmt()" title="Tampilkan koma desimal (mis. 1.000.000,000) di kolom Harga Satuan & Disc (Rp). Titik pemisah ribuan SELALU tampil, ini cuma soal desimalnya."
+              class="btn btn-s btn-sm text-xs flex-shrink-0" style="color:#64748b">,000 Desimal: OFF</button>
             <button class="btn btn-s btn-sm flex-shrink-0" onclick="addItem()">＋ Tambah Baris</button>
           </div>
         </div>
@@ -524,8 +577,11 @@ input[type=number]{-moz-appearance:textfield;}
           <input type="checkbox" id="fShowMaterai" onchange="onFormShowMateraiChange()" class="rounded accent-cyan-600">
           Tampilkan kotak Materai di dokumen ini saat cetak
         </label>
-        <button onclick="printForm()" class="btn btn-s w-full justify-center">
-          🖨️ Pratinjau &amp; Cetak
+        <button onclick="saveAndPrint()" class="btn btn-s w-full justify-center" title="Dokumen disimpan dulu ke riwayat, baru otomatis dibuka pratinjau cetaknya">
+          💾🖨️ Simpan &amp; Pratinjau Cetak
+        </button>
+        <button onclick="printForm()" class="btn btn-s w-full justify-center" title="Buka pratinjau cetak TANPA menyimpan dokumennya">
+          🖨️ Pratinjau Cetak Saja
         </button>
       </div>
 
@@ -555,8 +611,15 @@ input[type=number]{-moz-appearance:textfield;}
 <!-- ======================================================== -->
 <!-- TAB: RIWAYAT -->
 <!-- ======================================================== -->
-<div id="tab-riwayat" class="fade-in hidden">
-  <div class="card">
+<!-- Tab Riwayat sengaja "lepas" dari batas max-w-7xl milik <main> (full-bleed),
+     supaya tabel dokumen bisa memakai seluruh lebar layar -- tab lain (Form,
+     Customer, Pengaturan) TIDAK terpengaruh, tetap di lebar 7xl seperti biasa. -->
+<!-- Full-bleed (lepas dari max-w-7xl <main>), TAPI kartunya sendiri dikasih
+     batas atas 1680px biar di layar super lebar kolom2 pendek (Jenis/Tanggal/
+     Status/dst) nggak ikut melar jadi renggang -- cukup "lebih lega dari 7xl",
+     bukan literally edge-to-edge monitor. -->
+<div id="tab-riwayat" class="fade-in hidden" style="max-width:none;width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding-left:20px;padding-right:20px;box-sizing:border-box;">
+  <div class="card" style="max-width:1460px;margin-left:auto;margin-right:auto;">
     <!-- Title row -->
     <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex items-start justify-between gap-3 flex-wrap">
       <div>
@@ -566,9 +629,11 @@ input[type=number]{-moz-appearance:textfield;}
       </div>
       <div class="flex items-center gap-3">
         <label class="flex items-center gap-1.5 text-xs text-slate-500 select-none cursor-pointer" title="Berlaku untuk tombol cetak 🖨️ di daftar riwayat di bawah">
-          <input type="checkbox" id="riwShowUP" checked class="rounded accent-cyan-600">
+          <input type="checkbox" id="riwShowUP" class="rounded accent-cyan-600" onchange="pushPrefs()">
           Tampilkan U.P. saat cetak
         </label>
+        <button id="btnRiwGroup" onclick="toggleRiwGroupMode()" title="Kelompokkan dokumen per bulan terbit, bisa dibuka/tutup per bulan, dan centang beberapa/semua buat dihapus massal sekaligus"
+          class="btn btn-s btn-sm text-xs flex-shrink-0" style="color:#64748b">📅 Kelompokkan per Bulan: OFF</button>
         <button onclick="resetRiwFilter()" class="btn btn-s btn-sm text-xs text-slate-400">↺ Reset Filter</button>
       </div>
     </div>
@@ -590,6 +655,12 @@ input[type=number]{-moz-appearance:textfield;}
         <option value="sebagian">Sebagian Dibayar</option>
         <option value="batal">Dibatalkan</option>
       </select>
+      <!-- Urutan: terakhir diinput/diedit (default) atau tanggal dokumen -->
+      <select id="riwSortSel" class="fi" style="max-width:215px;font-size:12.5px;" onchange="setRiwSortMode(this.value)" title="Urutan daftar dokumen">
+        <option value="date">📅 Urut: Tanggal dokumen</option>
+        <option value="saved">🕒 Urut: Terakhir diinput/diedit</option>
+        <option value="other" hidden>↕ Urut: sesuai kolom yang diklik</option>
+      </select>
       <!-- Filter Jatuh Tempo -->
       <select id="riwTopFilter" class="fi" style="max-width:165px;font-size:12.5px;" onchange="renderHistory()">
         <option value="">Semua Jatuh Tempo</option>
@@ -606,15 +677,23 @@ input[type=number]{-moz-appearance:textfield;}
         <input id="riwDateTo" type="date" class="fi" style="max-width:140px;font-size:12.5px;" oninput="renderHistory()">
       </div>
       <!-- Customer search dengan AC -->
-      <div class="relative flex-1" style="min-width:170px;max-width:240px;">
+      <div class="relative flex-1" style="min-width:200px;max-width:360px;">
         <input id="riwQ" type="text" autocomplete="off"
           class="fi" style="font-size:12.5px;padding-left:28px;"
-          placeholder="Customer / No. Dok…"
-          oninput="renderHistory();riwCustAC(this)">
+          placeholder="Customer / No. Dok / Nama Barang…"
+          oninput="riwSearchInput(this)">
         <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none">🔍</span>
       </div>
     </div>
-    <div id="riwTableWrap" class="overflow-x-auto"></div>
+    <!-- Bar aksi massal -- cuma muncul kalau ada dokumen yang dicentang (mode
+         "Kelompokkan per Bulan"). Sticky di atas tabel biar kelihatan terus
+         walau sudah scroll ke bawah milih-milih dokumen. -->
+    <div id="riwBulkBar" style="display:none;position:sticky;top:var(--riw-top,112px);z-index:20;align-items:center;gap:12px;padding:10px 16px;background:#0e7490;color:#fff;">
+      <span id="riwBulkCount" style="font-weight:700;font-size:13px;">0 dokumen dipilih</span>
+      <button onclick="bulkDeleteSelected()" class="btn btn-xs" style="background:#dc2626;color:#fff;border:none;font-weight:700;">🗑️ Hapus Terpilih</button>
+      <button onclick="clearRiwSelection()" class="btn btn-xs" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);">Batal Pilih</button>
+    </div>
+    <div id="riwTableWrap" style="overflow-x:clip;"></div>
   </div>
 </div>
 
@@ -763,6 +842,7 @@ input[type=number]{-moz-appearance:textfield;}
       </label>
       <button onclick="fbUploadAll()" class="btn btn-s" style="color:#0ea5e9;border-color:#bae6fd;" title="Upload semua data lokal ke Supabase Cloud">☁ Upload ke Supabase</button>
       <button onclick="fbSync()" class="btn btn-s" style="color:#10b981;border-color:#a7f3d0;" title="Tarik data dari Supabase">⟳ Sync Supabase</button>
+      <button onclick="runSbDiagnostics()" class="btn btn-s" style="color:#d97706;border-color:#fde68a;" title="Cek kenapa data tidak sinkron">🩺 Diagnosa Sync</button>
       <button class="btn btn-d" onclick="clearAll()">🗑️ Hapus Semua Data</button>
     </div>
     <p class="text-xs text-slate-400 mt-3 leading-relaxed">Data tersimpan di <code>localStorage</code> browser ini <em>dan</em> di <strong>Supabase Cloud</strong> (otomatis tersinkron). Gunakan <em>Upload ke Supabase</em> untuk migrasi data lama, lalu <em>Sync Supabase</em> di perangkat lain untuk mengambilnya.</p>
@@ -844,6 +924,29 @@ let _sbUnsubs = [];
 let _uiRefreshT;
 let _sbErrShown = false;
 
+// ── fetch aman utk Supabase (lihat komentar di createClient) ──
+let _cleanFetch=null;
+function getCleanFetch(){
+  if(_cleanFetch) return _cleanFetch;
+  try{
+    const f=document.createElement('iframe'); f.style.display='none'; f.setAttribute('aria-hidden','true');
+    document.body.appendChild(f);
+    _cleanFetch=f.contentWindow.fetch.bind(f.contentWindow);
+  }catch(e){ _cleanFetch=null; }
+  return _cleanFetch;
+}
+async function safeFetch(input, init){
+  if(init && init.headers && typeof Headers!=='undefined' && init.headers instanceof Headers){
+    const o={}; init.headers.forEach((v,k)=>{ o[k]=v; }); init={...init, headers:o};
+  }
+  try{ return await fetch(input, init); }
+  catch(e){
+    if(e && (e.name==='DataCloneError' || /could not be cloned/i.test(e.message||''))){
+      const cf=getCleanFetch(); if(cf) return cf(input, init);
+    }
+    throw e;
+  }
+}
 (function initSB() {
   if (SUPABASE_URL.includes('XXXXXX')) {
     console.warn('⚠ Supabase URL belum dikonfigurasi. Edit konstanta SUPABASE_URL & SUPABASE_ANON di kode.');
@@ -851,7 +954,10 @@ let _sbErrShown = false;
     return;
   }
   try {
-    $sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    // fetch khusus: beberapa ekstensi browser (password manager, antivirus, ad-blocker) membungkus
+    // window.fetch lalu gagal dengan "DataCloneError: Headers object could not be cloned" --
+    // header diubah jadi objek biasa dulu, dan kalau masih ditolak, dicoba lewat fetch bersih dari iframe.
+    $sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, { global: { fetch: safeFetch } });
     console.log('✅ Supabase siap');
     startSbListeners();
   } catch(e) { console.warn('Supabase init gagal:', e.message); setSyncBadge('off'); }
@@ -861,34 +967,123 @@ function stopSbListeners() {
   _sbUnsubs.forEach(ch => { try { ch.unsubscribe(); } catch(e) {} });
   _sbUnsubs = [];
 }
+// PENTING utk performa real-time sync antar komputer: dulu fungsi ini SELALU
+// render ulang SEMUA (Riwayat 800+ baris, tabel Customer, dropdown Customer)
+// tiap kali ADA PERUBAHAN DARI KOMPUTER MANAPUN -- termasuk saat user lagi
+// kerja di tab lain (mis. lagi ngetik di Form) yang sama sekali nggak butuh
+// render itu. Itu penyebab utama kerasa "ngelag" tiap ada sync masuk. Sekarang
+// cuma render ulang tab yang MEMANG lagi kelihatan di layar -- tab lain cukup
+// nunggu di-render pas user beneran pindah ke situ (gotoTab() sudah otomatis
+// render ulang tab tujuan). localStorage (save()) tetap selalu jalan karena
+// ringan & penting buat cache offline.
+let _saveT;
+function scheduleSave(){ clearTimeout(_saveT); _saveT=setTimeout(()=>{ try{save();}catch(e){} },2500); }
+window.addEventListener('beforeunload',()=>{ if(_saveT){ clearTimeout(_saveT); try{save();}catch(e){} } });
 function scheduleUiRefresh(){
   clearTimeout(_uiRefreshT);
   _uiRefreshT = setTimeout(()=>{
-    save();
-    rebuildCustDrop();
-    renderHistory();
-    renderCustTable();
+    scheduleSave(); // tulis localStorage ditunda -- JSON ratusan dokumen itu berat
+    const onForm     = !g('tab-form')?.hidden;
+    const onRiwayat  = !g('tab-riwayat')?.hidden;
+    const onCustomer = !g('tab-customer')?.hidden;
+    if(onForm){ rebuildCustDrop(); refreshAutoDocNoIfUntouched(); }
+    if(onRiwayat) renderHistory();
+    if(onCustomer) renderCustTable();
   }, 250);
 }
+// ── SYNC CADANGAN (polling ringan) kalau Realtime/WebSocket tidak tersambung ──
+// Realtime bisa diblokir antivirus/ekstensi/jaringan kantor. Selama itu terjadi, aplikasi
+// memeriksa perubahan tiap 20 detik: dokumen cukup mengambil id + cap waktu (ringan),
+// hanya dokumen yang berubah/baru yang diunduh penuh; customer (kecil) ditarik penuh.
+// Begitu Realtime tersambung lagi, polling berhenti otomatis.
+var _rtStatus={}; var _pollBusy=false; // var: aman dipakai setSyncBadge() sebelum baris ini dijalankan
+function rtHealthy(){ return ['customers','documents','products','prices','price_dates'].every(t=>_rtStatus[t]==='SUBSCRIBED'); }
+async function pollLight(){
+  if(_pollBusy||!$sb) return;
+  _pollBusy=true;
+  try{
+    const PAGE=1000; let from=0, meta=[];
+    for(;;){
+      const {data,error}=await $sb.from('documents').select('id,u:payload->>updatedAt,s:payload->>savedAt').order('id').range(from,from+PAGE-1);
+      if(error) throw error;
+      meta=meta.concat(data||[]); if(!data||data.length<PAGE) break; from+=PAGE;
+    }
+    let changed=false;
+    const pendD=obPendingIds('documents'), seenD=seenLoad('documents');
+    const localById=new Map(ST.documents.map(d=>[String(d.id),d]));
+    const serverIds=new Set(), need=[];
+    meta.forEach(r=>{
+      const id=String(r.id); serverIds.add(id);
+      if(pendD.has(id)) return;
+      const l=localById.get(id);
+      if(!l){ need.push(id); return; }
+      if((r.u||null)!==(l.updatedAt||null) || (r.s||null)!==(l.savedAt||null)) need.push(id);
+    });
+    for(let i=0;i<need.length;i+=50){
+      const {data,error}=await $sb.from('documents').select('id,payload').in('id',need.slice(i,i+50));
+      if(error) throw error;
+      (data||[]).forEach(row=>{
+        const d={...(row.payload||{}),_fid:row.id};
+        const j=ST.documents.findIndex(x=>String(x.id)===String(row.id));
+        if(j>=0) Object.assign(ST.documents[j],d); else ST.documents.push(d);
+        seenAdd('documents',row.id); changed=true;
+      });
+    }
+    if(meta.length){
+      const n0=ST.documents.length;
+      ST.documents=ST.documents.filter(d=>{ const id=String(d.id); return serverIds.has(id)||pendD.has(id)||!seenD.has(id); });
+      if(ST.documents.length!==n0) changed=true;
+    }
+    // customer: kecil, tarik penuh
+    const fC=await sbGetAll('customers');
+    const pendC=obPendingIds('customers'), seenC=seenLoad('customers'), srvC=new Set(fC.map(x=>String(x._fid)));
+    fC.forEach(fc=>{
+      if(pendC.has(String(fc._fid))) return;
+      const i=ST.customers.findIndex(x=>String(x.id)===String(fc._fid));
+      if(i<0){ ST.customers.push(fc); changed=true; }
+      else if(JSON.stringify({...ST.customers[i],...fc})!==JSON.stringify(ST.customers[i])){ Object.assign(ST.customers[i],fc); changed=true; }
+    });
+    if(fC.length){
+      const n0=ST.customers.length;
+      ST.customers=ST.customers.filter(c=>{ const id=String(c.id); return srvC.has(id)||pendC.has(id)||!seenC.has(id); });
+      if(ST.customers.length!==n0) changed=true;
+    }
+    if(changed) scheduleUiRefresh();
+    setSyncBadge('poll');
+  }catch(e){ console.warn('Sync cadangan gagal:',e&&e.message||e); setSyncBadge('error'); }
+  finally{ _pollBusy=false; }
+}
+setInterval(()=>{ if($sb && !rtHealthy() && document.visibilityState==='visible') pollLight(); },20000);
+
 function startSbListeners(){
   if (!$sb) return;
   stopSbListeners();
   setSyncBadge('syncing');
 
-  const attach = (table, mergeOne, removeOne) => {
+  const attach = (table, mergeOne, removeOne, optional) => {
     const ch = $sb.channel('rt-' + table)
       .on('postgres_changes', { event: '*', schema: 'public', table }, payload => {
+        const pend = obPendingIds(table); // perubahan lokal yg belum terkirim jangan ditimpa
         if (payload.eventType === 'DELETE') {
-          const data = { ...(payload.old.payload || {}), _fid: payload.old.id };
-          removeOne(data);
+          // BUG FIX: baris DELETE dari Supabase cuma membawa id (kolom payload kosong), jadi
+          // dulu penghapusan di komputer lain TIDAK pernah menghapus data di komputer ini.
+          const fid = payload.old && payload.old.id != null ? String(payload.old.id) : null;
+          if (fid==null || pend.has(fid)) return;
+          seenDel(table, fid);
+          removeOne({ ...(payload.old.payload || {}), _fid: fid });
         } else {
-          const data = { ...(payload.new.payload || {}), _fid: payload.new.id };
+          const fid = String(payload.new.id);
+          if (pend.has(fid)) return;
+          seenAdd(table, fid);
+          const data = { ...(payload.new.payload || {}), _fid: fid };
           mergeOne(data);
         }
         setSyncBadge('ok');
         scheduleUiRefresh();
       })
       .subscribe(status => {
+        if (optional) { if (status!=='SUBSCRIBED') console.warn('Realtime opsional ('+table+'):',status); return; }
+        _rtStatus[table]=status;
         if (status === 'SUBSCRIBED') { setSyncBadge('ok'); }
         else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           setSyncBadge('error');
@@ -904,25 +1099,89 @@ function startSbListeners(){
 
   attach('customers',
     c => { const i = ST.customers.findIndex(x=>x.id===c.id); if(i>=0) Object.assign(ST.customers[i], c); else ST.customers.push(c); },
-    c => { ST.customers = ST.customers.filter(x=>x.id!==c.id); }
+    c => { ST.customers = ST.customers.filter(x=>String(x.id)!==c._fid); }
   );
   attach('documents',
     d => { const i = ST.documents.findIndex(x=>x.id===d.id); if(i>=0) Object.assign(ST.documents[i], d); else ST.documents.push(d); },
-    d => { ST.documents = ST.documents.filter(x=>x.id!==d.id); }
+    d => { ST.documents = ST.documents.filter(x=>String(x.id)!==d._fid); }
   );
   attach('products',
     p => { const ex = ST.products.find(x=>x.name===p.name); if(ex) Object.assign(ex, p); else ST.products.push(p); },
-    p => { ST.products = ST.products.filter(x=>x.name!==p.name); }
+    p => { ST.products = ST.products.filter(x=>pKey(x.name)!==p._fid); }
   );
   attach('prices',
     p => { if (p.k) ST.prices[p.k] = p.v; },
-    p => { if (p.k) delete ST.prices[p.k]; }
+    p => { Object.keys(ST.prices).forEach(k=>{ if(pKey(k)===p._fid) delete ST.prices[k]; }); }
   );
   attach('price_dates',
     p => { if (p.k) ST.priceDates[p.k] = p.v; },
-    p => { if (p.k) delete ST.priceDates[p.k]; }
+    p => { Object.keys(ST.priceDates).forEach(k=>{ if(pKey(k)===p._fid) delete ST.priceDates[k]; }); }
+  );
+  // Preferensi tampilan (TTD, U.P., kelompok per bulan, urutan, desimal, dll) -- OPSIONAL:
+  // kalau tabel app_settings belum dibuat, bagian lain tetap jalan normal.
+  attach('app_settings',
+    d => { if (d._fid==='prefs') applyPrefs(d); },
+    () => {},
+    true
   );
 }
+
+// ══════════════════════════════════════════════════════════════════
+// PREFERENSI YANG IKUT TERSINKRON ANTAR LAPTOP (tabel app_settings, baris 'prefs')
+// TTD di cetak, U.P. di cetak, Kelompokkan per Bulan, urutan Riwayat, ,000 Desimal,
+// kolom diskon salinan, format angka Sheets. Filter/pencarian TIDAK ikut (sifatnya sementara).
+// ══════════════════════════════════════════════════════════════════
+let _applyingPrefs=false, _prefsT=null;
+const PREFS_V=2; // v2: urutan default = tanggal dokumen (catatan lama bernilai 'saved' tidak boleh menimpa default baru)
+function collectPrefs(){
+  return {
+    v: PREFS_V,
+    showSig: ST.settings.showSig!==false,
+    showUP: !!(g('riwShowUP')&&g('riwShowUP').checked),
+    groupMode: !!ST._riwGroupMode,
+    sortMode: (_riwSort.col==='date')?'date':'saved',
+    priceDecimal: !!ST._priceFmtOn,
+    copyDisc: copyDiscOn(),
+    sheetsLoc: sheetsLocale()
+  };
+}
+function applyPrefs(p){
+  if(!p) return;
+  const cur=collectPrefs();
+  const same=Object.keys(cur).every(k=>p[k]===undefined||p[k]===cur[k]);
+  if(same) return;                       // sudah sama (mis. gema dari perubahan sendiri)
+  _applyingPrefs=true;
+  try{
+    if(typeof p.showSig==='boolean'){
+      ST.settings.showSig=p.showSig;
+      const a=g('qSigToggle'); if(a) a.checked=p.showSig;
+      const b=g('sShowSig');   if(b) b.checked=p.showSig;
+    }
+    if(typeof p.showUP==='boolean'){ const c=g('riwShowUP'); if(c) c.checked=p.showUP; }
+    if(typeof p.groupMode==='boolean'){
+      ST._riwGroupMode=p.groupMode;
+      const b=g('btnRiwGroup'); if(b) b.textContent='📅 Kelompokkan per Bulan: '+(p.groupMode?'ON':'OFF');
+    }
+    if(p.v===PREFS_V && (p.sortMode==='date'||p.sortMode==='saved') && (_riwSort.col==='saved'||_riwSort.col==='date')) _riwSort={col:p.sortMode,dir:-1};
+    if(typeof p.priceDecimal==='boolean'){
+      ST._priceFmtOn=p.priceDecimal; localStorage.setItem('sap_pricedecimal',p.priceDecimal?'1':'0');
+      const b=g('btnPriceFmt'); if(b) b.textContent=',000 Desimal: '+(p.priceDecimal?'ON':'OFF');
+    }
+    if(typeof p.copyDisc==='boolean') localStorage.setItem('sap_copydisc',p.copyDisc?'1':'0');
+    if(p.sheetsLoc==='id'||p.sheetsLoc==='en') localStorage.setItem('sap_sheetsloc',p.sheetsLoc);
+    try{ localStorage.setItem('sap_s',JSON.stringify(ST.settings)); }catch(e){}
+  } finally { _applyingPrefs=false; }
+  // gambar ulang hanya tab yang sedang dilihat
+  if(!g('tab-riwayat')?.hidden) renderHistory();
+  else if(!g('tab-form')?.hidden) renderItems();
+}
+// Dipanggil setiap user mengubah salah satu preferensi di atas (ditunda 0,6 dtk, digabung).
+function pushPrefs(){
+  if(_applyingPrefs) return;
+  clearTimeout(_prefsT);
+  _prefsT=setTimeout(()=>{ fbSet('app_settings','prefs',{...collectPrefs(),_at:Date.now()}); },600);
+}
+
 
 const pKey = k => encodeURIComponent(String(k||'')).replace(/%/g,'_').slice(0,500);
 
@@ -938,12 +1197,16 @@ const fbClean = sbClean;
 
 function setSyncBadge(st) {
   const el = g('syncBadge'); if (!el) return;
+  if (st==='ok' && _rtStatus && Object.keys(_rtStatus).length && !rtHealthy() && !obLoad().length) st='poll'; // realtime mati -> tampilkan status sync berkala
   const m = {
     syncing:{t:'⟳ Menyinkron…',c:'#f59e0b'},
     ok:     {t:'☁ Tersinkron', c:'#10b981'},
     error:  {t:'⚠ Gagal sync', c:'#ef4444'},
-    off:    {t:'• Lokal',      c:'#94a3b8'}
+    off:    {t:'• Lokal',      c:'#94a3b8'},
+    pending:{t:'⟳ '+obLoad().length+' menunggu kirim', c:'#f59e0b'},
+    poll:   {t:'⟳ Sync tiap 20 dtk (realtime mati)', c:'#f59e0b'}
   }[st] || {};
+  if (st==='ok' && obLoad().length) { el.textContent='⟳ '+obLoad().length+' menunggu kirim'; el.style.color='#f59e0b'; return; }
   el.textContent = m.t || ''; el.style.color = m.c || '';
 }
 
@@ -958,58 +1221,272 @@ function scheduleFbSync(){
   }, 500);
 }
 
+// ── OUTBOX: antrean kirim ke Supabase yang AMAN dari gagal/offline ────────────
+// Tiap simpan/hapus yang gagal terkirim (internet putus, server error) dicatat di
+// localStorage ('sap_outbox') dan dicoba ulang otomatis: tiap 20 dtk, saat internet
+// kembali, dan saat tab dibuka lagi. Jadi data tidak pernah "cuma tersimpan lokal".
+function obLoad(){ try{ return JSON.parse(localStorage.getItem('sap_outbox')||'[]'); }catch(e){ return []; } }
+function obSave(a){ try{ localStorage.setItem('sap_outbox',JSON.stringify(a)); }catch(e){} refreshSyncBadge(); }
+function obPush(op){ const a=obLoad().filter(x=>!(x.table===op.table&&x.id===op.id)); a.push(op); obSave(a); }
+function obRemove(table,id){ const a=obLoad(); const n=a.filter(x=>!(x.table===table&&x.id===String(id))); if(n.length!==a.length) obSave(n); }
+function obPendingIds(table){ return new Set(obLoad().filter(x=>x.table===table).map(x=>x.id)); }
+let _obBusy=false;
+async function flushOutbox(){
+  if(!$sb||_obBusy) return;
+  if(!obLoad().length) return;
+  _obBusy=true;
+  try{
+    for(const op of obLoad()){
+      let error=null;
+      try{
+        if(op.t==='set') ({error}=await $sb.from(op.table).upsert({id:op.id,payload:op.payload}));
+        else ({error}=await $sb.from(op.table).delete().eq('id',op.id));
+      }catch(e){ error=e; }
+      if(error) break; // masih gagal -> coba lagi nanti, urutan dijaga
+      // hapus dari antrean HANYA kalau belum ada op lebih baru utk id yang sama
+      const cur=obLoad(); const same=cur.find(x=>x.table===op.table&&x.id===op.id);
+      if(same && JSON.stringify(same)===JSON.stringify(op)) obSave(cur.filter(x=>x!==same && !(x.table===op.table&&x.id===op.id)));
+    }
+  } finally { _obBusy=false; refreshSyncBadge(); }
+}
+setInterval(flushOutbox,20000);
+// Tarik ulang data penuh dari server TIDAK tiap kali tab dibuka (itu ±1 MB bolak-balik);
+// cukup kalau sudah >60 detik sejak sync terakhir. Update dari komputer lain tetap masuk
+// seketika lewat realtime -- ini hanya jaring pengaman utk event yang terlewat.
+let _lastSyncAt=0;
+window.addEventListener('online',()=>{ flushOutbox().then(()=>fbSync({silent:true})); });
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible') return;
+  flushOutbox();
+  if(Date.now()-_lastSyncAt>60000) fbSync({silent:true});
+});
+function refreshSyncBadge(){ const n=obLoad().length; if(n>0) setSyncBadge('pending'); }
+
+// Daftar id yang pernah terkonfirmasi ada di server (utk bedakan "dihapus di komputer
+// lain" vs "belum pernah terkirim"). Disimpan per tabel.
+function seenLoad(t){ try{ return new Set(JSON.parse(localStorage.getItem('sap_seen_'+t)||'[]')); }catch(e){ return new Set(); } }
+function seenSave(t,set){ try{ localStorage.setItem('sap_seen_'+t,JSON.stringify([...set])); }catch(e){} }
+function seenAdd(t,id){ const x=seenLoad(t); if(!x.has(String(id))){ x.add(String(id)); seenSave(t,x);} }
+function seenDel(t,id){ const x=seenLoad(t); if(x.delete(String(id))) seenSave(t,x); }
+
 async function fbSet(table, id, data) {
-  if (!$sb) {
-    setSyncBadge('off');
-    return { error: { message: 'Supabase belum siap' } };
+  const sid=String(id), payload=sbClean(data);
+  if (!$sb) { obPush({t:'set',table,id:sid,payload}); setSyncBadge('off'); return { error: { message: 'Supabase belum siap' } }; }
+  let error=null;
+  try{ ({error} = await $sb.from(table).upsert({ id: sid, payload }, { onConflict: 'id' })); }catch(e){ error=e; }
+  if (error && table==='app_settings' && (error.code==='42P01'||error.code==='PGRST205'||/does not exist|schema cache|Could not find the table/i.test(error.message||''))) {
+    window._prefsTableMissing=true;       // tabel opsional belum dibuat -> jangan menumpuk di antrean
+    return { error };
   }
-  const { error } = await $sb.from(table).upsert(
-    { id: String(id), payload: sbClean(data) },
-    { onConflict: 'id' }
-  );
   if (error) {
     console.warn('Supabase set (' + table + '):', error.message);
+    obPush({t:'set',table,id:sid,payload}); // antre & coba ulang otomatis
     setSyncBadge('error');
     return { error };
   }
+  obRemove(table,sid); seenAdd(table,sid);
   setSyncBadge('ok');
   return { error: null };
 }
 
 // Sama seperti fbSet tapi beri toast konfirmasi instan ke user.
 async function fbSetLive(table, id, data, label) {
-  if (!$sb) { toast('⚠ Supabase belum siap — data hanya tersimpan lokal', 'warn'); return; }
+  const sid=String(id), payload=sbClean(data);
+  if (!$sb) { obPush({t:'set',table,id:sid,payload}); toast('⚠ Supabase belum siap — data diantre & dikirim otomatis nanti', 'warn'); return; }
   setSyncBadge('syncing');
-  const { error } = await $sb.from(table).upsert({ id: String(id), payload: sbClean(data) });
+  let error=null;
+  try{ ({error} = await $sb.from(table).upsert({ id: sid, payload })); }catch(e){ error=e; }
   if (!error) {
+    obRemove(table,sid); seenAdd(table,sid);
     setSyncBadge('ok');
     toast('☁ ' + (label ? label + ' ' : '') + 'langsung tersimpan ke Supabase');
   } else {
     console.warn('SB set:', error.message);
+    obPush({t:'set',table,id:sid,payload});
     setSyncBadge('error');
-    toast('⚠ Gagal kirim ke Supabase: ' + (error.message||'unknown'), 'err');
+    toast('⚠ Gagal kirim ke Supabase — diantre & dicoba ulang otomatis (' + (error.message||'unknown') + ')', 'err');
   }
 }
 
 async function fbDel(table, id) {
-  if (!$sb) return;
-  const { error } = await $sb.from(table).delete().eq('id', String(id));
-  if (error) console.warn('SB del (' + table + '):', error.message);
+  const sid=String(id);
+  seenDel(table,sid);
+  if (!$sb) { obPush({t:'del',table,id:sid}); return; }
+  let error=null;
+  try{ ({error} = await $sb.from(table).delete().eq('id', sid)); }catch(e){ error=e; }
+  if (error) { console.warn('SB del (' + table + '):', error.message); obPush({t:'del',table,id:sid}); setSyncBadge('error'); }
+  else obRemove(table,sid);
+}
+// Hapus banyak sekaligus (hapus massal) -- 1 request per 100 id, bukan 1 per dokumen.
+async function fbDelMany(table, ids) {
+  ids=ids.map(String); ids.forEach(i=>seenDel(table,i));
+  if(!$sb){ ids.forEach(i=>obPush({t:'del',table,id:i})); return; }
+  for(let i=0;i<ids.length;i+=100){
+    const chunk=ids.slice(i,i+100);
+    let error=null;
+    try{ ({error}=await $sb.from(table).delete().in('id',chunk)); }catch(e){ error=e; }
+    if(error){ console.warn('SB delMany:',error.message); chunk.forEach(c=>obPush({t:'del',table,id:c})); setSyncBadge('error'); }
+    else chunk.forEach(c=>obRemove(table,c));
+  }
 }
 
+// Ambil SEMUA baris tabel dgn paginasi (Supabase membatasi 1000 baris/permintaan --
+// tanpa ini dokumen ke-1001 dst. diam-diam tidak ikut ter-sync).
 async function sbGetAll(table) {
   if (!$sb) throw new Error('Supabase belum siap');
-  const { data, error } = await $sb.from(table).select('*');
-  if (error) throw new Error('Tabel ' + table + ': ' + error.message);
-  return (data || []).map(row => ({ ...(row.payload || {}), _fid: row.id }));
+  const PAGE=1000; let from=0, out=[];
+  for(;;){
+    const { data, error } = await $sb.from(table).select('*').order('id').range(from, from+PAGE-1);
+    if (error) throw new Error('Tabel ' + table + ': ' + error.message);
+    out=out.concat(data||[]);
+    if(!data || data.length<PAGE) break;
+    from+=PAGE;
+  }
+  return out.map(row => ({ ...(row.payload || {}), _fid: row.id }));
 }
 
-async function fbSync() {
+// ══════════════════════════════════════════════════════════════════
+// 🩺 DIAGNOSA SYNC SUPABASE -- cek satu per satu kenapa data tidak sinkron
+// (tabel belum ada / RLS memblokir / Realtime belum aktif / project di-pause /
+// key salah / ekstensi browser) dan tampilkan cara memperbaikinya.
+// ══════════════════════════════════════════════════════════════════
+function sbFixHint(err, table){
+  const m=String((err&&(err.message||err.details||err))||'');
+  const c=String((err&&err.code)||'');
+  if(/DataCloneError|could not be cloned/i.test(m)) return 'Ekstensi browser (password manager / antivirus / pemblokir iklan) mengganggu. Coba buka di jendela Incognito, atau nonaktifkan ekstensi satu per satu.';
+  if(c==='42P01'||c==='PGRST205'||/does not exist|Could not find the table|schema cache/i.test(m)) return 'Tabel'+(table?' "'+table+'"':'')+' belum dibuat di Supabase. Jalankan setup_supabase.sql di SQL Editor.';
+  if(c==='42501'||/permission denied|row-level security|violates row-level/i.test(m)) return 'Akses ditolak (RLS/privilege). Jalankan setup_supabase.sql di SQL Editor — bagian GRANT dan POLICY.';
+  if(/Invalid API key|JWT|apikey|No API key/i.test(m)) return 'API key salah/kedaluwarsa. Supabase → Project Settings → API → salin ulang anon/publishable key ke SUPABASE_ANON.';
+  if(c==='PGRST202'||/Could not find the function|get_next_seq/i.test(m)) return 'Fungsi get_next_seq belum ada. Jalankan setup_supabase.sql di SQL Editor.';
+  if(/Failed to fetch|NetworkError|Load failed|fetch/i.test(m)) return 'Tidak bisa menjangkau Supabase: cek internet/firewall/pemblokir iklan (*.supabase.co). Kalau project Free tidak dipakai >1 minggu, project di-PAUSE — buka dashboard Supabase lalu klik "Restore project".';
+  return 'Lihat pesan error di atas; kalau tidak jelas, salin hasil diagnosa ini dan kirim.';
+}
+function sbErrText(e){ return ((e&&e.code)?e.code+': ':'')+String((e&&(e.message||e.details))||e); }
+function showDiagModal(html, reportText){
+  let ov=g('diagModal');
+  if(!ov){
+    ov=document.createElement('div'); ov.id='diagModal';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;';
+    ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+    document.body.appendChild(ov);
+  }
+  ov.innerHTML=`<div style="background:#fff;border-radius:14px;max-width:640px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><b style="font-size:15px;">🩺 Diagnosa Sync Supabase</b><button onclick="g('diagModal').remove()" style="font-size:22px;line-height:1;color:#64748b;">&times;</button></div>
+    ${html}
+    ${reportText?`<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;"><button class="btn btn-s btn-sm" onclick="runSbDiagnostics()">↻ Periksa ulang</button><button class="btn btn-s btn-sm" onclick="flushOutbox().then(()=>toast('Antrean dikirim ulang'))">📤 Kirim antrean</button><button class="btn btn-s btn-sm" onclick="navigator.clipboard.writeText(window.__diagReport||'').then(()=>toast('Hasil diagnosa disalin'))">📋 Salin hasil</button></div>`:''}
+  </div>`;
+}
+async function runSbDiagnostics(){
+  const rows=[]; const add=(st,title,detail,fix)=>rows.push({st,title,detail:detail||'',fix:fix||''});
+  showDiagModal('<div style="padding:18px;color:#475569;">⏳ Memeriksa koneksi, tabel, izin tulis, dan Realtime… (±10 detik)</div>');
+  const render=()=>{
+    const icon={ok:'✅',warn:'⚠️',bad:'❌'};
+    const col={ok:'#16a34a',warn:'#d97706',bad:'#dc2626'};
+    const html=rows.map(r=>`<div style="padding:8px 0;border-top:1px solid #f1f5f9;"><div style="font-weight:700;color:${col[r.st]};">${icon[r.st]} ${esc(r.title)}</div>${r.detail?`<div style="font-size:12.5px;color:#475569;margin-top:2px;word-break:break-word;">${esc(r.detail)}</div>`:''}${r.fix?`<div style="font-size:12.5px;color:#0f172a;background:#fef9c3;border-radius:6px;padding:6px 8px;margin-top:4px;">🔧 ${esc(r.fix)}</div>`:''}</div>`).join('');
+    window.__diagReport=rows.map(r=>`${icon[r.st]} ${r.title}${r.detail?' — '+r.detail:''}${r.fix?'\n   → '+r.fix:''}`).join('\n');
+    const bad=rows.filter(r=>r.st==='bad').length, warn=rows.filter(r=>r.st==='warn').length;
+    const head=bad?`<div style="padding:8px 10px;border-radius:8px;background:#fee2e2;color:#991b1b;font-weight:700;margin-bottom:4px;">${bad} masalah ditemukan — ikuti saran 🔧 di bawah.</div>`
+      :warn?`<div style="padding:8px 10px;border-radius:8px;background:#fef3c7;color:#92400e;font-weight:700;margin-bottom:4px;">Koneksi OK, ada ${warn} catatan.</div>`
+      :`<div style="padding:8px 10px;border-radius:8px;background:#dcfce7;color:#166534;font-weight:700;margin-bottom:4px;">Semua pemeriksaan lolos — sync seharusnya jalan.</div>`;
+    showDiagModal(head+html, window.__diagReport);
+  };
+  if(!$sb){ add('bad','Klien Supabase belum siap','supabase-js tidak termuat atau URL/key belum benar','Cek internet, lalu refresh (Ctrl+Shift+R). Pastikan SUPABASE_URL & SUPABASE_ANON di kode terisi benar.'); render(); return; }
+  add('ok','Klien Supabase siap', SUPABASE_URL);
+  const TABLES=['customers','documents','products','prices','price_dates'];
+  const localN={customers:ST.customers.length,documents:ST.documents.length,products:ST.products.length};
+  let anyReadBad=false;
+  for(const t of TABLES){
+    try{
+      const {count,error}=await $sb.from(t).select('id',{count:'exact',head:true});
+      if(error){ anyReadBad=true; add('bad',`Tabel ${t}: tidak bisa dibaca`, sbErrText(error), sbFixHint(error,t)); }
+      else if((localN[t]||0)>0 && count===0) add('warn',`Tabel ${t}: terbaca tapi 0 baris di server (lokal ada ${localN[t]})`,'Tabel kosong, ATAU RLS memblokir baca diam-diam.','Jalankan setup_supabase.sql (bagian POLICY), lalu klik "☁ Upload ke Supabase" di Pengaturan.');
+      else add('ok',`Tabel ${t}: bisa dibaca`, `${count} baris di server`+((localN[t]!=null)?` · ${localN[t]} di laptop ini`:''));
+    }catch(e){ anyReadBad=true; add('bad',`Tabel ${t}: gagal`, sbErrText(e), sbFixHint(e,t)); }
+  }
+  // tabel opsional: preferensi yang ikut tersinkron (TTD, U.P., urutan, dll)
+  try{
+    const {count,error}=await $sb.from('app_settings').select('id',{count:'exact',head:true});
+    if(error) add('warn','Tabel app_settings (preferensi: TTD, U.P., urutan, dll) belum ada', sbErrText(error), 'Preferensi tampilan baru tidak ikut sinkron antar laptop. Jalankan setup_supabase.sql versi terbaru di SQL Editor.');
+    else add('ok','Preferensi tampilan ikut tersinkron (app_settings)', count+' baris');
+  }catch(e){ add('warn','Tabel app_settings tidak terbaca', sbErrText(e), 'Jalankan setup_supabase.sql versi terbaru.'); }
+  // izin tulis: upsert ulang baris yang SUDAH ada dgn isi persis sama (tidak mengubah data apa pun)
+  if(!anyReadBad){
+    for(const t of TABLES){
+      try{
+        const {data,error}=await $sb.from(t).select('id,payload').limit(1);
+        if(error||!data||!data[0]) continue;
+        const r=await $sb.from(t).upsert({id:data[0].id,payload:data[0].payload});
+        if(r.error) add('bad',`Tabel ${t}: tidak bisa DITULIS`, sbErrText(r.error), sbFixHint(r.error,t));
+        else add('ok',`Tabel ${t}: bisa ditulis`);
+      }catch(e){ add('bad',`Tabel ${t}: gagal ditulis`, sbErrText(e), sbFixHint(e,t)); }
+    }
+    // counters + fungsi nomor otomatis
+    try{
+      const w=await $sb.from('counters').upsert({id:'__diag__',seq:0,type:'diag'});
+      if(w.error) add('bad','Tabel counters: tidak bisa ditulis', sbErrText(w.error), sbFixHint(w.error,'counters'));
+      else{
+        const rp=await $sb.rpc('get_next_seq',{p_key:'__diag__',p_local_max:0,p_company:null,p_type:'diag'});
+        if(rp.error) add('bad','Fungsi get_next_seq (nomor otomatis) gagal', sbErrText(rp.error), sbFixHint(rp.error,'get_next_seq'));
+        else add('ok','Penomoran otomatis (counters + get_next_seq) berfungsi');
+        await $sb.from('counters').delete().eq('id','__diag__');
+      }
+    }catch(e){ add('bad','Tabel counters/get_next_seq gagal', sbErrText(e), sbFixHint(e,'counters')); }
+  }
+  // Realtime: sambung + uji event (no-op update pada 1 dokumen yang sudah ada)
+  try{
+    // 1) WebSocket mentah ke server Realtime: memisahkan "browser/jaringan memblokir" dari "Supabase menolak channel"
+    const raw=await new Promise(res=>{
+      let ws, done=false; const fin=r=>{ if(done) return; done=true; try{ ws&&ws.close(); }catch(e){} res(r); };
+      try{ ws=new WebSocket(SUPABASE_URL.replace(/^http/,'ws')+'/realtime/v1/websocket?apikey='+encodeURIComponent(SUPABASE_ANON)+'&vsn=1.0.0'); }
+      catch(e){ return res({ok:false,msg:e.message}); }
+      ws.onopen=()=>fin({ok:true});
+      ws.onerror=()=>setTimeout(()=>fin({ok:false,msg:'koneksi gagal dibuka'}),80);
+      ws.onclose=ev=>fin({ok:false,msg:'ditutup (kode '+ev.code+(ev.reason?': '+ev.reason:'')+')'});
+      setTimeout(()=>fin({ok:false,msg:'tidak ada respons 6 detik'}),6000);
+    });
+    if(raw.ok) add('ok','WebSocket ke server Realtime bisa dibuka');
+    else add('bad','WebSocket ke server Realtime DIBLOKIR/gagal', raw.msg, 'Browser tidak bisa membuka koneksi wss://*.supabase.co. Penyebab umum: antivirus/web protection (mis. McAfee), ekstensi pemblokir iklan, atau jaringan kantor/WiFi yang memblokir WebSocket. Coba: jendela Incognito, hotspot HP, atau nonaktifkan sementara web protection antivirus.');
+    // 2) channel Realtime sungguhan
+    const rt=await new Promise(resolve=>{
+      let status='TIMEOUT', everSub=false, subErr='', got=false, triggered=false, fin=false;
+      const ch=$sb.channel('diag-'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'documents'},()=>{ got=true; });
+      // status DIAMBIL DULU baru channel dilepas (melepas channel memicu status CLOSED yang bisa menimpa hasil)
+      const finish=()=>{ if(fin) return; fin=true; const r={status,everSub,subErr,got,triggered}; try{ $sb.removeChannel(ch); }catch(e){} resolve(r); };
+      ch.subscribe((st,err)=>{
+        if(fin) return;
+        status=st; if(st==='SUBSCRIBED') everSub=true; if(err) subErr=String(err.message||err);
+        if(st==='SUBSCRIBED'){
+          (async()=>{ try{
+            const {data}=await $sb.from('documents').select('id,payload').limit(1);
+            if(data&&data[0]){ triggered=true; await $sb.from('documents').upsert({id:data[0].id,payload:data[0].payload}); }
+          }catch(e){} })();
+          setTimeout(finish,4500);
+        } else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'||st==='CLOSED') finish();
+      });
+      setTimeout(finish,10000);
+    });
+    if(rt.everSub && rt.got) add('ok','Realtime aktif — event perubahan dokumen diterima');
+    else if(rt.everSub && !rt.triggered) add('warn','Realtime tersambung, tapi event belum bisa diuji (tabel documents kosong)');
+    else if(rt.everSub) add('bad','Realtime tersambung tapi TIDAK ada event masuk','Tabel belum masuk publikasi Realtime, atau RLS (policy SELECT) memblokir.','Jalankan setup_supabase.sql (bagian REALTIME + POLICY). Cek juga: Database → Publications → supabase_realtime → centang semua tabel.');
+    else if(raw.ok) add('bad','Realtime: channel ditolak server ('+rt.status+')'+(rt.subErr?' — '+rt.subErr:''),'WebSocket bisa dibuka, tapi Supabase menolak channel-nya.','Cek Supabase → Project Settings → API: pastikan Realtime aktif. Kalau memakai key "sb_publishable_…", coba ganti SUPABASE_ANON dengan key anon versi lama (tab "Legacy anon, service_role API keys", diawali eyJ…).');
+    else add('bad','Realtime gagal tersambung ('+rt.status+')','Penyebabnya sama dengan WebSocket di atas.','Lihat saran pada pemeriksaan WebSocket.');
+  }catch(e){ add('bad','Realtime error', sbErrText(e), sbFixHint(e)); }
+  // antrean kirim
+  const pend=obLoad().length;
+  if(pend) add('warn',`${pend} perubahan menunggu terkirim ke Supabase`,'Data aman di laptop ini dan akan dikirim otomatis begitu koneksi/izin beres.','Perbaiki masalah di atas, lalu klik "Kirim antrean".');
+  else add('ok','Tidak ada perubahan yang tertahan di antrean kirim');
+  render();
+}
+
+async function fbSync(opts) {
+  const silent = !!(opts && opts.silent);
+  _lastSyncAt = Date.now();
   if (!$sb) {
     setSyncBadge('off');
-    toast('⚠ Supabase belum siap — data tetap tersimpan lokal', 'warn');
+    if(!silent) toast('⚠ Supabase belum siap — data tetap tersimpan lokal', 'warn');
     return;
   }
+  await flushOutbox(); // kirim dulu yang tertunda sebelum menarik data server
   setSyncBadge('syncing');
   try {
     const [fC, fD, fP, fPr, fPd] = await Promise.all([
@@ -1020,16 +1497,48 @@ async function fbSync() {
       sbGetAll('price_dates')
     ]);
 
+    const pendC = obPendingIds('customers'), pendD = obPendingIds('documents');
     fC.forEach(fc => {
+      if (pendC.has(String(fc._fid))) return; // edit lokal belum terkirim -> jangan ditimpa data lama server
       const i = ST.customers.findIndex(x => x.id === fc.id);
       if (i >= 0) Object.assign(ST.customers[i], fc);
       else ST.customers.push(fc);
     });
     fD.forEach(fd => {
+      if (pendD.has(String(fd._fid))) return;
       const i = ST.documents.findIndex(x => x.id === fd.id);
       if (i >= 0) Object.assign(ST.documents[i], fd);
       else ST.documents.push(fd);
     });
+    // Rekonsiliasi dua arah (hanya kalau server mengembalikan data, supaya RLS/error
+    // yang membuat hasil kosong tidak menghapus data lokal):
+    //  - pernah terlihat di server tapi sekarang hilang  -> dihapus di komputer lain -> hapus lokal
+    //  - belum pernah ada di server                      -> belum terkirim -> kirim sekarang
+    const reconcile = (tbl, arr, serverRows, pend) => {
+      if (!serverRows.length) return arr;
+      const serverIds = new Set(serverRows.map(r => String(r._fid)));
+      const seen = seenLoad(tbl);
+      const keep = [];
+      arr.forEach(it => {
+        const id = String(it.id);
+        if (serverIds.has(id)) keep.push(it);
+        else if (pend.has(id)) keep.push(it);
+        else if (seen.has(id)) { /* dihapus di tempat lain */ }
+        else { keep.push(it); obPush({t:'set', table:tbl, id, payload:sbClean(it)}); }
+      });
+      seenSave(tbl, serverIds);
+      return keep;
+    };
+    // preferensi (opsional): server menang kalau sudah ada; kalau belum ada, kirim punya laptop ini
+    try{
+      const pr=(await sbGetAll('app_settings')).find(r=>r._fid==='prefs');
+      if(pr && pr.v===PREFS_V) applyPrefs(pr);
+      else if(pr){ const {sortMode,...rest}=pr; applyPrefs(rest); pushPrefs(); } // catatan versi lama: ambil pengaturan lain, perbarui urutan ke default baru
+      else pushPrefs();
+    }catch(e){ /* tabel app_settings belum ada -> abaikan */ }
+    ST.customers = reconcile('customers', ST.customers, fC, pendC);
+    ST.documents = reconcile('documents', ST.documents, fD, pendD);
+    flushOutbox();
     fP.forEach(fp => {
       const ex = ST.products.find(x => x.name === fp.name);
       if (ex) Object.assign(ex, fp);
@@ -1041,15 +1550,16 @@ async function fbSync() {
 
     save();
     migrateProductHistory();
-    rebuildCustDrop();
-    renderHistory();
-    renderCustTable();
+    // render hanya tab yang sedang dilihat (tab lain ter-render saat dibuka lewat gotoTab)
+    if(!g('tab-form')?.hidden){ rebuildCustDrop(); refreshAutoDocNoIfUntouched(); }
+    if(!g('tab-riwayat')?.hidden) renderHistory();
+    if(!g('tab-customer')?.hidden) renderCustTable();
     setSyncBadge('ok');
-    toast('☁ Sync Supabase selesai');
+    if(!silent) toast('☁ Sync Supabase selesai');
   } catch (e) {
     console.error('Supabase sync error:', e);
     setSyncBadge('error');
-    toast('⚠ Sync gagal: ' + (e.message || String(e)), 'err');
+    if(!silent) toast('⚠ Sync gagal: ' + (e.message || String(e)) + ' — klik 🩺 di header untuk diagnosa', 'err');
   }
 }
 
@@ -1150,6 +1660,12 @@ const ST = {
   items:[],
   _ongkir:0,
   _ongkirCod:false,
+  // Opsional: tampilkan akhiran desimal koma (mis. "1.000.000,000") di kolom
+  // Harga Satuan / Disc (Rp). Titik pemisah ribuan SELALU tampil terlepas dari
+  // ini -- toggle ini CUMA soal perlu-tidaknya ",000" di belakangnya.
+  // Default OFF. Disimpan di localStorage ('sap_pricedecimal').
+  _priceFmtOn:(localStorage.getItem('sap_pricedecimal')??'0')==='1',
+  _riwGroupMode:false, // mode "Kelompokkan per Bulan" di tab Riwayat (OFF = tabel relasi biasa)
   products:[],
   prices:{},
   priceDates:{}, // tanggal transaksi/update terakhir untuk tiap harga khusus "customer::produk"
@@ -1159,15 +1675,18 @@ const ST = {
 };
 
 // ── STORAGE ────────────────────────────────────────────────────────
+// Tiap kunci ditulis TERPISAH: kalau salah satu gagal (mis. kuota localStorage ±5 MB penuh
+// karena dokumen sudah ribuan), kunci lain (pengaturan, counter nomor) tetap tersimpan, dan
+// proses simpan ke Supabase TIDAK ikut terhenti -- data utama tetap aman di server.
+let _saveWarned=false;
 function save(){
-  try{
-    ls('sap_c',ST.customers);
-    ls('sap_d',ST.documents);
-    ls('sap_s',ST.settings);
-    ls('sap_products',ST.products);
-    ls('sap_prices',ST.prices);
-    ls('sap_priceDates',ST.priceDates);
-  }catch(e){toast('⚠️ Gagal simpan data','err');}
+  [['sap_c',ST.customers],['sap_d',ST.documents],['sap_s',ST.settings],
+   ['sap_products',ST.products],['sap_prices',ST.prices],['sap_priceDates',ST.priceDates]].forEach(([k,v])=>{
+    try{ ls(k,v); }catch(e){
+      console.warn('localStorage gagal utk',k,e&&e.message);
+      if(!_saveWarned){ _saveWarned=true; toast('⚠ Cache lokal penuh ('+k+') — data tetap aman di Supabase','err'); }
+    }
+  });
 }
 function load(){
   try{
@@ -1208,11 +1727,110 @@ function fmtDateID(s){
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const pad=n=>String(n).padStart(2,'0');
 function today(){const d=new Date();return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+// Status pengiriman Surat Jalan berdasarkan Tanggal dokumen vs hari ini:
+// tanggal di masa depan = belum dikirim, hari ini = diproses, sudah lewat = terkirim.
+function computeShipStatus(dateStr){
+  const d=dateStr||today(), t=today();
+  if(d>t) return 'belum_dikirim';
+  if(d===t) return 'diproses';
+  return 'terkirim';
+}
+// Sinkronkan dropdown fShipStatus dengan tanggal SJ saat ini -- dipanggil tiap
+// tanggal berubah atau saat ganti ke jenis dokumen Surat Jalan. Field tetap
+// bisa diubah manual oleh user kapanpun setelahnya (bukan read-only).
+function syncShipStatus(){
+  if(ST.docType!=='suratjalan') return;
+  const sel=g('fShipStatus');
+  if(sel) sel.value=computeShipStatus(g('fDate')?.value);
+}
 function addDays(n, from){const d=from?new Date(from):new Date();d.setDate(d.getDate()+n);return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
 function fmtDate(s){if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;}
 function fmtRp(n){return'Rp '+Math.round(parseFloat(n)||0).toLocaleString('id-ID');}
+// Ringkasan kuantiti fisik barang pada Surat Jalan, dikelompokkan per satuan
+// -- dipakai di kolom "Total" Riwayat khusus Surat Jalan (SJ tidak ada nilai
+// rupiah, yang relevan adalah jumlah barang yang dikirim). Contoh hasil:
+// "5 Box" atau "5 Box, 3 Pcs" kalau satuannya campuran.
+function sjQtySummary(items){
+  if(!items || !items.length) return '—';
+  const bySat={};
+  const order=[];
+  items.forEach(it=>{
+    if(!(it.nama||'').trim()) return; // lewati baris kosong
+    const sat=(it.sat||'').trim() || 'pcs';
+    if(!(sat in bySat)) order.push(sat);
+    bySat[sat]=(bySat[sat]||0)+(parseFloat(it.qty)||0);
+  });
+  if(!order.length) return '—';
+  return order.map(sat=>`${bySat[sat]} ${sat}`).join(', ');
+}
 function parseN(s){return parseFloat(String(s||0).replace(/\./g,'').replace(/,/g,'.'))||0;}
+// Baca angka hasil salin dari Google Sheets/Excel -- format Indonesia (1.234,56),
+// Inggris (1,234.56), atau polos (15000.5). Aturan: kalau ada titik DAN koma, yang
+// paling kanan = desimal; hanya koma = desimal; hanya titik = ribuan kalau pola
+// 1.234 / 1.234.567, selain itu desimal (mis. 15000.5, 0.5). Return NaN kalau bukan angka.
+function parseLocaleNumber(str){
+  let s=String(str==null?'':str).trim().replace(/Rp\.?/gi,'').replace(/\s/g,'').replace(/[^\d.,\-]/g,'');
+  if(!/\d/.test(s)) return NaN;
+  const neg=s.indexOf('-')===0; s=s.replace(/-/g,'');
+  const lastDot=s.lastIndexOf('.'), lastComma=s.lastIndexOf(',');
+  let ip=s, dec='';
+  if(lastDot>=0 && lastComma>=0){
+    const di=Math.max(lastDot,lastComma);
+    ip=s.slice(0,di).replace(/[.,]/g,''); dec=s.slice(di+1);
+  }else if(lastComma>=0){
+    if((s.match(/,/g)||[]).length>1) ip=s.replace(/,/g,'');
+    else { ip=s.slice(0,lastComma); dec=s.slice(lastComma+1); }
+  }else if(lastDot>=0){
+    if((s.match(/\./g)||[]).length>1 || /^\d{1,3}\.\d{3}$/.test(s)) ip=s.replace(/\./g,'');
+    else { ip=s.slice(0,lastDot); dec=s.slice(lastDot+1); }
+  }
+  const v=parseFloat((ip||'0')+(dec?'.'+dec:''));
+  return isNaN(v)?NaN:(neg?-v:v);
+}
+// Paste ke kolom angka (Harga, Disc, Qty, Ongkir) -- dulu titik/koma dari Sheets
+// ikut ke-strip jadi angka nempel ("62.000,50" -> 6200050). Sekarang di-parse benar.
+document.addEventListener('paste',e=>{
+  const inp=e.target; if(!(inp instanceof HTMLInputElement)) return;
+  const f=inp.dataset?inp.dataset.f:'';
+  const isMoney=(f==='harga'||f==='discRp'), isNum=(f==='qty'||f==='disc');
+  const isShip=/^ship_/.test(inp.id)||inp.id==='fSJCodOngkir';
+  if(!(isMoney||isNum||isShip)) return;
+  const txt=(e.clipboardData||window.clipboardData||{getData:()=>''}).getData('text');
+  const num=parseLocaleNumber(txt); if(isNaN(num)) return;
+  e.preventDefault();
+  if(isMoney){
+    const m=(inp.getAttribute('oninput')||'').match(/'([^']+)'/); if(!m) return;
+    const id=m[1], it=ST.items.find(x=>x.id===id); if(!it) return;
+    const hasDec=Math.abs(num-Math.round(num))>1e-9;
+    let rerender=false;
+    if(hasDec && !ST._priceFmtOn){
+      ST._priceFmtOn=true; localStorage.setItem('sap_pricedecimal','1'); rerender=true;
+      const b=g('btnPriceFmt'); if(b) b.textContent=',000 Desimal: ON';
+      toast('Angka desimal terdeteksi — mode ,000 Desimal diaktifkan');
+    }
+    it[f]=num; inp.value=fmtNDec(num);
+    const sEl=g('sub-'+id); if(sEl) sEl.textContent=fmtRp(rowSub(it));
+    recalc(); if(rerender) renderItems();
+  }else if(isNum){
+    inp.value=num; inp.dispatchEvent(new Event('input',{bubbles:true}));
+  }else{
+    inp.value=Math.round(num).toLocaleString('id-ID'); inp.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+});
 function fmtN(n){const v=Math.round(parseFloat(n)||0);return v?v.toLocaleString('id-ID'):'';}
+// Sama seperti fmtN (titik pemisah ribuan SELALU ada), tapi kalau toggle
+// ",000 Desimal" aktif, nilai desimal yang BENERAN DIKETIK user ditampilkan
+// (3 digit di belakang koma) -- mis. 1000000.5 -> "1.000.000,500". Toggle
+// OFF = dibulatkan ke bilangan bulat, koma tidak ditampilkan sama sekali.
+function fmtNDec(n){
+  const v=parseFloat(n)||0;
+  if(!v) return '';
+  if(ST._priceFmtOn){
+    return v.toLocaleString('id-ID',{minimumFractionDigits:3,maximumFractionDigits:3});
+  }
+  const r=Math.round(v);
+  return r?r.toLocaleString('id-ID'):'';
+}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function br(s){return esc(s||'').replace(/\n/g,'<br>');}
 
@@ -1241,10 +1859,20 @@ function maxSeqFor(type) {
     }, 0);
 }
 
-function formatNo(type, seq) {
-  const now    = new Date();
-  const month  = toRoman(now.getMonth()+1);
-  const year   = now.getFullYear();
+// dateStr (opsional): "YYYY-MM-DD" dari field Tanggal dokumen. Bulan romawi &
+// tahun pada nomor dokumen HARUS ikut tanggal dokumen itu sendiri -- BUKAN
+// tanggal hari ini real -- supaya kalau admin bikin dokumen utk tanggal di
+// bulan/tahun lain (mis. SJ dijadwalkan besok yang kebetulan ganti bulan),
+// romawinya otomatis benar, bukan nyangkut di bulan sekarang.
+function formatNo(type, seq, dateStr) {
+  let month, year;
+  if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const [y,m] = dateStr.split('-');
+    year = parseInt(y,10); month = toRoman(parseInt(m,10));
+  } else {
+    const now = new Date();
+    month = toRoman(now.getMonth()+1); year = now.getFullYear();
+  }
   const tCode  = DT_CODES[type]  || 'DOC';
   const coCode = CO_CODES[ST.activeCompany] || 'XX';
   const pfx = (type==='proforma') ? 'PI-' : '';
@@ -1262,9 +1890,52 @@ function genNo(type) {
   const fromDocs    = maxSeqFor(type);
   const fromCounter = ST.settings.seqCounters[key] || 0;
   const nextSeq     = Math.max(fromDocs, fromCounter) + 1;
-  const no = formatNo(type, nextSeq);
+  const no = formatNo(type, nextSeq, g('fDate')?.value);
   ST._autoPreviewNo = no; // dipakai saveDocument() utk tahu apakah user mengubah nomor manual
+  scheduleSeqHint();
   return no;
+}
+// ── INFO PENOMORAN: tampilkan dari mana nomor otomatis berasal ──────────────
+// Nomor otomatis = MAX( nomor tertinggi di Riwayat , penghitung (counter) ) + 1.
+// Counter TIDAK ikut turun kalau dokumen dihapus / pernah loncat, jadi bisa lebih
+// tinggi dari nomor terakhir di Riwayat -> nomor "tidak urut". Info ini
+// menampilkan angka-angkanya + tombol utk menyamakan counter ke Riwayat.
+let _seqHintT;
+function scheduleSeqHint(){ clearTimeout(_seqHintT); _seqHintT=setTimeout(updateSeqHint,300); }
+function _seqKeys(type){
+  const co=ST.activeCompany||'xx', base=(type==='proforma')?'invoice':type;
+  return {local:`${co}_${base}`, server:`${co}_${type}`};
+}
+async function updateSeqHint(){
+  const el=g('seqHint'); if(!el) return;
+  if(ST.editId){ el.innerHTML=''; return; }
+  const type=ST.docType, docMax=maxSeqFor(type), k=_seqKeys(type);
+  const localC=(ST.settings.seqCounters||{})[k.local]||0;
+  let serverC=null;
+  if($sb){ try{
+    const {data}=await $sb.from('counters').select('seq').eq('id',k.server).maybeSingle();
+    serverC = data? data.seq : 0;
+  }catch(e){} }
+  if(ST.docType!==type) return; // user sudah pindah jenis dokumen
+  const pad=n=>String(n).padStart(4,'0');
+  const high=Math.max(localC, serverC||0);
+  const gap=high>docMax;
+  el.innerHTML=`Terakhir di Riwayat: <b>${pad(docMax)}</b> · Penghitung: <b>${pad(high)}</b>`+
+    (gap?` <span style="color:#b45309;">(lebih tinggi — nomor akan loncat)</span> <a href="#" onclick="syncSeqCounter();return false;" style="color:#0e7490;font-weight:700;text-decoration:underline;">Samakan ke Riwayat</a>`:'');
+}
+async function syncSeqCounter(){
+  const type=ST.docType, docMax=maxSeqFor(type), k=_seqKeys(type);
+  if(!confirm(`Samakan penghitung nomor ${type} ke nomor terakhir di Riwayat (${String(docMax).padStart(4,'0')})?\nNomor berikutnya jadi ${String(docMax+1).padStart(4,'0')}.`)) return;
+  if(!ST.settings.seqCounters) ST.settings.seqCounters={};
+  ST.settings.seqCounters[k.local]=docMax;
+  ST.settings.seqCounters[k.server]=docMax;
+  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  if($sb){
+    const {error}=await $sb.from('counters').upsert({id:k.server,seq:docMax,company:ST.activeCompany||null,type,updated_at:new Date().toISOString()});
+    if(error){ toast('⚠ Counter server gagal diubah: '+error.message,'err'); }
+  }
+  refreshDocNo(); updateSeqHint();
+  toast('✓ Penghitung nomor disamakan ke Riwayat');
 }
 function incDocCounter(type) {
   if (!ST.settings.seqCounters) ST.settings.seqCounters = {};
@@ -1372,9 +2043,26 @@ async function validateDocNoLive() {
 function refreshDocNo() {
   if (!ST.editId) g('fNo').value = genNo(ST.docType);
 }
+// Perbarui pratinjau nomor otomatis supaya selalu urut dengan dokumen terbaru
+// (termasuk yang baru disimpan dari komputer lain), TAPI hanya kalau nomornya
+// masih nomor otomatis (belum diketik manual) dan form bukan mode edit.
+function refreshAutoDocNoIfUntouched() {
+  const fNo = g('fNo'); if (!fNo || ST.editId) return;
+  const cur = (fNo.value||'').trim();
+  if (cur && cur !== (ST._autoPreviewNo||'').trim()) return; // diketik manual -> jangan ditimpa
+  const fresh = genNo(ST.docType);
+  if (fresh !== cur) fNo.value = fresh;
+}
 
 // ── NAVIGATION ─────────────────────────────────────────────────────
+// Posisi scroll terakhir di tab Riwayat -- disimpan tiap kali pindah KELUAR
+// dari Riwayat, dan dikembalikan tiap kali pindah KE Riwayat lagi. Jadi kalau
+// admin sedang lihat baris di tengah/bawah tabel lalu klik Edit (pindah ke
+// Form), begitu balik lagi ke Riwayat posisinya TIDAK ke-reset ke atas/awal.
+let _riwScrollY = 0;
 function gotoTab(tab){
+  const wasRiwayat = !g('tab-riwayat').hidden;
+  if (wasRiwayat && tab!=='riwayat') _riwScrollY = window.scrollY;
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   ['form','customer','riwayat','pengaturan'].forEach(t=>{
     const p=g(`tab-${t}`);
@@ -1382,8 +2070,20 @@ function gotoTab(tab){
   });
   closeAC(); // tutup dropdown autocomplete saat ganti tab
   if(tab==='customer')renderCustTable();
-  if(tab==='riwayat')renderHistory();
+  if(tab==='riwayat'){
+    renderHistory();
+    // Kembalikan ke posisi scroll terakhir (bukan selalu ke atas) -- kalau
+    // jumpToDoc() mau scroll ke baris tertentu, itu jalan belakangan (setTimeout
+    // 50ms) jadi otomatis menang/override posisi ini.
+    requestAnimationFrame(()=>window.scrollTo(0,_riwScrollY));
+  }
   if(tab==='pengaturan')loadSettingsUI();
+  // Dropdown customer (fCustSel) di tab Form perlu di-refresh tiap kali masuk
+  // ke tab ini -- soalnya scheduleUiRefresh() sekarang SKIP rebuild dropdown
+  // selagi user lagi nggak di tab Form (demi performa, lihat komentarnya di
+  // sana), jadi perlu disamakan di sini supaya customer baru dari sync tetap
+  // muncul begitu balik ke Form, nggak ketinggalan/stale.
+  if(tab==='form'){ rebuildCustDrop(); refreshAutoDocNoIfUntouched(); }
 }
 
 
@@ -1413,6 +2113,7 @@ function toggleShowSig(val) {
   const qc = g('qSigToggle'); if(qc) qc.checked = ST.settings.showSig;
   const sc = g('sShowSig');   if(sc) sc.checked = ST.settings.showSig;
   localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  pushPrefs();
 }
 
 function toggleShowMaterai(val) {
@@ -1478,6 +2179,7 @@ function setDocType(t){
   if(!ST.editId)g('fNo').value=genNo(t);
   // Alur otomatis: Invoice -> Surat Jalan, bawa data barang & customer dari invoice terakhir
   if(t==='suratjalan' && !ST.editId) setTimeout(autoFillFromLastInvoice, 0);
+  if(t==='suratjalan' && !ST.editId) syncShipStatus(); // dokumen baru: status ikut tanggal (default hari ini)
   recalc();
 }
 
@@ -1520,6 +2222,15 @@ function applyTypeUI(){
   const t=ST.docType,isSJ=t==='suratjalan',isInv=t==='invoice',isPnw=t==='penawaran',isPrf=t==='proforma';
   g('wrapExtraDate').hidden=isSJ;
   g('lblExtraDate').textContent=isPnw?'Berlaku Hingga':'Jatuh Tempo';
+  // Badge NET/TOP tetap tampil di semua jenis dokumen (sebagai referensi), tapi
+  // HANYA bisa benar2 diubah pada Invoice -- di jenis lain dikunci (disabled)
+  // supaya tidak ke-klik/ke-ubah tanpa sadar (salah satu penyebab TOP "kadang
+  // kehapus" sebelumnya).
+  {
+    const netSel=g('fCustNet'), netCustom=g('fCustNetCustom');
+    if(netSel) netSel.disabled=!isInv;
+    if(netCustom) netCustom.disabled=!isInv;
+  }
   // Auto-isi tanggal sesuai jenis dokumen (hanya saat buat baru, bukan edit)
   if(!ST.editId){
     const el=g('fExtraDate');
@@ -1543,6 +2254,9 @@ function applyTypeUI(){
   }
   g('wrapStatus').hidden=!(isInv||isPrf);
   g('wrapChannel').hidden=!(isInv||isPrf);
+  if(g('wrapPnwRef')) g('wrapPnwRef').hidden=!(isInv||isPrf);
+  // Ref. Penawaran: auto-isi dari penawaran terakhir customer (khusus Invoice/Proforma baru)
+  if((isInv||isPrf) && !ST.editId) setTimeout(autoFillPnwRef, 0);
   g('wrapNpwp').hidden=isSJ;
   g('cardSJ').classList.toggle('hidden',!isSJ);
   // F4: Auto-isi ref invoice dari invoice terakhir customer
@@ -1604,6 +2318,25 @@ function autoFillInvRef() {
   fi.value = getLatestCustInvoice(custId, custName);
 }
 
+// Ambil nomor Penawaran terakhir milik customer (untuk auto-fill Ref. Penawaran di Invoice/Proforma)
+function getLatestCustPenawaran(custId, custName) {
+  const docs = ST.documents.filter(d =>
+    d.type === 'penawaran' &&
+    (d.custId === custId ||
+     (d.custName||'').toLowerCase() === (custName||'').toLowerCase())
+  ).sort((a,b) => ((b.savedAt||b.date||'') > (a.savedAt||a.date||'')) ? 1 : -1);
+  return docs[0]?.no || '';
+}
+
+function autoFillPnwRef() {
+  if (ST.docType !== 'invoice' && ST.docType !== 'proforma') return;
+  const fp = g('fPnwRef');
+  if (!fp) return;
+  const custId   = g('fCustSel').value;
+  const custName = g('fCustName')?.value || '';
+  fp.value = getLatestCustPenawaran(custId, custName);
+}
+
 function onCustSel(){
   const id=g('fCustSel').value;
   if(!id)return;
@@ -1615,6 +2348,7 @@ function onCustSel(){
   g('fCustPhone').value=c.phone||'';
   autoFillJatuhTempo();    // F3: Hitung jatuh tempo dari TOP
   autoFillInvRef();         // Isi ref invoice dari invoice terakhir customer
+  autoFillPnwRef();         // Isi ref penawaran dari penawaran terakhir customer
   showCustNetBadge(c);     // F2: Tampilkan badge NET
   refreshAllCustPriceHints(); // Tampilkan notifikasi harga khusus utk semua baris barang yg cocok
   showCustSpecialPriceBadge(c.name); // F4: Info umum "Harga Khusus Customer Ini"
@@ -1676,17 +2410,17 @@ function onCustNetCustom(val) {
   const days = parseInt(val) || 0;
   if (days > 0) applyNetToCust(days);
 }
+// PENTING (fix bug "TOP kadang kehapus" di Surat Jalan/Invoice): fungsi ini
+// DULU langsung menulis cust.top ke database setiap dropdown NET berubah --
+// tanpa cek jenis dokumen & tanpa nunggu tombol Simpan. Akibatnya nilai TOP
+// customer bisa ketimpa cuma gara2 dropdown-nya kebuka/keklik sedikit di form
+// Surat Jalan/Penawaran/Proforma (yang mana TOP-nya nggak relevan sama sekali),
+// atau ketimpa nilai yang belum sempat ter-refresh dengan benar.
+// SEKARANG: fungsi ini HANYA mengubah tampilan preview (jatuh tempo & teks
+// badge) di form saat itu juga. Penyimpanan permanen ke cust.top HANYA terjadi
+// lewat updateHistory() saat dokumen Invoice benar2 di-Simpan (sudah dijaga
+// dengan pengecekan _isInvoiceDoc di sana).
 function applyNetToCust(days) {
-  // Update customer record
-  const custId = g('fCustSel').value;
-  if (custId) {
-    const cust = ST.customers.find(c => c.id === custId);
-    if (cust) {
-      cust.top = days;
-      save();
-      fbSet('customers', cust.id, cust);
-    }
-  }
   // Recalculate jatuh tempo
   if (days > 0 && ST.docType === 'invoice') {
     const baseDate = g('fDate')?.value || today();
@@ -1818,6 +2552,11 @@ function onDateChange() {
     const el = g('fExtraDate');
     if (el) el.value = addDays(3, g('fDate')?.value || today());
   }
+  syncShipStatus(); // Surat Jalan: status pengiriman mengikuti tanggal dokumen
+  // No. Dokumen: bulan romawi & tahun di nomor pratinjau ikut tanggal yang baru
+  // dipilih (HANYA kalau nomornya masih otomatis, belum diubah manual user).
+  const typedNo = (g('fNo')?.value||'').trim();
+  if (!ST.editId && typedNo === (ST._autoPreviewNo||'').trim()) refreshDocNo();
   // Update tanggal di badge NET jika ada customer dengan TOP
   const custId = g('fCustSel').value;
   const cust   = ST.customers.find(c => c.id === custId);
@@ -1888,6 +2627,7 @@ function setupCustomerAC() {
       g('fCustSel').value = match ? item.data.id : '';
       autoFillJatuhTempo(); // F3: auto jatuh tempo
       autoFillInvRef();        // Isi ref invoice dari invoice terakhir
+      autoFillPnwRef();        // Isi ref penawaran dari penawaran terakhir
       showCustNetBadge(item.data); // F2: tampilkan NET
     });
   });
@@ -2100,12 +2840,17 @@ function saveFormCust(){
   const name=(g('fCustName').value||'').trim();
   if(!name){toast('Isi nama customer dulu','err');return;}
   const ex=ST.customers.find(c=>c.name.toLowerCase()===name.toLowerCase());
-  // Ikut simpan Term of Payment (NET) yang sedang dipilih di badge, supaya
-  // tidak perlu diisi ulang manual tiap kali customer ini di-autofill lagi.
+  // Ikut simpan Term of Payment (NET) yang sedang dipilih di badge -- TAPI
+  // HANYA kalau sedang mengisi dokumen Invoice (sama seperti updateHistory()).
+  // Dulu ini tanpa pengecekan jenis dokumen, jadi klik "Simpan Customer" dari
+  // form Surat Jalan/Penawaran/Proforma bisa ikut menimpa TOP customer dengan
+  // nilai dropdown yang belum tentu benar/ter-refresh -- itu salah satu
+  // penyebab TOP "kadang kehapus".
+  const _isInvoiceDoc = ST.docType === 'invoice';
   const _netSelVal = g('fCustNet')?.value;
   const _netCustomVal = parseInt(g('fCustNetCustom')?.value) || 0;
   const _topDays = _netSelVal === 'custom' ? _netCustomVal : (parseInt(_netSelVal) || 0);
-  const data={id:ex?.id||uid(),name,pic:g('fCustPic').value.trim(),addr:g('fCustAddr').value.trim(),phone:g('fCustPhone').value.trim(),company:ST.activeCompany,top:_topDays};
+  const data={id:ex?.id||uid(),name,pic:g('fCustPic').value.trim(),addr:g('fCustAddr').value.trim(),phone:g('fCustPhone').value.trim(),company:ST.activeCompany,top:_isInvoiceDoc?_topDays:(ex?.top||0)};
   if(ex){Object.assign(ex,data);}else{ST.customers.push(data);}
   save();rebuildCustDrop();g('fCustSel').value=data.id;
   autoFillJatuhTempo(); // TOP auto-fill
@@ -2218,9 +2963,9 @@ function renderItems(){
         ${ST._showNie?`<div class="it-cell" style="width:90px;flex-shrink:0"><input id="ni-${it.id}" value="${esc(it.nie||'')}" placeholder="NIE" data-f="nie" oninput="setIt('${it.id}',this)" onblur="onNieBlur('${it.id}')"></div>`:''}
         <div class="it-cell" style="width:52px;flex-shrink:0"><input value="${it.qty}" type="number" min="0" step="any" class="text-center" data-f="qty" oninput="setIt('${it.id}',this)"></div>
         <div class="it-cell" style="width:62px;flex-shrink:0"><input id="si-${it.id}" value="${esc(it.sat)}" placeholder="pcs" data-f="sat" oninput="setIt('${it.id}',this)"></div>
-        <div class="it-cell" style="width:104px;flex-shrink:0"><input id="hi-${it.id}" value="${fmtN(it.harga)}" inputmode="numeric" class="text-right" data-f="harga" oninput="setItNum('${it.id}',this)" onblur="onHargaBlur('${it.id}')"></div>
+        <div class="it-cell" style="width:104px;flex-shrink:0"><input id="hi-${it.id}" value="${fmtNDec(it.harga)}" inputmode="decimal" class="text-right" data-f="harga" oninput="setItNum('${it.id}',this)" onblur="finalizeNumFmt('${it.id}',this,'harga');onHargaBlur('${it.id}')"></div>
         ${ST.discEnabled?(ST.discMode==='rupiah'
-          ?`<div class="it-cell" style="width:80px;flex-shrink:0"><input value="${fmtN(it.discRp||0)||''}" inputmode="numeric" class="text-right" placeholder="0" data-f="discRp" oninput="setItNum('${it.id}',this,'discRp')"></div>`
+          ?`<div class="it-cell" style="width:80px;flex-shrink:0"><input value="${fmtNDec(it.discRp||0)}" inputmode="decimal" class="text-right" placeholder="0" data-f="discRp" oninput="setItNum('${it.id}',this,'discRp')" onblur="finalizeNumFmt('${it.id}',this,'discRp')"></div>`
           :`<div class="it-cell" style="width:52px;flex-shrink:0"><input value="${it.disc||''}" type="number" min="0" max="100" step="0.01" class="text-center" placeholder="0" data-f="disc" oninput="setIt('${it.id}',this)"></div>`)
           :''}
         <div class="text-right text-sm font-semibold text-slate-700 px-1 flex-shrink-0" style="width:${ST.discEnabled?104:130}px" id="sub-${it.id}">${fmtRp(rowSub(it))}</div>
@@ -2267,6 +3012,17 @@ function toggleNie(){
   }
   const b=g('btnNie');if(b)b.textContent=(ST._showNie?'☑':'☐')+' NIE';
   renderItemsHdr();renderItems();
+}
+// Toggle opsional: tampilkan/sembunyikan akhiran desimal koma (",000") di
+// kolom Harga Satuan & Disc (Rp) -- mis. "1.000.000" vs "1.000.000,000".
+// Titik pemisah ribuan SELALU tampil apapun kondisi toggle ini; nilai
+// aslinya tetap bilangan bulat, ini murni soal tampilan.
+function togglePriceFmt(){
+  ST._priceFmtOn=!ST._priceFmtOn;
+  localStorage.setItem('sap_pricedecimal', ST._priceFmtOn?'1':'0');
+  const b=g('btnPriceFmt');if(b)b.textContent=',000 Desimal: '+(ST._priceFmtOn?'ON':'OFF');
+  renderItems();
+  pushPrefs();
 }
 // Simpan NIE ke database produk saat user selesai mengetik, supaya otomatis
 // terisi lagi utk barang yang sama di invoice/proforma berikutnya.
@@ -2372,22 +3128,55 @@ function refreshAllCustPriceHints(){
 function setItNum(id,inp,field){
   field=field||'harga';
   const it=ST.items.find(x=>x.id===id);if(!it)return;
-  const raw=inp.value.replace(/\./g,'').replace(/[^\d]/g,'');
-  const num=parseInt(raw)||0;
-  it[field]=num;
-  const pos=inp.selectionStart,oldL=inp.value.length;
-  inp.value=num?num.toLocaleString('id-ID'):'';
+  const pos=inp.selectionStart, oldL=inp.value.length;
+  const v=inp.value;
+  if(ST._priceFmtOn){
+    // Mode ",000 Desimal" AKTIF: koma & digit di belakangnya BENERAN BISA
+    // DIKETIK. Bagian bulat tetap diformat titik ribuan live; bagian desimal
+    // dibiarkan apa adanya selagi diketik (baru dirapikan ke 3 digit saat blur
+    // -- lihat finalizeNumFmt()), supaya tidak mengganggu sambil user ngetik.
+    const commaIdx=v.indexOf(',');
+    let intPart, decPart=null;
+    if(commaIdx>=0){
+      intPart=v.slice(0,commaIdx).replace(/\./g,'').replace(/[^\d]/g,'');
+      decPart=v.slice(commaIdx+1).replace(/[^\d]/g,'').slice(0,3); // maks 3 digit desimal
+    }else{
+      intPart=v.replace(/\./g,'').replace(/[^\d]/g,'');
+    }
+    const intNum=parseInt(intPart)||0;
+    const decLen=decPart?decPart.length:0;
+    it[field]=intNum + (decLen?parseInt(decPart)/Math.pow(10,decLen):0);
+    const intFmt=intNum?intNum.toLocaleString('id-ID'):'';
+    inp.value = commaIdx>=0 ? `${intFmt},${decPart}` : intFmt;
+  }else{
+    const raw=v.replace(/\./g,'').replace(/[^\d]/g,'');
+    const num=parseInt(raw)||0;
+    it[field]=num;
+    inp.value=num?num.toLocaleString('id-ID'):'';
+  }
   try{inp.setSelectionRange(pos+(inp.value.length-oldL),pos+(inp.value.length-oldL));}catch(e){}
   const s=g(`sub-${id}`);if(s)s.textContent=fmtRp(rowSub(it));
   recalc();
 }
+// Dipanggil saat blur dari kolom Harga/Disc(Rp) -- rapikan tampilan akhir:
+// genapkan desimal ke 3 digit (kalau toggle aktif & user sempat ngetik koma),
+// atau format bulat biasa (kalau toggle mati / tidak ada desimal diketik).
+function finalizeNumFmt(id,inp,field){
+  field=field||'harga';
+  const it=ST.items.find(x=>x.id===id);if(!it)return;
+  inp.value=fmtNDec(it[field]);
+}
 
-function rowSub(it){
+// Hitung subtotal 1 baris berdasarkan pengaturan diskon yang DIBERIKAN (bukan state form).
+// Dipakai langsung oleh cetak/riwayat supaya hasilnya ikut diskon dokumen itu sendiri.
+function rowSubFor(it,discEnabled,discMode){
   const gross=(it.qty||0)*(it.harga||0);
-  if(!ST.discEnabled)return gross;
-  if(ST.discMode==='rupiah')return Math.max(0,gross-(it.discRp||0));
+  if(!discEnabled)return gross;
+  if(discMode==='rupiah')return Math.max(0,gross-(it.discRp||0));
   return Math.max(0,gross-gross*((it.disc||0)/100));
 }
+// Versi untuk form yang sedang diisi (ikut state ST).
+function rowSub(it){return rowSubFor(it,ST.discEnabled,ST.discMode);}
 
 function fmtShip(inp){
   const raw=inp.value.replace(/\./g,'').replace(/[^\d]/g,'');
@@ -2549,6 +3338,7 @@ function collectForm(){
     extraDate:!isSJ?(g('fExtraDate')?.value||''):'',
     status:t==='invoice'?(g('fStatus')?.value||'belum_lunas'):'',
     channel:t==='invoice'?(g('fChannel')?.value||''):'',
+    pnwRef:(t==='invoice'||t==='proforma')?(g('fPnwRef')?.value||'').trim():'',
     custId:g('fCustSel').value,custName:g('fCustName').value.trim(),
     custPic:g('fCustPic').value.trim(),custAddr:g('fCustAddr').value.trim(),
     custPhone:g('fCustPhone').value.trim(),
@@ -2563,6 +3353,7 @@ function collectForm(){
       ? ((g('fSJCodEkspedisi')?.value==='lainnya')?(g('fSJCodEkspedisiLain')?.value||'').trim():(g('fSJCodEkspedisi')?.value||''))
       : '',
     sjCodOngkir:(isSJ&&g('fSJPayMethod')?.value==='cod')?parseN(g('fSJCodOngkir')?.value):0,
+    shipStatus:isSJ?(g('fShipStatus')?.value||computeShipStatus(g('fDate')?.value)):'',
     items:JSON.parse(JSON.stringify(ST.items)),
     company:ST.activeCompany,disc,discEnabled:ST.discEnabled,discMode:ST.discMode,ongkir,ongkirRaw,ongkirCod,carriers,ppnOn:on,ppnRate:rate,subtotal:sub,dpp,ppn,total:dpp+ppn,
     payMethod,codEkspedisi,
@@ -2588,15 +3379,30 @@ function loadDocToForm(doc){
   if(g('fExtraDate'))g('fExtraDate').value=doc.extraDate||'';
   if(g('fStatus')){g('fStatus').value=doc.status||'belum_lunas';if(doc.type==='invoice')onStatusChange();}
   if(g('fChannel'))g('fChannel').value=doc.channel||'';
+  if(g('fPnwRef'))g('fPnwRef').value=doc.pnwRef||'';
   g('fCustSel').value=doc.custId||'';g('fCustName').value=doc.custName||'';
   g('fCustPic').value=doc.custPic||'';g('fCustAddr').value=doc.custAddr||'';
   g('fCustPhone').value=doc.custPhone||'';
   if(g('fCustNpwp'))g('fCustNpwp').value=doc.custNpwp||'';
+  // BUG FIX: sebelumnya badge NET/TOP (fCustNet dkk) TIDAK PERNAH dipulihkan
+  // saat buka dokumen lama utk diedit -- jadi yang tampil cuma sisa nilai
+  // form sebelumnya (kelihatan kayak "TOP-nya kehapus"). Sekarang dicari
+  // ulang customer-nya & badge-nya di-refresh persis seperti saat dipilih manual.
+  {
+    const _cust = ST.customers.find(c=>c.id===doc.custId) ||
+                  ST.customers.find(c=>(c.name||'').toLowerCase()===(doc.custName||'').toLowerCase());
+    if (_cust) showCustNetBadge(_cust);
+    showCustSpecialPriceBadge(doc.custName||'');
+  }
   if(g('fShipper'))g('fShipper').value=doc.shipper||'';
   if(g('fVehicle'))g('fVehicle').value=doc.vehicle||'';
   if(g('fPlate'))g('fPlate').value=doc.plate||'';
   if(g('fPoRef'))g('fPoRef').value=doc.poRef||'';
   if(g('fInvRef'))g('fInvRef').value=doc.invRef||'';
+  // Status Pengiriman (khusus Surat Jalan) -- pakai nilai tersimpan apa adanya
+  // (TIDAK dihitung ulang dari tanggal), karena saat edit, user mungkin sudah
+  // mengganti statusnya manual dan itu harus dihormati.
+  if(g('fShipStatus'))g('fShipStatus').value=doc.shipStatus||computeShipStatus(doc.date);
   // COD Pengiriman (khusus Surat Jalan)
   if(g('fSJPayMethod')){
     g('fSJPayMethod').value=doc.sjPayMethod||'transfer';
@@ -2684,6 +3490,7 @@ function resetForm(){
   if(g('fExtraDate'))g('fExtraDate').value=ST.docType==='penawaran'?addDays(3):addDays(14);
   if(g('fStatus')){g('fStatus').value='belum_lunas';if(ST.docType==='invoice')onStatusChange();}
   if(g('fChannel'))g('fChannel').value='';
+  if(g('fPnwRef'))g('fPnwRef').value='';
   g('fCustSel').value='';g('fCustName').value='';g('fCustPic').value='';
   if(g('fCustNet'))g('fCustNet').value='0';
   if(g('fCustNetCustom'))g('fCustNetCustom').classList.add('hidden');
@@ -2694,6 +3501,8 @@ function resetForm(){
   if(g('fShipper'))g('fShipper').value='';
   if(g('fPoRef'))g('fPoRef').value='';
   if(g('fInvRef'))g('fInvRef').value='';
+  // reset Status Pengiriman ke default (akan disinkronkan ulang oleh setDocType -> syncShipStatus)
+  if(g('fShipStatus'))g('fShipStatus').value='diproses';
   // reset COD Pengiriman (Surat Jalan) ke default
   if(g('fSJPayMethod')){g('fSJPayMethod').value='transfer';onSJPayMethodChange();}
   if(g('fSJCodEkspedisi'))g('fSJCodEkspedisi').value='';
@@ -2797,6 +3606,7 @@ async function saveDocument(){
       fbSetLive('documents', doc.id, doc, doc.no);
       if(doc.type==='invoice') ST.lastInvoiceId = doc.id;
       resetForm();
+      return doc; // dipakai saveAndPrint() utk langsung buka pratinjau setelah tersimpan
     }else{
       // Dokumen BARU: kalau nomor di form masih sama dgn nomor pratinjau otomatis
       // (belum diubah manual oleh user), kunci nomor final via transaksi atomik
@@ -2817,7 +3627,7 @@ async function saveDocument(){
       if(btnLbl) btnLbl.textContent='⏳ Menyimpan...';
       if(isAutoNo){
         const seq = await reserveNextSeq(ST.docType);
-        g('fNo').value = formatNo(ST.docType, seq);
+        g('fNo').value = formatNo(ST.docType, seq, g('fDate')?.value);
       }
       const doc=collectForm();
       ST.documents.push(doc);
@@ -2828,6 +3638,7 @@ async function saveDocument(){
       fbSetLive('documents', doc.id, doc, doc.no);
       if(doc.type==='invoice') ST.lastInvoiceId = doc.id; // untuk carry-over otomatis ke Surat Jalan
       resetForm();
+      return doc; // dipakai saveAndPrint() utk langsung buka pratinjau setelah tersimpan
     }
   }catch(e){
     console.error('saveDocument error:', e);
@@ -2840,12 +3651,149 @@ async function saveDocument(){
 
 // ── HISTORY ────────────────────────────────────────────────────────
 // Sort state untuk riwayat
-let _riwSort = { col:'date', dir:-1 };
+let _riwSort = { col:'date', dir:-1 }; // default: urut TANGGAL DOKUMEN (terbaru di atas); alternatif: terakhir diinput/diedit lewat pilihan Urut
 
+// Waktu TERAKHIR dokumen diinput / diedit (ISO). Dokumen lama yg belum punya cap waktu
+// memakai tanggal dokumennya. Dipakai utk urutan default Riwayat.
+function lastTouchedOf(d){ return d.updatedAt||d.savedAt||d.date||''; }
+function fmtTouched(iso){
+  if(!iso||iso.length<16) return '';
+  const t=new Date(iso); if(isNaN(t)) return '';
+  const p=n=>String(n).padStart(2,'0');
+  return `${p(t.getDate())}/${p(t.getMonth()+1)} ${p(t.getHours())}:${p(t.getMinutes())}`;
+}
+function setRiwSortMode(v){ _riwSort={col:v,dir:-1}; renderHistory(); if(v==='saved'||v==='date') pushPrefs(); }
 function sortRiw(col) {
   if (_riwSort.col === col) _riwSort.dir *= -1;
   else { _riwSort.col = col; _riwSort.dir = -1; }
   renderHistory();
+}
+
+// ── MODE "KELOMPOKKAN PER BULAN" + HAPUS MASSAL ──────────────────────────
+// Dipisah dari sort/filter biasa: ini buat bantu admin bersih-bersih dokumen
+// lama tanpa harus hapus satu-satu. _riwSelected bertahan lintas render/bulan
+// (jadi bisa centang dari beberapa bulan sekaligus sebelum hapus massal).
+let _riwSelected = new Set();
+let _riwExpandedMonths = new Set();
+const BULAN_ID=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+function monthKeyOf(dateStr){ return (dateStr||'').slice(0,7) || 'tanpa-tanggal'; }
+function monthLabel(key){
+  if(key==='tanpa-tanggal') return 'Tanpa Tanggal';
+  const [y,m]=key.split('-');
+  return `${BULAN_ID[parseInt(m,10)-1]||m} ${y}`;
+}
+function toggleRiwGroupMode(){
+  ST._riwGroupMode=!ST._riwGroupMode;
+  const b=g('btnRiwGroup'); if(b) b.textContent='📅 Kelompokkan per Bulan: '+(ST._riwGroupMode?'ON':'OFF');
+  renderHistory(); pushPrefs();
+}
+// ── RINCIAN DOKUMEN di Riwayat (klik panah ▸ di samping nomor) ──────────────
+let _riwDetailOpen = new Set();
+function toggleRiwDetail(id){
+  const opening=!_riwDetailOpen.has(id);
+  if(opening) _riwDetailOpen.add(id); else _riwDetailOpen.delete(id);
+  // Mode tabel biasa: cukup sisipkan/hapus SATU baris rincian (tanpa render ulang tabel)
+  const tr=ST._riwGroupMode?null:document.querySelector(`#riwTableWrap tr[data-id="${id}"]`);
+  const d=ST.documents.find(x=>x.id===id);
+  if(tr && d){
+    const nxt=tr.nextElementSibling;
+    if(opening){ if(!(nxt&&nxt.classList.contains('riw-detail'))) tr.insertAdjacentHTML('afterend',riwDetailRowHtml(d,parseInt(tr.dataset.level)||0)); }
+    else if(nxt&&nxt.classList.contains('riw-detail')) nxt.remove();
+    const ch=tr.querySelector('.rinc-tg'); if(ch){ ch.textContent=opening?'▾':'▸'; ch.title=opening?'Tutup rincian':'Lihat rincian'; }
+    return;
+  }
+  renderHistory();
+}
+function riwDetailRowHtml(d,level){
+  return `<tr class="riw-detail" data-for="${d.id}"><td colspan="8" style="padding:0 16px 0 ${14+level*28}px;">${riwDetailHtml(d)}</td></tr>`;
+}
+function riwChevron(d){
+  const open=_riwDetailOpen.has(d.id);
+  return `<span class="rinc-tg" onclick="event.stopPropagation();toggleRiwDetail('${d.id}')" title="${open?'Tutup rincian':'Lihat rincian'}">${open?'▾':'▸'}</span>`;
+}
+function riwDetailHtml(d){
+  const isSJ=d.type==='suratjalan';
+  const items=(d.items||[]).filter(it=>(it.nama||'').trim());
+  const hasNie=items.some(it=>(it.nie||'').trim());
+  const pct=d.discEnabled&&d.discMode!=='rupiah', rp=d.discEnabled&&d.discMode==='rupiah';
+  const TH='padding:6px 10px;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.04em;background:#f1f5f9;';
+  const TD='padding:6px 10px;font-size:12.5px;color:#0f172a;border-top:1px solid #e2e8f0;';
+  const R='text-align:right;white-space:nowrap;';
+  const head=`<tr><th style="${TH}text-align:left;width:32px;">No</th><th style="${TH}text-align:left;">Nama Barang</th>${hasNie?`<th style="${TH}text-align:left;">NIE</th>`:''}<th style="${TH}${R}">Qty</th><th style="${TH}text-align:left;">Satuan</th>`+
+    (isSJ?`<th style="${TH}text-align:left;">Keterangan</th>`:`<th style="${TH}${R}">Harga</th>${pct?`<th style="${TH}${R}">Disc %</th>`:''}${rp?`<th style="${TH}${R}">Disc Rp</th>`:''}<th style="${TH}${R}">Subtotal</th>`)+`</tr>`;
+  const body=items.map((it,i)=>`<tr><td style="${TD}color:#94a3b8;">${i+1}</td><td style="${TD}font-weight:600;">${esc(it.nama)}</td>${hasNie?`<td style="${TD}">${esc(it.nie||'—')}</td>`:''}<td style="${TD}${R}">${it.qty}</td><td style="${TD}">${esc(it.sat||'pcs')}</td>`+
+    (isSJ?`<td style="${TD}">${esc(it.ket||'')}</td>`:`<td style="${TD}${R}">${fmtRp(it.harga||0)}</td>${pct?`<td style="${TD}${R}">${(it.disc||0)>0?it.disc+'%':'—'}</td>`:''}${rp?`<td style="${TD}${R}">${(it.discRp||0)>0?fmtRp(it.discRp):'—'}</td>`:''}<td style="${TD}${R}font-weight:700;">${fmtRp(rowSubFor(it,d.discEnabled,d.discMode))}</td>`)+`</tr>`).join('');
+  const sumRow=(l,v,st)=>`<div style="display:flex;justify-content:space-between;gap:24px;padding:3px 0;font-size:12.5px;${st||''}"><span style="color:#475569;">${l}</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${v}</span></div>`;
+  let summary='';
+  if(!isSJ){
+    const ongkirRaw=(d.ongkirRaw!=null)?d.ongkirRaw:(d.ongkir||0);
+    summary=sumRow('Subtotal',fmtRp(d.subtotal||0))+
+      (ongkirRaw?sumRow('Ongkos kirim'+(d.ongkirCod?' <span style="color:#92400e;">(COD — tidak masuk tagihan)</span>':''),fmtRp(ongkirRaw)):'')+
+      ((d.ppn||0)>0?sumRow(`PPN ${d.ppnRate||11}%`,fmtRp(d.ppn)):'')+
+      sumRow('Total',fmtRp(d.total||0),'border-top:1.5px solid #0f172a;margin-top:4px;padding-top:6px;font-weight:800;font-size:14px;');
+  }
+  const meta=[];
+  if(d.custPic) meta.push(['PIC',d.custPic]);
+  if(d.custAddr) meta.push(['Alamat',d.custAddr]);
+  if(d.custPhone) meta.push(['Telepon',d.custPhone]);
+  if(d.poRef) meta.push(['No. PO',d.poRef]);
+  if(d.invRef) meta.push(['Ref. Invoice',d.invRef]);
+  if(d.pnwRef) meta.push(['Ref. Penawaran',d.pnwRef]);
+  if(isSJ){ if(d.shipper) meta.push(['Pengirim',d.shipper]); if(d.vehicle||d.plate) meta.push(['Kendaraan',[d.vehicle,d.plate].filter(Boolean).join(' / ')]);
+    if(d.sjPayMethod==='cod') meta.push(['COD',[d.sjCodEkspedisi, (d.sjCodOngkir?fmtRp(d.sjCodOngkir):'')].filter(Boolean).join(' · ')||'Ya']); }
+  else { if(d.payMethod==='cod') meta.push(['Pembayaran','COD'+(d.codEkspedisi?' · '+d.codEkspedisi:'')]);
+    else if(d.bankName||d.bankAcc) meta.push(['Transfer',[d.bankName,d.bankAcc,d.bankHolder].filter(Boolean).join(' · ')]); }
+  if(d.notes) meta.push(['Catatan',d.notes]);
+  const metaHtml=meta.map(([k,v])=>`<div style="font-size:12px;line-height:1.5;"><span style="color:#64748b;font-weight:600;">${k}:</span> <span style="color:#0f172a;">${esc(v)}</span></div>`).join('');
+  return `<div style="background:#f8fafc;border-left:3px solid #0e7490;margin:2px 0 6px;padding:12px 16px;border-radius:0 8px 8px 0;">
+    <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
+      <div style="flex:1 1 460px;min-width:0;overflow-x:auto;background:#fff;border:1px solid #e2e8f0;border-radius:8px;"><table style="width:100%;border-collapse:collapse;"><thead>${head}</thead><tbody>${body||`<tr><td style="${TD}" colspan="8">Tidak ada barang.</td></tr>`}</tbody></table></div>
+      <div style="flex:0 1 300px;min-width:220px;">${summary}${metaHtml?`<div style="margin-top:${summary?'12px':'0'};">${metaHtml}</div>`:''}</div>
+    </div></div>`;
+}
+
+function toggleMonthExpand(key){
+  if(_riwExpandedMonths.has(key)) _riwExpandedMonths.delete(key);
+  else _riwExpandedMonths.add(key);
+  renderHistory();
+}
+function toggleRiwSelect(id,checked){
+  if(checked) _riwSelected.add(id); else _riwSelected.delete(id);
+  renderHistory();
+}
+function toggleMonthSelectAll(key,checked){
+  const list=[...ST.documents].filter(d=>monthKeyOf(d.date)===key)
+    .filter(d=>!ST.activeCompany||!d.company||d.company===ST.activeCompany);
+  list.forEach(d=> checked?_riwSelected.add(d.id):_riwSelected.delete(d.id));
+  renderHistory();
+}
+function clearRiwSelection(){
+  _riwSelected.clear();
+  renderHistory();
+}
+function updateBulkBar(){
+  const bar=g('riwBulkBar');
+  if(!bar) return;
+  // BUG FIX: dulu bar ini pakai class "hidden" tapi style inline display:flex menimpanya,
+  // jadi bar biru "0 dokumen dipilih" SELALU tampil dan menutupi judul tabel. Sekarang
+  // hanya muncul di mode Kelompokkan per Bulan DAN ada yang dicentang.
+  const show=!!(ST._riwGroupMode && _riwSelected.size>0);
+  bar.style.display=show?'flex':'none';
+  if(show){ const c=g('riwBulkCount'); if(c) c.textContent=_riwSelected.size+' dokumen dipilih'; }
+  // judul tabel yang membeku harus turun di bawah bar ini kalau bar tampil
+  document.documentElement.style.setProperty('--riw-bar-h', show?bar.offsetHeight+'px':'0px');
+}
+async function bulkDeleteSelected(){
+  const ids=[..._riwSelected];
+  if(!ids.length) return;
+  if(!confirm(`Hapus ${ids.length} dokumen yang dipilih?\nTidak dapat dibatalkan.`)) return;
+  const idSet=new Set(ids);
+  ST.documents=ST.documents.filter(d=>!idSet.has(d.id));
+  fbDelMany('documents',ids);
+  _riwSelected.clear();
+  save();
+  renderHistory();
+  toast(`${ids.length} dokumen dihapus`);
 }
 
 
@@ -2873,6 +3821,62 @@ function resetRiwFilter() {
   renderHistory();
 }
 
+// Lompat ke dokumen tertentu di Riwayat (dipanggil dari link 🔗 Inv:/SJ: di tabel).
+// Reset semua filter dulu (jenis/status/tanggal/jatuh tempo) supaya dokumen tujuan
+// tidak ketutup filter yang sedang aktif, lalu isi kolom cari dengan no. dokumennya,
+// render ulang, dan scroll+highlight baris yang cocok.
+// Menu "⋮ Aksi lainnya" per baris Riwayat (Duplikat/Simpan PDF/Sheets/dst).
+// Menu ⋮ dibuat SAAT DIKLIK (bukan dicetak di setiap baris) -- dulu menu 8 tombol ikut
+// ter-render di semua baris sehingga HTML tabel membengkak ±3 KB/baris dan render lambat.
+function buildRowMenuHtml(d){
+  const nz=x=>(x||'').trim().toLowerCase();
+  const noSJ=d.type==='invoice' && !ST.documents.some(x=>x.type==='suratjalan' && nz(x.invRef)===nz(d.no) && (!ST.activeCompany||!x.company||x.company===ST.activeCompany));
+  const it=(fn,label,st)=>`<button class="rowmenu-item"${st?` style="${st}"`:''} onclick="event.stopPropagation();closeAllRowMenus();${fn}">${label}</button>`;
+  const q=`'${d.id}'`;
+  const nInv=d.type==='penawaran'?ST.documents.filter(x=>(x.type==='invoice'||x.type==='proforma') && nz(x.pnwRef)===nz(d.no)).length:0;
+  return (d.type==='penawaran'?it(`quickCreateInvoiceFromPenawaran(${q})`,'🧾 Buat Invoice'+(nInv?` <span style="color:#94a3b8;font-weight:500;">(sudah ada ${nInv})</span>`:'')):'')+
+    (noSJ?it(`quickCreateSJFromInvoice(${q})`,'🚚 Buat Surat Jalan'):'')+
+    it(`duplicateDoc(${q})`,'📄 Duplikat')+
+    it(`saveDocPdf(${q})`,'💾 Simpan PDF')+
+    it(`copyDocToSheets(${q})`,'📋 Salin ke Sheets')+
+    it(`copyDocItemsToSheets(${q})`,'🧴 Salin Barang saja')+
+    it('toggleCopyDisc()','🏷️ Kolom diskon di salinan: '+(copyDiscOn()?'IKUT':'TIDAK ikut'),'font-weight:500;color:#64748b;')+
+    it('toggleSheetsLocale()','🔣 Angka Sheets: '+(sheetsLocale()==='id'?'Indonesia (koma)':'Inggris (titik)'),'font-weight:500;color:#64748b;')+
+    (d.type==='proforma'?it(`convertToInvoice(${q})`,'✅ Jadikan Invoice','color:#0d9488;'):'')+
+    it(`delDoc(${q})`,'🗑️ Hapus','color:#dc2626;');
+}
+function toggleRowMenu(id,btn){
+  const host=btn&&btn.parentNode; if(!host) return;
+  const was=host.querySelector('.rowmenu');
+  closeAllRowMenus();
+  if(was) return;
+  const d=ST.documents.find(x=>x.id===id); if(!d) return;
+  const m=document.createElement('div'); m.className='rowmenu'; m.innerHTML=buildRowMenuHtml(d);
+  host.appendChild(m);
+}
+function closeAllRowMenus(){ document.querySelectorAll('.rowmenu').forEach(m=>m.remove()); }
+document.addEventListener('click',(e)=>{
+  if(!e.target.closest('.rowmenu') && !e.target.closest('[onclick*="toggleRowMenu"]')) closeAllRowMenus();
+});
+
+function jumpToDoc(no){
+  if(!no) return;
+  gotoTab('riwayat');
+  ['riwType','riwStatus','riwDateFrom','riwDateTo','riwTopFilter'].forEach(id=>{ const e=g(id); if(e) e.value=''; });
+  const q=g('riwQ'); if(q) q.value=no;
+  renderHistory();
+  setTimeout(()=>{
+    const target=[...document.querySelectorAll('#riwTableWrap tbody tr[data-docno]')]
+      .find(tr=>tr.dataset.docno.trim()===no.trim());
+    if(target){
+      target.scrollIntoView({behavior:'smooth',block:'center'});
+      target.style.transition='background-color .4s';
+      target.style.backgroundColor='#fef08a';
+      setTimeout(()=>{target.style.backgroundColor='';},1800);
+    }
+  },50);
+}
+
 // Hitung sisa hari jatuh tempo (negatif = terlambat)
 function daysRemaining(extraDate, status) {
   if (!extraDate || status === 'lunas') return null;
@@ -2888,6 +3892,87 @@ function tempoLabel(days) {
   return `<span class="tempo-badge tempo-ok">Sisa ${days} hari</span>`;
 }
 
+// ── PENCARIAN RIWAYAT: cocokkan juga NAMA BARANG ───────────────────────────
+// Query dipecah per kata; SETIAP kata harus ketemu di salah satu: no. dokumen,
+// nama customer, atau nama barang (mis. "nitrile dr yonathan" -> dokumen Dr Yonathan
+// yang berisi Nitrile). riwTokens() dipakai filter & penyorotan barang di baris hasil.
+function riwTokens(q){ return (q||'').toLowerCase().split(/\s+/).filter(Boolean); }
+function riwDocMatches(d,tokens){
+  if(!tokens.length) return true;
+  const hay=((d.no||'')+' '+(d.custName||'')+' '+(d.items||[]).map(it=>it.nama||'').join(' ')).toLowerCase();
+  return tokens.every(t=>hay.includes(t));
+}
+// Nama barang di dokumen yang cocok dengan kata pencarian (utk ditampilkan di hasil)
+function riwMatchedItems(d,tokens){
+  if(!tokens.length) return [];
+  const seen=new Set(), out=[];
+  (d.items||[]).forEach(it=>{
+    const n=(it.nama||'').trim(); if(!n) return;
+    const low=n.toLowerCase();
+    if(tokens.some(t=>low.includes(t)) && !seen.has(low)){ seen.add(low); out.push(n); }
+  });
+  return out;
+}
+function riwItemsLine(d){
+  const names=riwMatchedItems(d,riwTokens(g('riwQ')?.value));
+  if(!names.length) return '';
+  const shown=names.slice(0,3).map(esc).join(', ')+(names.length>3?` +${names.length-3} lainnya`:'');
+  return `<div class="text-xs" style="color:#0e7490;font-weight:600;margin-top:2px;white-space:normal;">🧴 ${shown}</div>`;
+}
+
+function setRiwStickyTop(){
+  const h=document.querySelector('header'), q=g('quickBar');
+  const top=(h?h.offsetHeight:56)+(q?q.offsetHeight:0);
+  document.documentElement.style.setProperty('--riw-top',top+'px');
+}
+window.addEventListener('resize',()=>{ try{setRiwStickyTop();}catch(e){} });
+// ── EDIT TANGGAL LANGSUNG DARI RIWAYAT ──────────────────────────────────────
+// Klik tanggal -> jadi kotak tanggal -> pilih -> tersimpan lokal + langsung dikirim
+// ke Supabase (lewat antrean fbSet: kalau gagal kirim, dicoba ulang otomatis).
+// No. dokumen TIDAK diubah (nomor sudah tercetak/terpakai). Yang ikut menyesuaikan:
+// jatuh tempo/masa berlaku (digeser sebanyak selisih hari, jadi TOP tetap sama) dan
+// status pengiriman Surat Jalan kalau sebelumnya masih otomatis mengikuti tanggal.
+function dayDiff(a,b){ return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000); }
+function startEditDate(el,id,val){
+  const inp=document.createElement('input');
+  inp.type='date'; inp.value=val||''; inp.className='riw-date-input';
+  inp.onclick=e=>e.stopPropagation();
+  let done=false;
+  const finish=(commit)=>{
+    if(done) return; done=true;
+    if(commit && inp.value && inp.value!==val) editDocDate(id,inp.value); else renderHistory();
+  };
+  // Saat mengetik tahun manual (2,0,2,6) browser mengirim 'change' di tiap angka dengan
+  // tahun setengah jadi (0002, 0020, 0202). Hanya terima tahun 2000-2100 supaya tanggal
+  // tidak tersimpan dengan tahun ngawur.
+  inp.addEventListener('change',()=>{ if(/^(20\d\d|2100)-\d\d-\d\d$/.test(inp.value)) finish(true); });
+  inp.addEventListener('blur',()=>setTimeout(()=>finish(false),200));
+  inp.addEventListener('keydown',e=>{ if(e.key==='Escape'){ done=true; renderHistory(); } if(e.key==='Enter' && /^(20\d\d|2100)-\d\d-\d\d$/.test(inp.value)) finish(true); });
+  el.replaceWith(inp); inp.focus();
+  try{ inp.showPicker&&inp.showPicker(); }catch(e){}
+}
+function editDocDate(id,newDate){
+  const doc=ST.documents.find(d=>d.id===id); if(!doc||!/^\d{4}-\d{2}-\d{2}$/.test(newDate||'')) return;
+  const old=doc.date||newDate; if(old===newDate) return;
+  const delta=dayDiff(old,newDate);
+  if(doc.extraDate) doc.extraDate=addDays(delta,doc.extraDate);        // jatuh tempo / berlaku hingga ikut bergeser
+  if(doc.type==='suratjalan' && (!doc.shipStatus || doc.shipStatus===computeShipStatus(old))) doc.shipStatus=computeShipStatus(newDate);
+  doc.date=newDate; doc.updatedAt=new Date().toISOString();
+  save();
+  fbSetLive('documents',doc.id,doc,doc.no);   // kirim ke Supabase (antre & ulang otomatis kalau gagal)
+  renderHistory();
+}
+function riwDateCell(d){
+  return `<span class="riw-date-view" onclick="event.stopPropagation();startEditDate(this,'${d.id}','${esc(d.date||'')}')" title="Klik untuk ubah tanggal">${fmtDate(d.date)} <span style="color:#94a3b8;font-size:11px;">✎</span></span>`;
+}
+
+const RIW_PAGE=150; let _riwLimit=RIW_PAGE, _riwLastSig='';
+function riwShowMore(){ _riwLimit+=RIW_PAGE; renderHistory(); }
+// Cari: tunda render sampai user berhenti mengetik sebentar (dulu render ulang
+// seluruh tabel di SETIAP ketukan huruf).
+let _riwSearchT;
+function riwSearchInput(inp){ clearTimeout(_riwSearchT); _riwSearchT=setTimeout(()=>renderHistory(),220); riwCustAC(inp); }
+
 function renderHistory(){
   const tf  = g('riwType')?.value   || '';
   const topF = g('riwTopFilter')?.value || '';
@@ -2895,13 +3980,18 @@ function renderHistory(){
   const df  = g('riwDateFrom')?.value || '';
   const dt  = g('riwDateTo')?.value   || '';
   const q   = (g('riwQ')?.value||'').trim().toLowerCase();
+  setRiwStickyTop();
+  updateBulkBar();
+  // filter/urutan berubah -> kembali ke halaman pertama
+  const _sig=[tf,topF,st,df,dt,q,ST.activeCompany,_riwSort.col,_riwSort.dir].join('|');
+  if(_sig!==_riwLastSig){ _riwLastSig=_sig; _riwLimit=RIW_PAGE; }
 
   const list=[...ST.documents]
     .filter(d=> (!tf || d.type===tf))
     .filter(d=> (!st || d.status===st))
     .filter(d=> (!df || (d.date||'')>=df))
     .filter(d=> (!dt || (d.date||'')<=dt))
-    .filter(d=> (!q  || d.no.toLowerCase().includes(q) || (d.custName||'').toLowerCase().includes(q)))
+    .filter(d=> riwDocMatches(d, riwTokens(q)))
     .filter(d=> !ST.activeCompany||!d.company||d.company===ST.activeCompany)
     .filter(d=>{
       // Filter Jatuh Tempo (Terlambat / Hari ini / Segera / Belum Jatuh Tempo)
@@ -2919,14 +4009,19 @@ function renderHistory(){
       let va,vb;
       const col=_riwSort.col;
       if(col==='total')   { va=a.total||0; vb=b.total||0; }
+      else if(col==='saved'){ va=lastTouchedOf(a); vb=lastTouchedOf(b); }
       else if(col==='date'){ va=a.date||''; vb=b.date||''; }
       else if(col==='status'){ va=a.status||''; vb=b.status||''; }
       else if(col==='no'){ va=a.no||''; vb=b.no||''; }
       else { va=(a.custName||'').toLowerCase(); vb=(b.custName||'').toLowerCase(); }
       if(va<vb) return -1*_riwSort.dir;
       if(va>vb) return  1*_riwSort.dir;
-      return new Date(b.savedAt)-new Date(a.savedAt);
+      // seri: yang tanggal dokumennya lebih baru dulu, lalu no. dokumen
+      const ta=lastTouchedOf(a), tb=lastTouchedOf(b);
+      if(ta!==tb) return ta<tb?1:-1;
+      return (b.date||'')<(a.date||'')?-1:(b.date||'')>(a.date||'')?1:0;
     });
+  { const sel=g('riwSortSel'); if(sel) sel.value=(_riwSort.col==='saved'||_riwSort.col==='date')?_riwSort.col:'other'; }
   // Update sort indicators
   ['no','custName','date','total','status'].forEach(c=>{
     const el=document.getElementById('sort-'+c);
@@ -2938,9 +4033,183 @@ function renderHistory(){
   const wrap=g('riwTableWrap');
   if(!list.length){
     wrap.innerHTML=`<div class="p-12 text-center text-slate-400 text-sm">${ST.documents.length?'Tidak ada hasil.':'Belum ada dokumen tersimpan.'}</div>`;
+    updateBulkBar();
     return;
   }
-  wrap.innerHTML=`<table class="tbl"><thead><tr>
+
+  // ── MODE: KELOMPOKKAN PER BULAN ──────────────────────────────────────
+  // Mode TERPISAH dari tabel relasi (Penawaran→Invoice→SJ) di bawah -- ini
+  // khusus buat bantu admin bersih-bersih dokumen lama: dikelompokkan per
+  // bulan terbit, bisa expand/collapse per bulan, centang beberapa/semua
+  // dalam satu bulan, lalu hapus massal sekaligus (supaya daftar "nggak
+  // kebanyakan").
+  if(ST._riwGroupMode){
+    const groups={};
+    list.forEach(d=>{ const key=monthKeyOf(d.date); (groups[key]=groups[key]||[]).push(d); });
+    const sortedKeys=Object.keys(groups).sort((a,b)=>a<b?1:-1); // terbaru dulu
+    const rowHtml=(d)=>{
+      const checked=_riwSelected.has(d.id);
+      const tlabel={invoice:'Invoice',proforma:'Proforma',suratjalan:'Surat Jalan',penawaran:'Penawaran'}[d.type]||d.type;
+      const totalDisp = d.type==='suratjalan' ? sjQtySummary(d.items) : fmtRp(d.total||0);
+      const rowDiv = `<div data-docno="${esc(d.no)}" style="display:flex;align-items:center;gap:12px;padding:10px 16px 10px 44px;border-top:1px solid #f8fafc;${checked?'background:#ecfeff;':''}">
+        <input type="checkbox" ${checked?'checked':''} onchange="toggleRiwSelect('${d.id}',this.checked)" class="accent-cyan-600 flex-shrink-0">
+        <span class="font-mono font-bold text-sm text-gray-900" style="width:150px;flex-shrink:0;">${riwChevron(d)}${esc(d.no)}</span>
+        <span class="badge b-${d.type} flex-shrink-0">${tlabel}</span>
+        <span style="flex:1;min-width:0;color:#0f172a;font-weight:600;"><span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(d.custName||'—')}</span>${riwItemsLine(d)}</span>
+        <span style="width:120px;flex-shrink:0;color:#475569;font-size:13px;">${riwDateCell(d)}</span>
+        <span style="width:130px;flex-shrink:0;text-align:right;font-weight:700;color:#0f172a;">${totalDisp}</span>
+        <button class="btn btn-s btn-xs flex-shrink-0" onclick="editDoc('${d.id}')">✏️</button>
+        <button class="btn btn-d btn-xs flex-shrink-0" onclick="delDoc('${d.id}')">🗑️</button>
+      </div>`;
+      return rowDiv + (_riwDetailOpen.has(d.id) ? `<div style="padding:0 16px 0 44px;">${riwDetailHtml(d)}</div>` : '');
+    };
+    let groupHtml='';
+    sortedKeys.forEach(key=>{
+      const docs=groups[key];
+      const ids=docs.map(d=>d.id);
+      const allSel=ids.length>0 && ids.every(id=>_riwSelected.has(id));
+      const expanded=_riwExpandedMonths.has(key);
+      const monthTotal=docs.filter(d=>d.type!=='suratjalan').reduce((s,d)=>s+(d.total||0),0);
+      groupHtml+=`<div style="border-bottom:1px solid #e8edf3;">
+        <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;background:#f8fafc;" onclick="toggleMonthExpand('${key}')">
+          <span style="font-size:12px;color:#64748b;width:14px;flex-shrink:0;">${expanded?'▼':'▶'}</span>
+          <input type="checkbox" ${allSel?'checked':''} onclick="event.stopPropagation();toggleMonthSelectAll('${key}',this.checked)" class="accent-cyan-600 flex-shrink-0">
+          <span style="font-weight:700;color:#0f172a;flex:1;">${monthLabel(key)}</span>
+          <span style="font-size:12px;color:#64748b;">${docs.length} dokumen${monthTotal>0?' · '+fmtRp(monthTotal):''}</span>
+        </div>
+        ${expanded?docs.map(rowHtml).join(''):''}
+      </div>`;
+    });
+    wrap.innerHTML=groupHtml;
+    updateBulkBar();
+    return;
+  }
+
+  // ── PENGELOMPOKAN BERTINGKAT: Penawaran → Invoice/Proforma → Surat Jalan ──
+  // Dicari dari SELURUH dokumen milik company aktif (bukan cuma `list` yang
+  // sudah kena filter), supaya dokumen turunan tetap kelihatan menempel ke
+  // induknya walau tanggal/statusnya beda dari filter yang sedang aktif.
+  // Tapi hanya "disarangkan" kalau dokumen akarnya memang sedang tampil di
+  // `list` saat ini -- kalau tidak, dokumen turunan itu tetap tampil sebagai
+  // baris biasa dengan link 🔗 (fallback), jadi tidak pernah hilang dari daftar.
+  const allForCompany=ST.documents.filter(d=>!ST.activeCompany||!d.company||d.company===ST.activeCompany);
+  const norm=s=>(s||'').trim().toLowerCase();
+  // SJ -> induk Invoice/Proforma (via invRef)
+  const sjByInvNo={};
+  allForCompany.forEach(d=>{
+    if(d.type==='suratjalan' && norm(d.invRef)) (sjByInvNo[norm(d.invRef)]=sjByInvNo[norm(d.invRef)]||[]).push(d);
+  });
+  // Invoice/Proforma -> induk Penawaran (via pnwRef)
+  const followupByPnwNo={};
+  allForCompany.forEach(d=>{
+    if((d.type==='invoice'||d.type==='proforma') && norm(d.pnwRef)) (followupByPnwNo[norm(d.pnwRef)]=followupByPnwNo[norm(d.pnwRef)]||[]).push(d);
+  });
+  function childrenOf(d){
+    if(d.type==='invoice'||d.type==='proforma') return sjByInvNo[norm(d.no)]||[];
+    if(d.type==='penawaran') return followupByPnwNo[norm(d.no)]||[];
+    return [];
+  }
+  // Tandai semua id yang akan tampil sebagai anak (disarangkan), supaya tidak
+  // dirender dobel sebagai baris akar terpisah -- hanya menelusuri turunan dari
+  // dokumen yang memang tampil sebagai akar di `list` saat ini.
+  const nestedIds=new Set();
+  function markNested(d,depth){
+    if(depth>4) return; // jaga-jaga terhadap referensi melingkar
+    childrenOf(d).forEach(c=>{ if(!nestedIds.has(c.id)){ nestedIds.add(c.id); markNested(c,depth+1); } });
+  }
+  list.forEach(d=>markNested(d,0));
+
+  const docRow=(d,level)=>{
+    // Indentasi grup bertingkat: PAKAI padding-left asli di kolom No. Dokumen
+    // (bukan spasi &nbsp;), jadi dokumen turunan (Surat Jalan dkk) betul2
+    // tergeser ke kanan secara visual -- 28px per tingkat -- dan tidak pernah
+    // sejajar dengan nomor dokumen induknya.
+    const BASE_PAD=14, INDENT_PER_LEVEL=28;
+    const noCellPad = BASE_PAD + level*INDENT_PER_LEVEL;
+    const sikuIcon = level>0 ? `<span class="text-emerald-500 font-bold mr-1">↳</span>` : '';
+    // Kalau dokumen ini punya rujukan ke induk TAPI induknya tidak sedang
+    // tampil sebagai grup (jadi tidak bisa disarangkan) -- cukup kasih ikon
+    // 🔗 kecil yang bisa diklik utk lompat ke sana, bukan kalimat penuh.
+    const upRef = d.type==='suratjalan' ? (d.invRef||'').trim()
+      : (d.type==='invoice'||d.type==='proforma') ? (d.pnwRef||'').trim() : '';
+    const linkIcon = (level===0 && upRef)
+      ? `<span class="ml-1.5 text-emerald-600 cursor-pointer" onclick="event.stopPropagation();jumpToDoc('${upRef.replace(/'/g,"\\'")}')" title="Terhubung ke #${esc(upRef)} — klik untuk lihat">🔗</span>`
+      : '';
+    // Baris induk: latar putih polos. Baris turunan (nested): latar emerald
+    // lembut + garis tepi kiri, konsisten di SELURUH baris (bukan cuma kolom
+    // nomor), supaya satu grup transaksi kelihatan menyatu dari ujung ke ujung.
+    const rowStyle = level>0
+      ? 'background:#f0fdf6;border-left:3px solid #6ee7b7;'
+      : 'border-left:3px solid transparent;';
+    return `<tr data-docno="${esc(d.no)}" data-id="${d.id}" data-level="${level}" style="${rowStyle}">
+    <td class="font-mono font-bold text-sm text-gray-900" style="padding-left:${noCellPad}px;">${sikuIcon}${riwChevron(d)}${esc(d.no)}${linkIcon}</td>
+    <td class="whitespace-nowrap"><span class="badge b-${d.type}">${TL[d.type]||d.type}</span></td>
+    <td><span class="font-semibold text-gray-900">${esc(d.custName||'—')}</span><br><span class="text-xs text-slate-500">${esc(d.custPic||'')}</span>${riwItemsLine(d)}</td>
+    <td class="text-slate-600 text-sm whitespace-nowrap">${riwDateCell(d)}${fmtTouched(d.updatedAt||d.savedAt)?`<br><span style="font-size:10.5px;color:#94a3b8;" title="Terakhir diinput/diedit">diubah ${fmtTouched(d.updatedAt||d.savedAt)}</span>`:''}</td>
+    <td class="text-right font-bold text-gray-900 whitespace-nowrap">${d.type==='suratjalan'?sjQtySummary(d.items):fmtRp(d.total||0)}</td>
+    <td class="whitespace-nowrap">${d.type==='invoice'?`<span class="badge b-${d.status||'draft'}">${SL[d.status]||d.status||'—'}</span>`:d.type==='suratjalan'?(()=>{
+      const ss=d.shipStatus||computeShipStatus(d.date);
+      const SHIP_LABEL={belum_dikirim:'Belum Dikirim',diproses:'Diproses',terkirim:'Terkirim'};
+      return `<span class="badge b-${ss}">${SHIP_LABEL[ss]||'Terkirim'}</span>`;
+    })():'—'}</td>
+    <td class="whitespace-nowrap">${d.type==='invoice'&&d.extraDate?(()=>{const dy=daysRemaining(d.extraDate,d.status);return`${fmtDate(d.extraDate)}<br>${tempoLabel(dy)}`;})():'—'}</td>
+    <td class="text-right whitespace-nowrap" style="position:relative;">
+      <button class="btn btn-s btn-xs mr-1" onclick="event.stopPropagation();editDoc('${d.id}')" title="Edit">✏️</button>
+      <button class="btn btn-s btn-xs mr-1" onclick="event.stopPropagation();printDoc('${d.id}')" title="Cetak langsung">🖨️</button>
+      <span style="position:relative;display:inline-block;"><button class="btn btn-s btn-xs" onclick="event.stopPropagation();toggleRowMenu('${d.id}',this)" title="Aksi lainnya">⋮</button></span>
+    </td>
+  </tr>`;
+  };
+
+  function renderNode(d,level){
+    let html=docRow(d,level);
+    if(_riwDetailOpen.has(d.id)) html+=riwDetailRowHtml(d,level);
+    if(level<=4) childrenOf(d).forEach(c=>{ html+=renderNode(c,level+1); });
+    return html;
+  }
+
+  // Batasi jumlah baris yang digambar sekaligus (ratusan baris + rincian = berat &
+  // bikin nyendat tiap sync/ketik). Sisanya muncul lewat tombol "Tampilkan lagi".
+  let rowsHtml='', shownRoots=0, totalRoots=0;
+  let rootList=list;
+  if(_riwSort.col==='saved'){
+    // Urut "terakhir diinput/diedit": satu GRUP (penawaran > invoice > surat jalan) ikut naik
+    // ke atas kalau salah satu anggotanya baru diedit -- jadi Surat Jalan yang baru diinput
+    // tidak "tersembunyi" di bawah invoice lama.
+    const gk=new Map();
+    const groupKey=(d,depth)=>{
+      if(gk.has(d.id)) return gk.get(d.id);
+      let k=lastTouchedOf(d);
+      if(depth<5) childrenOf(d).forEach(c=>{ const ck=groupKey(c,depth+1); if(ck>k) k=ck; });
+      gk.set(d.id,k); return k;
+    };
+    const dir=_riwSort.dir;
+    rootList=list.filter(d=>!nestedIds.has(d.id)).map((d,i)=>({d,i,k:groupKey(d,0)}))
+      .sort((a,b)=> a.k===b.k ? a.i-b.i : (a.k<b.k?1:-1)*(-dir)).map(x=>x.d);
+  }
+  rootList.forEach(d=>{
+    if(nestedIds.has(d.id)) return; // sudah/akan disarangkan di bawah induknya
+    totalRoots++;
+    if(shownRoots>=_riwLimit) return;
+    shownRoots++;
+    rowsHtml+=renderNode(d,0);
+  });
+  if(totalRoots>shownRoots){
+    rowsHtml+=`<tr><td colspan="8" style="text-align:center;padding:14px;"><button class="btn btn-s" onclick="riwShowMore()">⬇ Tampilkan ${Math.min(RIW_PAGE,totalRoots-shownRoots)} lagi (sisa ${totalRoots-shownRoots} dokumen)</button></td></tr>`;
+  }
+
+  wrap.innerHTML=`<table class="tbl w-full riw-table">
+  <colgroup>
+    <col style="width:14%"><!-- No. Dokumen -->
+    <col style="width:7%"><!-- Jenis -->
+    <col style="width:29%"><!-- Customer -- paling longgar, nama PT panjang jangan wrap cepat -->
+    <col style="width:10%"><!-- Tanggal -->
+    <col style="width:12%"><!-- Total -->
+    <col style="width:8%"><!-- Status -- sering "—" (Penawaran/SJ tak selalu punya status), jangan kelebaran -->
+    <col style="width:8%"><!-- Jatuh Tempo -- sering "—" juga (hanya Invoice yg isi) -->
+    <col style="width:12%"><!-- Aksi -- dirampingkan jadi 2 tombol + menu "⋮", jadi tidak perlu lebar lagi -->
+  </colgroup>
+  <thead><tr>
     <th class="cursor-pointer hover:bg-slate-100 select-none" onclick="sortRiw('no')" title="Urutkan">No. Dokumen <span id="sort-no" class="text-slate-300"></span></th>
     <th>Jenis</th>
     <th class="cursor-pointer hover:bg-slate-100 select-none" onclick="sortRiw('custName')" title="Urutkan">Customer <span id="sort-custName" class="text-slate-300"></span></th>
@@ -2949,31 +4218,85 @@ function renderHistory(){
     <th class="cursor-pointer hover:bg-slate-100 select-none" onclick="sortRiw('status')" title="Urutkan">Status <span id="sort-status" class="text-slate-300"></span></th>
     <th>Jatuh Tempo</th>
     <th class="text-right">Aksi</th>
-  </tr></thead><tbody>${list.map(d=>`<tr>
-    <td class="font-mono font-bold text-sm">${esc(d.no)}</td>
-    <td><span class="badge b-${d.type}">${TL[d.type]||d.type}</span></td>
-    <td>${esc(d.custName||'—')}<br><span class="text-xs text-slate-400">${esc(d.custPic||'')}</span></td>
-    <td class="text-slate-500 text-sm">${fmtDate(d.date)}</td>
-    <td class="text-right font-semibold">${d.type!=='suratjalan'?fmtRp(d.total||0):'—'}</td>
-    <td>${d.type==='invoice'?`<span class="badge b-${d.status||'draft'}">${SL[d.status]||d.status||'—'}</span>`:'—'}</td>
-    <td>${d.type==='invoice'&&d.extraDate?(()=>{const dy=daysRemaining(d.extraDate,d.status);return`${fmtDate(d.extraDate)}<br>${tempoLabel(dy)}`;})():'—'}</td>
-    <td class="text-right whitespace-nowrap">
-      <button class="btn btn-s btn-xs mr-1" onclick="editDoc('${d.id}')">✏️ Edit</button>
-      <button class="btn btn-s btn-xs mr-1" onclick="printDoc('${d.id}')">🖨️</button>
-      <button class="btn btn-s btn-xs mr-1" onclick="copyDocToSheets('${d.id}')" title="Salin ke Google Sheets" style="padding:3px 7px;">📋</button>
-      ${d.type==='proforma'?`<button onclick="convertToInvoice('${d.id}')" title="Jadikan Invoice resmi" style="background:#0d9488;color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11.5px;font-weight:700;cursor:pointer;margin-right:4px;">✅ Jadikan Invoice</button>`:''}
-      <button class="btn btn-d btn-xs" onclick="delDoc('${d.id}')">🗑️</button>
-    </td>
-  </tr>`).join('')}</tbody></table>`;
+  </tr></thead><tbody>${rowsHtml}</tbody></table>`;
 }
 
 // ── COPY KE GOOGLE SHEETS (computed values, bukan formula referensi) ──
+// Format angka utk Google Sheets. Sheets berbahasa Indonesia membaca koma sbg
+// desimal (15000,5) dan titik sbg ribuan -- kalau angka desimal ditempel dgn titik
+// ("15000.5") nilainya salah. Pilih format sesuai Sheets-mu lewat menu ⋮ (default: Indonesia).
+function sheetsLocale(){ return localStorage.getItem('sap_sheetsloc')||'id'; }
+function toggleSheetsLocale(){
+  localStorage.setItem('sap_sheetsloc', sheetsLocale()==='id'?'en':'id');
+  toast('Format angka Sheets: '+(sheetsLocale()==='id'?'Indonesia (koma desimal)':'Inggris (titik desimal)'));
+  renderHistory();
+  pushPrefs();
+}
+function fmtSheetNum(n){
+  const v=Math.round((parseFloat(n)||0)*100)/100;
+  const t=Number.isInteger(v)?String(v):String(v);
+  return sheetsLocale()==='id'?t.replace('.',','):t;
+}
+// Salin HANYA barang dari satu dokumen (tanpa no. dokumen/customer/tanggal) utk
+// ditempel ke kolom barang di Google Sheets -- urutan kolom: Nama Barang, Qty, Harga,
+// lalu Diskon (kolom ini hanya ikut kalau dokumennya memang punya diskon; diskon % atau
+// Rp sesuai mode dokumen). Nama ditulis persis seperti di dokumen: kalau kolom Nama di
+// Sheets-mu berupa dropdown, ejaannya harus sama dengan isi daftar dropdown.
+// Dropdown diskon di Sheets hanya menerima persen 5%,10%,15%,20%,25% -- diskon ditulis
+// "10%" (bukan 10) dan nilai di luar daftar dikosongkan supaya tidak ditolak dropdown.
+const SHEETS_DISC_OPTIONS=[5,10,15,20,25];
+function copyDiscOn(){ return localStorage.getItem('sap_copydisc')!=='0'; }
+function toggleCopyDisc(){
+  localStorage.setItem('sap_copydisc', copyDiscOn()?'0':'1');
+  toast('Kolom diskon di "Salin Barang": '+(copyDiscOn()?'IKUT disalin':'TIDAK ikut'));
+  renderHistory();
+  pushPrefs();
+}
+function copyDocItemsToSheets(docId){
+  const doc=ST.documents.find(d=>d.id===docId); if(!doc) return;
+  const items=(doc.items||[]).filter(it=>(it.nama||'').trim());
+  if(!items.length){ toast('Dokumen ini tidak punya barang','err'); return; }
+  const rupiah=doc.discMode==='rupiah';
+  // diskon sebagai persen (diskon Rp dikonversi: diskon / (qty x harga))
+  const pctOf=it=>{
+    if(!doc.discEnabled) return 0;
+    if(!rupiah) return Math.round((it.disc||0)*100)/100;
+    const gross=(it.qty||0)*(it.harga||0);
+    return gross>0?Math.round(((it.discRp||0)/gross)*10000)/100:0;
+  };
+  let skipped=0;
+  const discCell=it=>{
+    const pc=pctOf(it); if(!(pc>0)) return '';
+    if(SHEETS_DISC_OPTIONS.includes(pc)) return pc+'%';
+    skipped++; return '';   // di luar pilihan dropdown -> kosongkan
+  };
+  const hasDisc=copyDiscOn() && !!doc.discEnabled && items.some(it=>pctOf(it)>0);
+  const N=fmtSheetNum;
+  const rows=items.map(it=>{
+    const row=[(it.nama||'').replace(/[\t\r\n]+/g,' ').trim(), N(it.qty||1), N(it.harga||0)];
+    if(hasDisc) row.push(discCell(it));
+    return row;
+  });
+  // Ongkir yang ikut ditagih disalin sbg baris terakhir: "Ongkir", qty 1, harga = ongkir.
+  // Ongkir COD (tidak masuk tagihan) tidak ikut.
+  const ongkir=doc.ongkir||0;
+  if(ongkir>0){ const r=['Ongkir', N(1), N(ongkir)]; if(hasDisc) r.push(''); rows.push(r); }
+  const text=rows.map(r=>r.join('\t')).join('\n');
+  const done=()=>toast('📋 '+items.length+' barang'+(ongkir>0?' + ongkir':'')+' disalin'+(hasDisc?' + diskon %':'')+' — paste ke Sheets'
+    +(skipped?` · ${skipped} diskon di luar 5/10/15/20/25% dikosongkan`:'')
+    +(doc.ongkirCod&&(doc.ongkirRaw||0)>0?' · ongkir COD tidak ikut':''));
+  navigator.clipboard.writeText(text).then(done).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0;top:0;left:0;';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ toast('⚠ Gagal salin, coba lagi','err'); } finally{ ta.remove(); }
+  });
+}
 function copyDocToSheets(docId) {
   const doc = ST.documents.find(d => d.id === docId);
   if (!doc) return;
 
   const items  = (doc.items||[]).filter(it => (it.nama||'').trim());
-  const isHnH  = (doc.company||'') === 'hnh';
+  const N = fmtSheetNum;
 
   // Format tanggal DD/MM/YYYY
   const fmt = s => {
@@ -2985,35 +4308,28 @@ function copyDocToSheets(docId) {
 
   let rows = [];
 
-  // === Baris per item — nilai sudah dihitung, bukan formula referensi ===
+  // === Baris per item -- subtotal = NET setelah diskon dokumen itu sendiri, sama
+  // persis dengan yang tercetak di invoice (dulu diskon tidak ikut dihitung) ===
   items.forEach((it, i) => {
     const qty      = it.qty   || 1;
     const harga    = it.harga || 0;
-    const subtotal = qty * harga; // ← computed, tidak akan error di mana pun di-paste
-
-    if (i === 0) {
-      // Baris pertama: NO (nomor doc) + data lengkap
-      rows.push([doc.no||'', doc.custName||'', dateStr, it.nama||'', qty, harga, subtotal]);
-    } else {
-      // Baris berikutnya: kosongkan NO, Customer, Tanggal
-      rows.push(['', '', '', it.nama||'', qty, harga, subtotal]);
-    }
+    const subtotal = rowSubFor(it, doc.discEnabled, doc.discMode);
+    const cells = [it.nama||'', N(qty), N(harga), N(subtotal)];
+    if (i === 0) rows.push([doc.no||'', doc.custName||'', dateStr, ...cells]);
+    else         rows.push(['', '', '', ...cells]);
   });
 
-  // === Hitung total dari items ===
-  const subTotal = items.reduce((s,it) => s + ((it.qty||1)*(it.harga||0)), 0);
-  const ppnVal   = isHnH ? 0 : Math.round(subTotal * 0.11);
-  const total    = subTotal + ppnVal;
-
-  if (isHnH) {
-    // H&H (Non-PKP): langsung TOTAL saja, TANPA PPN
-    rows.push(['', '', '', '', 'TOTAL', '', total]);
-  } else {
-    // Glomed & Gracia (PKP): SUB TOTAL + PPN 11% + TOTAL
-    rows.push(['', '', '', '', 'SUB TOTAL', '', subTotal]);
-    rows.push(['', '', '', '', 'PPN 11%',   '', ppnVal]);
-    rows.push(['', '', '', '', 'TOTAL',     '', total]);
-  }
+  // === Ringkasan: pakai angka yang TERSIMPAN di dokumen (sudah termasuk diskon,
+  // ongkir, PPN sesuai persentase dokumen) -- bukan dihitung ulang dgn PPN 11% tetap ===
+  const itemsSum = items.reduce((sm,it)=>sm+rowSubFor(it,doc.discEnabled,doc.discMode),0);
+  const subTotal = (doc.subtotal!=null) ? doc.subtotal : itemsSum;
+  const ongkir   = doc.ongkir || 0;           // ongkir yang ikut ditagih (COD = 0)
+  const ppnVal   = doc.ppn || 0;
+  const total    = (doc.total!=null) ? doc.total : (subTotal+ongkir+ppnVal);
+  if (ongkir>0 || ppnVal>0) rows.push(['', '', '', '', 'SUB TOTAL', '', N(subTotal)]);
+  if (ongkir>0)             rows.push(['', '', '', '', 'ONGKIR',    '', N(ongkir)]);
+  if (ppnVal>0)             rows.push(['', '', '', '', `PPN ${doc.ppnRate||11}%`, '', N(ppnVal)]);
+  rows.push(['', '', '', '', 'TOTAL', '', N(total)]);
 
   // === Gabungkan: Tab antar kolom, Newline antar baris ===
   const TAB = String.fromCharCode(9);
@@ -3037,7 +4353,7 @@ function convertToInvoice(id) {
   const doc = ST.documents.find(d => d.id === id);
   if (!doc || doc.type !== 'proforma') return;
   if (!confirm(`Jadikan "${doc.no}" sebagai Invoice resmi?\n\nProforma akan berubah menjadi Invoice dan tidak bisa dikembalikan.`)) return;
-  doc.type = 'invoice';
+  doc.type = 'invoice'; doc.updatedAt = new Date().toISOString();
   if (doc.no && doc.no.startsWith('PI-')) doc.no = doc.no.slice(3); // hapus prefix PI-
   save();
   fbSet('documents', doc.id, doc);
@@ -3046,7 +4362,37 @@ function convertToInvoice(id) {
   toast('✅ Proforma berhasil dikonversi menjadi Invoice: ' + doc.no);
 }
 
-function editDoc(id){const doc=ST.documents.find(d=>d.id===id);if(doc)loadDocToForm(doc);}
+function editDoc(id){
+  const doc=ST.documents.find(d=>d.id===id);
+  if(!doc) return;
+  loadDocToForm(doc);
+  gotoTab('form');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Duplikat dokumen dari Riwayat: isi form dengan SEMUA data dokumen asal (lewat
+// loadDocToForm, sama seperti Edit), tapi lalu "lepaskan" dari mode edit --
+// nomor dokumen baru di-generate, tanggal di-reset ke hari ini, dan status
+// dikembalikan ke default -- supaya saat disimpan jadi DOKUMEN BARU terpisah,
+// bukan menimpa dokumen aslinya. Cocok utk bikin invoice/SJ mirip yang lama
+// tanpa mengetik ulang dari nol.
+function duplicateDoc(id){
+  const doc=ST.documents.find(d=>d.id===id);
+  if(!doc) return;
+  loadDocToForm(doc);
+  ST.editId=null;
+  g('fNo').value=genNo(doc.type);
+  g('fDate').value=today();
+  if(g('fExtraDate')){
+    if(doc.type==='penawaran') g('fExtraDate').value=addDays(3);
+    else if(doc.type==='invoice'||doc.type==='proforma') g('fExtraDate').value=addDays(14);
+  }
+  if(doc.type==='invoice' && g('fStatus')){ g('fStatus').value='belum_lunas'; onStatusChange(); }
+  const b=g('editBanner'); if(b) b.style.display='none';
+  g('btnSaveLbl').textContent='💾 Simpan Dokumen';
+  gotoTab('form'); window.scrollTo({top:0,behavior:'smooth'});
+  toast(`📄 Disalin dari ${doc.no} — cek/ubah datanya lalu simpan sebagai dokumen baru`);
+}
 
 function delDoc(id){
   const doc=ST.documents.find(d=>d.id===id);
@@ -3057,6 +4403,9 @@ function delDoc(id){
 }
 
 // ── PRINT ──────────────────────────────────────────────────────────
+// Pratinjau cetak TANPA menyimpan -- dokumen yang sedang diisi di form
+// langsung dibuka ke pratinjau apa adanya, TIDAK ditambahkan/diperbarui di
+// Riwayat. Cocok buat cek tampilan dulu sebelum yakin mau disimpan.
 function printForm(){
   if(!(g('fCustName').value||'').trim()){toast('Isi nama customer dahulu','err');return;}
   openPrint(collectForm());
@@ -3101,8 +4450,26 @@ function getCompanyProfileForPrint(companyKey){
 
 function printDoc(id){
   const doc=ST.documents.find(d=>d.id===id);if(!doc)return;
-  const showUP=g('riwShowUP')?g('riwShowUP').checked:true;
+  const showUP=g('riwShowUP')?g('riwShowUP').checked:false;
   openPrint({...doc,showUP});
+}
+// "Simpan" (PDF) -- browser tidak mengizinkan JS langsung bikin file PDF tanpa
+// library tambahan, jadi rutenya tetap lewat dialog cetak bawaan browser
+// (window.print()), TAPI dibedakan dari tombol 🖨️ Cetak: kasih tau dulu lewat
+// toast supaya user tau harus pilih "Simpan sebagai PDF" di dialog yang muncul,
+// bukan asal klik "Cetak" ke printer fisik.
+function saveDocPdf(id){
+  toast('💾 Di dialog yang muncul, pilih tujuan "Simpan sebagai PDF"');
+  printDoc(id);
+}
+// Tombol "💾🖨️ Simpan & Pratinjau Cetak" di form -- dokumen DISIMPAN DULU ke
+// riwayat (lewat saveDocument() yang sama persis dgn tombol "Simpan Dokumen"
+// biasa, termasuk validasi no. dokumen & penomoran otomatis), baru KALAU
+// berhasil tersimpan, pratinjau cetaknya langsung terbuka. Kalau gagal/
+// dibatalkan (mis. no. dokumen bentrok), pratinjau TIDAK dibuka.
+async function saveAndPrint(){
+  const doc = await saveDocument();
+  if(doc) openPrint(doc);
 }
 
 function openPrint(doc){
@@ -3119,7 +4486,7 @@ function buildPrintHTML(doc,s){
   const TEAL='#0d6e56',TEAL_DK='#073e30',TEAL_TN='#eaf6f1';
   const LIME_DK='#4f6e1f',INK='#1c2622',INK_S='#5c6b65',LINE='#dde4e0',LINE_S='#eef2ef';
   const TH_SJ='background:#eaf6f1;color:#3a5a4a;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:9px 8px;border-bottom:1px solid #dde4e0;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
-  const TD='padding:6px 8px;border-bottom:1px solid #eef2ef;font-size:13px;vertical-align:middle;color:#1c2622;';
+  const TD='padding:6px 10px;border-bottom:1px solid #eef2ef;font-size:13px;vertical-align:middle;color:#1c2622;';
   const fmtD=s_=>{if(!s_)return'—';const[y,m,d]=s_.split('-');return`${d}/${m}/${y}`;};
 
   /* ── HEADER ─────────────────────────────────────────────── */
@@ -3149,6 +4516,7 @@ function buildPrintHTML(doc,s){
     // F4: Referensi PO & Invoice
     if(doc.poRef)   metaRows.push(['Purchase Order', esc(doc.poRef)]);
     if(doc.invRef)  metaRows.push(['Invoice', esc(doc.invRef)]);
+    if(doc.pnwRef)  metaRows.push(['Ref. Penawaran', esc(doc.pnwRef)]);
   }
   const docTitle={invoice:'INVOICE',suratjalan:'SURAT JALAN',penawaran:'SURAT PENAWARAN HARGA',proforma:'PROFORMA INVOICE'}[doc.type];
 
@@ -3221,26 +4589,26 @@ function buildPrintHTML(doc,s){
     </table>`;
   } else {
     const hasNie=(doc.items||[]).some(it=>(it.nie||'').trim());
-    tbl=`<table style="width:100%;border-collapse:collapse;margin-top:4px;">
+    tbl=`<table style="width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed;">
       <thead><tr style="background:${TEAL_TN};-webkit-print-color-adjust:exact;print-color-adjust:exact;">
-        <th style="${TH_SJ}width:28px;">No</th>
-        <th style="${TH_SJ}">Nama Barang / Jasa</th>
-        ${hasNie?`<th style="${TH_SJ}white-space:nowrap;">NIE</th>`:''}
-        <th style="${TH_SJ}width:60px;text-align:right;">Qty</th>
-        <th style="${TH_SJ}width:70px;">Satuan</th>
-        <th style="${TH_SJ}width:100px;text-align:right;white-space:nowrap;">Harga Satuan</th>
-        ${doc.discEnabled?(doc.discMode==='rupiah'?`<th style="${TH_SJ}width:80px;text-align:right;">Disc. Rp</th>`:`<th style="${TH_SJ}width:65px;text-align:right;">Disc. %</th>`):''}
-        <th style="${TH_SJ}width:${doc.discEnabled?115:180}px;text-align:right;">Subtotal</th>
+        <th style="${TH_SJ}padding-left:6px;padding-right:6px;width:28px;white-space:nowrap;">No</th>
+        <th style="${TH_SJ}white-space:nowrap;">Nama Barang / Jasa</th>
+        ${hasNie?`<th style="${TH_SJ}padding-left:6px;padding-right:6px;white-space:nowrap;width:118px;">NIE</th>`:''}
+        <th style="${TH_SJ}padding-left:6px;padding-right:6px;width:44px;text-align:right;white-space:nowrap;">Qty</th>
+        <th style="${TH_SJ}padding-left:6px;padding-right:6px;width:54px;white-space:nowrap;">Satuan</th>
+        <th style="${TH_SJ}padding-left:6px;padding-right:6px;width:98px;text-align:right;white-space:nowrap;">Harga Satuan</th>
+        ${doc.discEnabled?(doc.discMode==='rupiah'?`<th style="${TH_SJ}padding-left:6px;padding-right:6px;width:84px;text-align:right;white-space:nowrap;">Disc. Rp</th>`:`<th style="${TH_SJ}padding-left:6px;padding-right:6px;width:60px;text-align:right;white-space:nowrap;">Disc. %</th>`):''}
+        <th style="${TH_SJ}padding-left:6px;padding-right:6px;width:110px;text-align:right;white-space:nowrap;">Subtotal</th>
       </tr></thead>
       <tbody>${(doc.items||[]).map((it,i)=>`<tr>
-        <td style="${TD}text-align:center;color:#94a3b8;width:28px;">${i+1}</td>
+        <td style="${TD}padding-left:6px;padding-right:6px;text-align:center;color:#94a3b8;width:28px;">${i+1}</td>
         <td style="${TD}font-weight:500;">${esc(it.nama||'—')}</td>
-        ${hasNie?`<td style="${TD}color:${INK_S};white-space:nowrap;"><span class="nie-inline">${esc((it.nie||'—').replace(/\s+/g,' ').trim())}</span></td>`:''}
-        <td style="${TD}text-align:right;">${it.qty}</td>
-        <td style="${TD}">${esc(it.sat||'pcs')}</td>
-        <td style="${TD}text-align:right;font-variant-numeric:tabular-nums;">${fmtRp(it.harga||0)}</td>
-        ${doc.discEnabled?(doc.discMode==='rupiah'?`<td style="${TD}text-align:right;font-variant-numeric:tabular-nums;">${(it.discRp||0)>0?fmtRp(it.discRp):'—'}</td>`:`<td style="${TD}text-align:right;">${(it.disc||0)>0?it.disc+'%':'—'}</td>`):''}
-        <td style="${TD}text-align:right;font-weight:600;font-variant-numeric:tabular-nums;">${fmtRp(rowSub(it))}</td>
+        ${hasNie?`<td style="${TD}padding-left:6px;padding-right:6px;color:${INK_S};white-space:nowrap;overflow:visible;font-size:12px;"><span class="nie-inline">${esc((it.nie||'—').replace(/\s+/g,' ').trim())}</span></td>`:''}
+        <td style="${TD}padding-left:6px;padding-right:6px;text-align:right;white-space:nowrap;">${it.qty}</td>
+        <td style="${TD}padding-left:6px;padding-right:6px;white-space:nowrap;">${esc(it.sat||'pcs')}</td>
+        <td style="${TD}padding-left:6px;padding-right:6px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;">${fmtRp(it.harga||0)}</td>
+        ${doc.discEnabled?(doc.discMode==='rupiah'?`<td style="${TD}padding-left:6px;padding-right:6px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;">${(it.discRp||0)>0?fmtRp(it.discRp):'—'}</td>`:`<td style="${TD}padding-left:6px;padding-right:6px;text-align:right;white-space:nowrap;">${(it.disc||0)>0?it.disc+'%':'—'}</td>`):''}
+        <td style="${TD}padding-left:6px;padding-right:6px;text-align:right;white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums;">${fmtRp(rowSubFor(it,doc.discEnabled,doc.discMode))}</td>
       </tr>`).join('')}</tbody>
     </table>`;
   }
@@ -3519,6 +4887,59 @@ function clearCompany(){
   toast('Menampilkan data semua perusahaan');
 }
 
+// Dipanggil dari tombol company di Quick Bar (Profil:) -- beda dari loadCompany()
+// polos yang dipakai di tab Pengaturan: kalau company-nya BERUBAH (bukan klik ulang
+// company yang sama), langsung tawarkan bikin dokumen baru hari ini lewat modal.
+// Klik kartu company di Profil = cuma pindah company aktif, TITIK.
+// Deteksi sederhana: form sedang ada isiannya (customer/barang sudah diisi)
+// yang belum disimpan -- dipakai sebagai pengaman sebelum resetForm().
+function hasUnsavedFormData(){
+  const hasCust = !!(g('fCustName')?.value || '').trim();
+  const hasItem = ST.items.some(it => (it.nama||'').trim());
+  return hasCust || hasItem;
+}
+
+// Tombol pintas "+ Buat Surat Jalan" pada baris Invoice di Riwayat yang belum
+// punya SJ sama sekali -- bikin Surat Jalan baru dengan customer, barang, dan
+// Ref. Invoice otomatis dibawa dari invoice yang DIKLIK (bukan sekadar invoice
+// terakhir), dengan menumpangi mekanisme autoFillFromLastInvoice() yang sudah ada.
+// Menu ⋮ pada baris PENAWARAN -> "🧾 Buat Invoice": buka form Invoice BARU yang sudah
+// terisi dari penawaran itu (customer, barang, harga, diskon, ongkir, catatan), tanggal
+// hari ini, nomor invoice berikutnya, dan Ref. Penawaran = no. penawaran tsb (jadi di
+// Riwayat invoice-nya otomatis bersarang di bawah penawarannya). Penawaran aslinya tidak diubah.
+function quickCreateInvoiceFromPenawaran(id){
+  const pnw=ST.documents.find(d=>d.id===id && d.type==='penawaran'); if(!pnw) return;
+  if(hasUnsavedFormData() && !confirm('Form yang sedang diisi belum disimpan. Buat Invoice dari penawaran dan buang isian yang sekarang?')) return;
+  loadDocToForm(pnw);               // isi form dgn data penawaran (sementara masih mode edit)
+  ST.editId=null;                   // lepas dari mode edit -> dokumen baru
+  g('fDate').value=today();
+  setDocType('invoice');            // ganti ke Invoice: UI, nomor invoice baru, catatan default
+  if(g('fStatus')){ g('fStatus').value='belum_lunas'; if(typeof onStatusChange==='function') onStatusChange(); }
+  if(g('fExtraDate')) g('fExtraDate').value=addDays(14);
+  autoFillJatuhTempo();             // jatuh tempo dari TOP customer kalau ada
+  const b=g('editBanner'); if(b) b.style.display='none';
+  g('btnSaveLbl').textContent='💾 Simpan Dokumen';
+  gotoTab('form'); window.scrollTo({top:0,behavior:'smooth'});
+  // autoFillPnwRef (jalan setTimeout 0 setelah ganti jenis) mengisi penawaran TERAKHIR customer
+  // -- tulis ulang setelahnya dgn penawaran yang BENAR-BENAR dipilih.
+  setTimeout(()=>{ const f=g('fPnwRef'); if(f) f.value=pnw.no; },60);
+  toast(`🧾 Invoice baru dari Penawaran ${pnw.no} — cek datanya lalu simpan`);
+}
+
+function quickCreateSJFromInvoice(invId){
+  const inv=ST.documents.find(d=>d.id===invId && d.type==='invoice');
+  if(!inv) return;
+  if(hasUnsavedFormData() && !confirm('Form yang sedang diisi belum disimpan. Buat Surat Jalan baru dan buang isian yang sekarang?')){
+    return;
+  }
+  gotoTab('form');
+  resetForm();
+  ST.lastInvoiceId=invId;
+  setDocType('suratjalan');
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast(`🚚 Surat Jalan baru dari Invoice ${inv.no} — tanggal hari ini`);
+}
+
 function loadCompany(key){
   const co=COMPANIES[key];if(!co)return;
   ST.activeCompany=key;
@@ -3676,6 +5097,8 @@ g('custModal').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&d
   // Sync quickbar TTD toggle dari settings
   const qSig=g('qSigToggle');
   if(qSig)qSig.checked=ST.settings.showSig!==false;
+  // Label awal tombol toggle ",000 Desimal", sesuai preferensi tersimpan
+  {const b=g('btnPriceFmt');if(b)b.textContent=',000 Desimal: '+(ST._priceFmtOn?'ON':'OFF');}
   // Highlight active company di quickbar jika ada
   if(ST.activeCompany){
     document.querySelectorAll('[data-co]').forEach(b=>{
