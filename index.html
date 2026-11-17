@@ -114,20 +114,461 @@ input[type=number]{-moz-appearance:textfield;}
 .sg-name{font-weight:600;}
 .sg-sub{font-size:11px;color:#94a3b8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sg-price{font-size:11px;color:#0d6e56;font-weight:600;margin-top:1px;}
+
+/* ── PENANDA JATUH TEMPO (hanya tampilan; data tidak diubah) ── */
+.tempo-badge{display:inline-flex;align-items:center;gap:4px;margin-top:4px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+.tempo-late{background:#fee2e2;color:#b91c1c;box-shadow:inset 0 0 0 1px #fecaca;}
+.tempo-today{background:#ffedd5;color:#c2410c;box-shadow:inset 0 0 0 1px #fed7aa;}
+.tempo-soon{background:#fef9c3;color:#a16207;box-shadow:inset 0 0 0 1px #fde68a;}
+.tempo-ok{background:#f1f5f9;color:#64748b;}
+.tempo-late::before{content:'';width:6px;height:6px;border-radius:50%;background:#dc2626;}
+@keyframes duePulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,.55);}70%{box-shadow:0 0 0 6px rgba(220,38,38,0);}100%{box-shadow:0 0 0 0 rgba(220,38,38,0);}}
+.tbl tr.row-late td{background:#fef2f2;}
+.tbl tr.row-late:hover td{background:#fee2e2;}
+.tbl tr.row-soon td{background:#fefce8;}
+.tbl tr.row-soon:hover td{background:#fef9c3;}
+.grp-late{background:#fef2f2!important;box-shadow:inset 3px 0 0 #dc2626;}
+.grp-soon{background:#fefce8!important;box-shadow:inset 3px 0 0 #eab308;}
+.pay-quick{margin-top:5px;display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d;cursor:pointer;font-family:inherit;}
+.pay-quick:hover{background:#dcfce7;border-color:#86efac;}
+/* Banner ringkasan jatuh tempo di atas tabel Riwayat */
+.due-banner{margin:12px 20px 0;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;animation:fadeIn .25s ease;}
+.due-banner.lvl-late{background:linear-gradient(135deg,#fef2f2,#fff1f2);border:1px solid #fecaca;}
+.due-banner.lvl-soon{background:linear-gradient(135deg,#fefce8,#fffbeb);border:1px solid #fde68a;}
+.due-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.lvl-late .due-ic{background:#dc2626;color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.3);}
+.lvl-soon .due-ic{background:#eab308;color:#fff;box-shadow:0 4px 12px rgba(234,179,8,.3);}
+.due-txt{flex:1;min-width:220px;}
+.due-title{font-weight:800;font-size:13.5px;color:#0f172a;}
+.due-sub{font-size:12px;color:#475569;margin-top:2px;}
+.due-chip{font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;border:1px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.due-chip.c-late{background:#dc2626;color:#fff;}
+.due-chip.c-late:hover{background:#b91c1c;}
+.due-chip.c-soon{background:#fff;color:#a16207;border-color:#fde68a;}
+.due-chip.c-soon:hover{background:#fef9c3;}
+.due-chip.c-pay{background:#fff;color:#15803d;border-color:#bbf7d0;}
+.due-chip.c-pay:hover{background:#f0fdf4;}
+.due-x{background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;line-height:1;padding:2px 4px;}
+.due-x:hover{color:#475569;}
+/* Kartu notifikasi pojok kanan bawah (muncul 1x per hari) */
+#duePop{position:fixed;right:20px;bottom:20px;width:340px;max-width:calc(100vw - 40px);background:#fff;border-radius:14px;box-shadow:0 18px 48px rgba(15,23,42,.22);border:1px solid #fecaca;z-index:9998;overflow:hidden;transform:translateY(20px);opacity:0;transition:all .3s ease;}
+#duePop.show{transform:translateY(0);opacity:1;}
+#duePop .dp-head{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;}
+#duePop .dp-body{padding:12px 16px 14px;font-size:12.5px;color:#334155;}
+#duePop .dp-list{margin:8px 0 12px;max-height:130px;overflow:auto;}
+#duePop .dp-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed #f1f5f9;}
+/* Modal cek & tandai lunas */
+.pay-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;border:1px solid #f1f5f9;margin-bottom:6px;cursor:pointer;}
+.pay-row:hover{background:#f8fafc;}
+.pay-row.on{background:#f0fdf4;border-color:#bbf7d0;}
 </style>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style id="theme-modern">
+/* ════════════════════════════════════════════════════════════════════
+   TEMA MODERN v2 -- hanya tampilan. Logika, data & hasil CETAK tidak berubah
+   (#printArea dikunci ke font & gaya lama di bagian paling bawah).
+   ════════════════════════════════════════════════════════════════════ */
+:root{
+  --brand:#0e7490; --brand-2:#0891b2; --brand-d:#0c4a6e; --ink:#0f172a; --ink-2:#334155; --mute:#64748b;
+  --line:#e6ebf1; --bg:#f3f6f9; --card:#ffffff; --ring:rgba(8,145,178,.18);
+  --sh-1:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.06);
+  --sh-2:0 4px 14px -2px rgba(15,23,42,.08),0 2px 6px -2px rgba(15,23,42,.05);
+  --sh-3:0 18px 50px -12px rgba(15,23,42,.28);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+  background:
+    radial-gradient(1100px 500px at 100% -10%,rgba(8,145,178,.08),transparent 60%),
+    radial-gradient(900px 480px at -10% 0%,rgba(14,116,144,.06),transparent 55%),
+    var(--bg)!important;
+  color:var(--ink);}
+::selection{background:rgba(8,145,178,.2);}
+
+/* ── HEADER ── */
+header.sticky{background:rgba(9,40,61,.88)!important;backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 10px 30px -12px rgba(2,32,51,.55)!important;}
+header.sticky>div{height:60px!important;}
+.brand-logo{display:inline-flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:15.5px;letter-spacing:-.01em;}
+.brand-logo .bl-ic{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;
+  background:linear-gradient(135deg,#22d3ee,#0e7490);box-shadow:0 6px 16px -4px rgba(34,211,238,.55),inset 0 1px 0 rgba(255,255,255,.35);}
+.brand-logo small{display:block;font-size:10.5px;font-weight:600;color:#67e8f9;letter-spacing:.02em;margin-top:1px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#syncBadge{display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 9px;border-radius:999px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);font-weight:600;font-size:11.5px!important;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}
+.hdr-ic{width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.65)!important;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);transition:all .2s var(--ease);margin-left:0!important;}
+.hdr-ic:hover{background:rgba(255,255,255,.16);color:#fff!important;transform:translateY(-1px);}
+.hdr-ic:active{transform:scale(.92);}
+#syncBtn.spin{animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+header nav{position:relative;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);padding:4px;border-radius:14px;gap:2px!important;}
+.nav-ind{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:10px;background:linear-gradient(135deg,#22d3ee,#0891b2);
+  box-shadow:0 6px 18px -6px rgba(34,211,238,.7),inset 0 1px 0 rgba(255,255,255,.35);transition:left .38s var(--ease),width .38s var(--ease);z-index:0;}
+.nav-btn{position:relative;z-index:1;border-radius:10px!important;padding:7px 15px!important;font-weight:600!important;color:rgba(255,255,255,.7)!important;transition:color .25s,background .25s!important;}
+.nav-btn:hover{background:rgba(255,255,255,.08)!important;color:#fff!important;}
+.nav-btn.active{background:transparent!important;color:#fff!important;}
+header nav:not(.has-ind) .nav-btn.active{background:linear-gradient(135deg,#22d3ee,#0891b2)!important;}
+
+/* ── QUICK BAR (profil perusahaan) ── */
+#quickBar{top:60px!important;background:rgba(255,255,255,.97)!important;border-color:var(--line)!important;box-shadow:0 6px 20px -14px rgba(15,23,42,.25)!important;}
+#quickBar>div{padding-top:9px!important;padding-bottom:9px!important;}
+.qco-btn{--co:#0891b2;--co-bg:#ecfeff;position:relative;border-width:1.5px!important;border-radius:999px!important;padding:6px 14px 6px 10px!important;
+  background:#fff!important;border-color:var(--line)!important;color:var(--ink-2)!important;font-weight:700!important;transition:all .22s var(--ease)!important;}
+.qco-btn[data-co="glomed"]{--co:#2563eb;--co-bg:#eff6ff;}
+.qco-btn[data-co="gracia"]{--co:#059669;--co-bg:#ecfdf5;}
+.qco-btn::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--co);box-shadow:0 0 0 3px var(--co-bg);}
+.qco-btn:hover{border-color:var(--co)!important;color:var(--co)!important;transform:translateY(-1px);box-shadow:0 6px 14px -8px var(--co);}
+.qco-btn.active{background:var(--co)!important;border-color:var(--co)!important;color:#fff!important;box-shadow:0 8px 18px -8px var(--co)!important;}
+.qco-btn.active::before{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3);}
+#btnAllCoQ{border-radius:999px;text-decoration:none!important;font-weight:600;}
+#btnAllCoQ:hover{background:#f1f5f9;}
+
+/* ── KARTU & LABEL ── */
+.card{border-radius:18px!important;border:1px solid var(--line)!important;box-shadow:var(--sh-1)!important;transition:box-shadow .3s var(--ease),border-color .3s;}
+.card:focus-within{border-color:#bae6fd!important;box-shadow:0 0 0 4px rgba(8,145,178,.07),var(--sh-2)!important;}
+.lbl{color:#5b6b80!important;font-size:10.5px!important;letter-spacing:.08em!important;font-weight:800!important;}
+main>div>.card,main>div>div>.card,.grid>.card{animation:riseIn .45s var(--ease) both;}
+.grid>.card:nth-child(2),main>div>.card:nth-child(3){animation-delay:.05s;}
+.grid>.card:nth-child(3),main>div>.card:nth-child(4){animation-delay:.1s;}
+@keyframes riseIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.fade-in{animation:tabIn .35s var(--ease)!important;}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ── INPUT ── */
+.fi{border-radius:11px!important;border:1.5px solid #e3e9f0!important;background:#fbfcfe!important;padding:9px 13px;
+  transition:border-color .2s,box-shadow .2s,background .2s!important;}
+.fi:hover:not(:focus):not(:disabled){border-color:#cbd5e1!important;background:#fff!important;}
+.fi:focus{background:#fff!important;border-color:var(--brand-2)!important;box-shadow:0 0 0 4px var(--ring)!important;}
+select.fi{appearance:none;-webkit-appearance:none;padding-right:34px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;background-position:right 12px center!important;}
+input[type=checkbox]{accent-color:var(--brand-2);}
+
+/* ── TOMBOL ── */
+.btn{border-radius:11px!important;font-weight:700!important;position:relative;overflow:hidden;transition:transform .15s var(--ease),box-shadow .2s,background .2s,border-color .2s,color .2s!important;}
+.btn:active{transform:scale(.96);}
+.btn-p{background:linear-gradient(135deg,#0891b2,#0e7490)!important;border-color:transparent!important;box-shadow:0 6px 16px -6px rgba(8,145,178,.6),inset 0 1px 0 rgba(255,255,255,.2)!important;}
+.btn-p:hover{box-shadow:0 10px 22px -8px rgba(8,145,178,.75),inset 0 1px 0 rgba(255,255,255,.2)!important;transform:translateY(-1px);filter:brightness(1.05);}
+.btn-s{background:#fff!important;border-color:#e3e9f0!important;box-shadow:var(--sh-1);}
+.btn-s:hover{border-color:#bae6fd!important;color:var(--brand)!important;background:#f5fcff!important;}
+.btn-d:hover{box-shadow:0 6px 14px -8px rgba(220,38,38,.6);}
+.btn-xs{border-radius:8px!important;}
+.btn-sm{border-radius:9px!important;}
+.rpl{position:absolute;border-radius:50%;transform:scale(0);background:currentColor;opacity:.18;pointer-events:none;animation:rpl .55s ease-out forwards;}
+@keyframes rpl{to{transform:scale(2.6);opacity:0;}}
+
+/* ── PILIH JENIS DOKUMEN (segmented) ── */
+.dtype-btn{border-radius:12px!important;border:1.5px solid var(--line)!important;background:#fff!important;font-weight:700!important;color:var(--mute)!important;
+  padding:9px 18px!important;box-shadow:var(--sh-1);transition:all .22s var(--ease)!important;position:relative;overflow:hidden;}
+.dtype-btn:hover{color:var(--brand)!important;border-color:#bae6fd!important;transform:translateY(-2px);box-shadow:var(--sh-2);}
+.dtype-btn.active{color:#fff!important;border-color:transparent!important;background:linear-gradient(135deg,#0891b2,#0e7490)!important;
+  box-shadow:0 10px 22px -10px rgba(8,145,178,.85)!important;transform:translateY(-1px);}
+
+/* ── BADGE ── */
+.badge{padding:3.5px 11px!important;font-weight:700!important;box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 2px 6px -2px rgba(15,23,42,.18)!important;}
+.b-invoice{background:linear-gradient(135deg,#3b82f6,#2563eb)!important;}
+.b-suratjalan{background:linear-gradient(135deg,#10b981,#059669)!important;}
+.b-penawaran{background:linear-gradient(135deg,#f59e0b,#d97706)!important;}
+.b-proforma{background:linear-gradient(135deg,#8b5cf6,#7c3aed)!important;}
+.b-lunas{background:linear-gradient(135deg,#22c55e,#16a34a)!important;}
+.b-belum_lunas{background:linear-gradient(135deg,#ef4444,#dc2626)!important;}
+.b-sebagian{background:linear-gradient(135deg,#f59e0b,#d97706)!important;}
+
+/* ── TABEL ── */
+.tbl th{background:#f8fafc!important;color:#64748b!important;font-size:10.5px!important;letter-spacing:.08em!important;font-weight:800!important;border-bottom:1px solid var(--line)!important;}
+.tbl td{border-bottom:1px solid #f1f4f8!important;transition:background .18s;}
+.tbl tbody tr{transition:box-shadow .18s;}
+.tbl tbody tr:hover td{background:#f5fbfe!important;}
+.tbl tbody tr:hover{box-shadow:inset 3px 0 0 var(--brand-2);}
+.tbl tr.row-late:hover td{background:#fee2e2!important;}
+.tbl tr.row-soon:hover td{background:#fef9c3!important;}
+.riw-table td.font-mono{white-space:nowrap;font-size:12.5px!important;letter-spacing:-.01em;font-family:ui-monospace,'SF Mono','Cascadia Code',Menlo,monospace!important;}
+#riwTableWrap{border-radius:0 0 18px 18px;}
+#riwQ{padding-left:32px!important;}
+.rinc-tg{transition:transform .2s;}
+
+/* ── MENU ⋮, AUTOCOMPLETE, MODAL, TOAST ── */
+.rowmenu,.sg-box{border-radius:14px!important;border:1px solid var(--line)!important;box-shadow:var(--sh-3)!important;animation:popIn .16s var(--ease);}
+.rowmenu-item{border-radius:9px!important;transition:background .15s,padding .15s;}
+.rowmenu-item:hover{background:#f0f9ff!important;padding-left:14px!important;}
+.modal-bg{background:rgba(9,30,45,.45)!important;backdrop-filter:blur(6px)!important;-webkit-backdrop-filter:blur(6px)!important;animation:fadeBg .2s ease;}
+@keyframes fadeBg{from{opacity:0;}to{opacity:1;}}
+.modal-card{border-radius:22px!important;box-shadow:var(--sh-3)!important;border:1px solid rgba(255,255,255,.6);}
+#toast-inner{border-radius:14px!important;padding:12px 22px!important;backdrop-filter:blur(8px);box-shadow:0 18px 40px -12px rgba(2,6,23,.45)!important;
+  border:1px solid rgba(255,255,255,.08);letter-spacing:.01em;}
+#toast{bottom:28px!important;}
+#editBanner{border-radius:14px!important;}
+
+/* ── BANNER JATUH TEMPO ── */
+.due-banner{border-radius:16px!important;box-shadow:var(--sh-1);}
+.due-chip{border-radius:10px!important;transition:transform .15s var(--ease),box-shadow .2s,background .2s!important;}
+.due-chip:hover{transform:translateY(-1px);}
+.due-chip.c-late{box-shadow:0 6px 14px -6px rgba(220,38,38,.6);}
+#duePop{border-radius:18px!important;}
+
+/* ── SCROLLBAR & TOMBOL KE ATAS ── */
+::-webkit-scrollbar{width:9px!important;height:9px!important;}
+::-webkit-scrollbar-thumb{background:#cdd6e1!important;border-radius:999px!important;border:2px solid transparent;background-clip:padding-box!important;}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8!important;background-clip:padding-box!important;}
+#toTop{position:fixed;right:22px;bottom:24px;width:44px;height:44px;border-radius:14px;border:none;cursor:pointer;z-index:60;color:#fff;font-size:18px;font-weight:800;
+  background:linear-gradient(135deg,#0891b2,#0e7490);box-shadow:0 12px 26px -10px rgba(8,145,178,.8);opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;transition:all .3s var(--ease);}
+#toTop.show{opacity:1;transform:none;pointer-events:auto;}
+#toTop:hover{transform:translateY(-2px);}
+
+/* ── HP / LAYAR KECIL: menu pindah ke bawah ── */
+@media (max-width:760px){
+  header.sticky{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#0b3349!important;}
+  header.sticky>div{gap:8px!important;padding-left:12px!important;padding-right:12px!important;}
+  main [class*="grid-cols-"]{grid-template-columns:minmax(0,1fr)!important;}
+  main [class*="col-span-"]{grid-column:auto!important;}
+  #riwTableWrap{overflow-x:auto!important;}
+  .riw-table>thead>tr>th{position:static!important;}
+  #tab-riwayat .card>div:first-child>div:last-child{flex-wrap:wrap;}
+  #tab-riwayat{padding-left:10px!important;padding-right:10px!important;}
+  .brand-logo small{display:none;}
+  #syncBadge{max-width:130px;}
+  header nav{position:fixed!important;left:10px;right:10px;bottom:10px;z-index:70;justify-content:space-between;border-radius:18px;padding:5px;
+    background:rgba(9,40,61,.92)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 18px 40px -12px rgba(2,6,23,.55);overflow:visible!important;}
+  .nav-btn{flex:1;font-size:11px!important;padding:8px 4px!important;line-height:1.25;white-space:normal!important;text-align:center;}
+  body{padding-bottom:84px;}
+  #toTop{bottom:94px;}
+  #toast{bottom:96px!important;}
+  #quickBar>div{flex-wrap:nowrap!important;overflow-x:auto;}
+  .qco-btn{white-space:nowrap;}
+  main{padding-left:12px!important;padding-right:12px!important;}
+}
+
+/* ── CETAK: kunci ke tampilan lama (tidak terpengaruh tema) ── */
+#printArea{font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji'!important;color:initial;}
+@media print{
+  body{background:#fff!important;padding-bottom:0!important;}
+  #toTop,#duePop{display:none!important;}
+}
+/* ════ NOTIFIKASI JATUH TEMPO v2 ════ */
+.tbl tr.row-today td{background:#fff7ed;}
+.tbl tr.row-today:hover td{background:#ffedd5!important;}
+.grp-today{background:#fff7ed!important;box-shadow:inset 3px 0 0 #f97316;}
+.tempo-today{background:linear-gradient(135deg,#fb923c,#f97316)!important;color:#fff!important;box-shadow:0 4px 10px -4px rgba(249,115,22,.7)!important;animation:todayPulse 2s ease-in-out infinite;}
+@keyframes todayPulse{0%,100%{transform:none;}50%{transform:scale(1.06);}}
+.tempo-soon{background:#fef3c7!important;color:#b45309!important;}
+
+/* lonceng di header */
+#notifBell{position:relative;font-size:15px;}
+#notifBell .bell-ic{display:inline-block;transform-origin:50% 10%;filter:grayscale(.4);}
+#notifBell.has .bell-ic{filter:none;}
+#notifBell.ring .bell-ic{animation:bellRing 2.4s ease-in-out infinite;}
+@keyframes bellRing{0%,55%,100%{transform:rotate(0);}5%{transform:rotate(16deg);}10%{transform:rotate(-14deg);}15%{transform:rotate(10deg);}20%{transform:rotate(-8deg);}25%{transform:rotate(4deg);}30%{transform:rotate(0);}}
+#notifCount{position:absolute;top:-6px;right:-7px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:linear-gradient(135deg,#f43f5e,#dc2626);
+  color:#fff;font-size:10.5px;font-weight:800;line-height:19px;text-align:center;border:2px solid #0b3349;box-shadow:0 4px 10px -2px rgba(220,38,38,.7);}
+#notifBell.ring #notifCount{background:linear-gradient(135deg,#fb923c,#ea580c);}
+
+/* panel notifikasi */
+#notifPanel{position:fixed;top:68px;right:max(16px,calc((100vw - 1280px)/2));width:410px;max-width:calc(100vw - 24px);max-height:min(640px,calc(100vh - 90px));
+  display:flex;flex-direction:column;background:#fff;border-radius:20px;border:1px solid #e6ebf1;box-shadow:0 30px 70px -18px rgba(2,32,51,.45);z-index:9997;overflow:hidden;
+  opacity:0;transform:translateY(-8px) scale(.98);transform-origin:top right;transition:opacity .22s,transform .22s cubic-bezier(.2,.8,.2,1);}
+#notifPanel.show{opacity:1;transform:none;}
+.nt-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 18px 12px;background:linear-gradient(135deg,#0b3349,#0e7490);color:#fff;}
+.nt-h1{font-weight:800;font-size:15px;letter-spacing:-.01em;}
+.nt-h2{font-size:11.5px;color:#a5f3fc;margin-top:2px;}
+.nt-x,.dt-x{background:rgba(255,255,255,.12);border:none;color:#fff;width:28px;height:28px;border-radius:9px;font-size:17px;cursor:pointer;line-height:1;transition:background .2s;}
+.nt-x:hover,.dt-x:hover{background:rgba(255,255,255,.25);}
+.nt-sum{padding:0 18px 14px;background:linear-gradient(135deg,#0b3349,#0e7490);color:#fff;}
+.nt-sum b{font-size:22px;font-weight:800;letter-spacing:-.02em;display:block;}
+.nt-sum span{font-size:11.5px;color:#bae6fd;}
+.nt-tabs{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid #eef2f6;background:#f8fafc;}
+.nt-tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;background:transparent;border-radius:10px;padding:7px 6px;
+  font-size:12.5px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit;transition:all .2s;}
+.nt-tabs button i{font-style:normal;font-size:10.5px;min-width:20px;padding:1px 6px;border-radius:999px;background:#e2e8f0;color:#475569;}
+.nt-tabs button:hover{background:#fff;color:#0f172a;}
+.nt-tabs button.on{background:#fff;border-color:#e2e8f0;color:#0f172a;box-shadow:0 2px 6px -2px rgba(15,23,42,.12);}
+.nt-tabs .k-today.on i,.nt-tabs .k-today i{background:#ffedd5;color:#c2410c;}
+.nt-tabs .k-late i{background:#fee2e2;color:#b91c1c;}
+.nt-tabs .k-soon i{background:#fef3c7;color:#b45309;}
+.nt-list{overflow:auto;padding:8px;flex:1;}
+.nt-item{display:flex;gap:11px;align-items:center;padding:11px 10px;border-radius:14px;transition:background .18s,transform .18s;animation:ntIn .3s cubic-bezier(.2,.8,.2,1) both;position:relative;}
+.nt-item:nth-child(2){animation-delay:.03s}.nt-item:nth-child(3){animation-delay:.06s}.nt-item:nth-child(4){animation-delay:.09s}.nt-item:nth-child(5){animation-delay:.12s}
+@keyframes ntIn{from{opacity:0;transform:translateX(10px);}to{opacity:1;transform:none;}}
+.nt-item:hover{background:#f5fbfe;}
+.nt-item::before{content:'';position:absolute;left:2px;top:14px;bottom:14px;width:3px;border-radius:3px;}
+.nt-item.lv-late::before{background:#ef4444;} .nt-item.lv-today::before{background:#f97316;} .nt-item.lv-soon::before{background:#eab308;}
+.nt-av{width:38px;height:38px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;flex-shrink:0;}
+.nt-main{flex:1;min-width:0;}
+.nt-no{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:700;color:#0f172a;}
+.nt-cust{font-size:12.5px;color:#334155;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nt-meta{display:flex;align-items:center;gap:6px;font-size:10.5px;color:#94a3b8;margin-top:2px;}
+.nt-meta .tempo-badge{margin-top:0;}
+.nt-side{text-align:right;flex-shrink:0;}
+.nt-amt{font-weight:800;font-size:13px;color:#0f172a;}
+.nt-act{display:flex;gap:4px;margin-top:6px;justify-content:flex-end;opacity:.55;transition:opacity .2s;}
+.nt-item:hover .nt-act{opacity:1;}
+.nt-act button{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:7px;border:1px solid #e2e8f0;background:#fff;color:#334155;cursor:pointer;font-family:inherit;}
+.nt-act button:hover{border-color:#7dd3fc;color:#0e7490;}
+.nt-act button.ok{border-color:#bbf7d0;background:#f0fdf4;color:#15803d;}
+.nt-act button.ok:hover{background:#dcfce7;}
+.nt-empty{padding:40px 10px;text-align:center;color:#64748b;font-size:13px;font-weight:600;}
+.nt-empty span{display:block;font-size:34px;margin-bottom:8px;}
+.nt-more{width:100%;padding:10px;border:none;background:#f1f5f9;border-radius:12px;font-weight:700;color:#0e7490;cursor:pointer;font-family:inherit;margin-top:4px;}
+.nt-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid #eef2f6;background:#fafcfe;}
+.nt-foot button{font-size:12px;font-weight:700;border:none;background:none;color:#475569;cursor:pointer;font-family:inherit;padding:6px 8px;border-radius:8px;}
+.nt-foot button:hover{background:#f1f5f9;}
+.nt-foot .go{color:#0e7490;}
+.nt-ok{font-size:11.5px;color:#15803d;font-weight:700;}
+
+/* panel ringkasan di Riwayat */
+.dn-wrap{margin:14px 20px 4px;padding:14px 16px 16px;border-radius:18px;border:1px solid #e6ebf1;background:linear-gradient(180deg,#ffffff,#f8fbfd);box-shadow:0 1px 3px rgba(15,23,42,.05);animation:riseIn .35s cubic-bezier(.2,.8,.2,1);}
+.dn-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.dn-bell{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;background:linear-gradient(135deg,#0891b2,#0e7490);box-shadow:0 8px 18px -8px rgba(8,145,178,.8);}
+.dn-bell.ring{animation:bellRing 2.4s ease-in-out infinite;transform-origin:50% 15%;}
+.dn-title{font-weight:800;font-size:14.5px;color:#0f172a;}
+.dn-date{font-size:11.5px;color:#64748b;}
+.dn-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.dn-tile{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;padding:13px 15px;border-radius:15px;
+  border:1.5px solid transparent;cursor:pointer;font-family:inherit;overflow:hidden;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s,border-color .2s;}
+.dn-tile:hover{transform:translateY(-2px);}
+.dn-tile .dn-ic{grid-row:1/3;width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;background:rgba(255,255,255,.75);}
+.dn-tile .dn-num{font-size:24px;font-weight:800;line-height:1;letter-spacing:-.02em;}
+.dn-tile .dn-lbl{position:absolute;top:13px;right:14px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;opacity:.8;max-width:55%;text-align:right;line-height:1.3;}
+.dn-tile .dn-amt{font-size:12px;font-weight:700;opacity:.85;}
+.dn-tile.t-today{background:linear-gradient(135deg,#fff7ed,#ffedd5);color:#9a3412;}
+.dn-tile.t-today:not(.zero){box-shadow:0 10px 24px -14px rgba(249,115,22,.9);}
+.dn-tile.t-late{background:linear-gradient(135deg,#fef2f2,#fee2e2);color:#991b1b;}
+.dn-tile.t-soon{background:linear-gradient(135deg,#fefce8,#fef3c7);color:#92400e;}
+.dn-tile.on{border-color:currentColor;box-shadow:0 0 0 4px rgba(255,255,255,.9),0 0 0 6px currentColor!important;}
+.dn-tile.zero{filter:saturate(.35);opacity:.75;}
+.dn-tile.t-today:not(.zero)::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-100%);animation:shine 3.2s ease-in-out 2;}
+@keyframes shine{0%,60%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.dn-today{margin-top:12px;}
+.dn-today-h{font-size:10.5px;font-weight:800;color:#c2410c;letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px;}
+.dn-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
+.dn-chip{display:flex;align-items:center;gap:9px;padding:7px 12px 7px 7px;border-radius:13px;border:1px solid #fed7aa;background:#fff;cursor:pointer;font-family:inherit;flex-shrink:0;
+  transition:transform .18s,box-shadow .18s;text-align:left;}
+.dn-chip:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px rgba(249,115,22,.8);}
+.dn-chip .nt-av{width:32px;height:32px;border-radius:10px;font-size:11px;}
+.dn-chip b{display:block;font-size:11.5px;font-family:ui-monospace,Menlo,monospace;color:#0f172a;}
+.dn-chip small{display:block;font-size:11px;color:#64748b;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dn-chip em{font-style:normal;font-weight:800;font-size:12px;color:#c2410c;margin-left:4px;}
+.dn-chip.more{padding:7px 14px;font-weight:700;font-size:12px;color:#c2410c;}
+
+/* kartu saat aplikasi dibuka */
+#dueToast{position:fixed;right:22px;bottom:22px;width:380px;max-width:calc(100vw - 24px);border-radius:22px;background:#fff;z-index:9998;overflow:hidden;
+  box-shadow:0 30px 70px -18px rgba(2,32,51,.5);border:1px solid #e6ebf1;transform:translateY(30px) scale(.96);opacity:0;transition:all .45s cubic-bezier(.2,1.2,.3,1);}
+#dueToast.show{transform:none;opacity:1;}
+.dt-glow{position:absolute;inset:0 0 auto 0;height:120px;background:linear-gradient(135deg,#0b3349,#0e7490 60%,#0891b2);}
+.dt-glow::after{content:'';position:absolute;right:-40px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.45),transparent 70%);}
+.dt-head{position:relative;display:flex;gap:12px;align-items:center;padding:16px 16px 10px;color:#fff;}
+.dt-bell{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:20px;animation:bellRing 2.4s ease-in-out infinite;transform-origin:50% 15%;}
+.dt-h1{font-weight:800;font-size:15px;}
+.dt-h2{font-size:11.5px;color:#a5f3fc;}
+.dt-stats{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:4px 14px 12px;}
+.dt-stats div{background:#fff;border-radius:14px;padding:10px 8px;text-align:center;box-shadow:0 8px 20px -12px rgba(2,32,51,.5);border:1px solid #eef2f6;}
+.dt-stats b{display:block;font-size:22px;font-weight:800;line-height:1.1;}
+.dt-stats span{font-size:10.5px;font-weight:700;color:#64748b;}
+.dt-stats .s-today b{color:#ea580c;} .dt-stats .s-late b{color:#dc2626;} .dt-stats .s-soon b{color:#ca8a04;}
+.dt-list{padding:0 10px;max-height:220px;overflow:auto;}
+.dt-row{display:flex;align-items:center;gap:10px;width:100%;padding:8px 8px;border:none;background:none;border-radius:12px;cursor:pointer;text-align:left;font-family:inherit;transition:background .15s;}
+.dt-row:hover{background:#f5fbfe;}
+.dt-row .nt-av{width:34px;height:34px;border-radius:11px;font-size:11px;}
+.dt-t{flex:1;min-width:0;}
+.dt-t b{display:block;font-size:12.5px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dt-t small{display:block;font-size:11px;color:#64748b;}
+.dt-row .tempo-badge{margin-top:0;}
+.dt-foot{display:flex;gap:8px;padding:12px 14px 16px;}
+.dt-btn{flex:1;border:none;border-radius:12px;padding:10px;font-weight:800;font-size:12.5px;cursor:pointer;font-family:inherit;color:#fff;
+  background:linear-gradient(135deg,#0891b2,#0e7490);box-shadow:0 8px 18px -8px rgba(8,145,178,.8);transition:transform .15s;}
+.dt-btn:hover{transform:translateY(-1px);}
+.dt-btn.ghost{flex:0 0 auto;padding:10px 16px;background:#f1f5f9;color:#475569;box-shadow:none;}
+.dt-bar{height:3px;background:linear-gradient(90deg,#22d3ee,#0e7490);transform-origin:left;animation:dtBar 20s linear forwards;}
+#dueToast.hold .dt-bar{animation-play-state:paused;opacity:.3;}
+@keyframes dtBar{from{transform:scaleX(1);}to{transform:scaleX(0);}}
+@media (max-width:760px){
+  .dn-tiles{grid-template-columns:1fr;}
+  .dn-wrap{margin:12px 10px 4px;}
+  #notifPanel{top:66px;right:8px;left:8px;width:auto;max-height:calc(100vh - 170px);}
+  #dueToast{right:10px;left:10px;width:auto;bottom:96px;}
+}
+@media print{#notifPanel,#dueToast{display:none!important;}}
+
+/* ── KUNING: segera jatuh tempo (H-1 s/d H-3) dibuat jelas ── */
+.tbl tr.row-soon td{background:#fef9c3!important;}
+.tbl tr.row-soon:hover td{background:#fef08a!important;}
+.tbl tr.row-soon td:first-child{box-shadow:inset 4px 0 0 #eab308;}
+.grp-soon{background:#fef9c3!important;box-shadow:inset 4px 0 0 #eab308!important;}
+.tempo-soon{background:linear-gradient(135deg,#fde047,#facc15)!important;color:#713f12!important;box-shadow:0 4px 10px -4px rgba(202,138,4,.7)!important;}
+.dn-today-h span{font-weight:600;text-transform:none;letter-spacing:0;color:#9a3412;opacity:.75;}
+
+/* lonceng cukup bergoyang 3x lalu diam (tidak mengganggu) */
+#notifBell.ring .bell-ic,.dn-bell.ring,.dt-bell{animation-iteration-count:3!important;}
+.tempo-today{animation-iteration-count:4!important;}
+
+/* ── DRAFT OTOMATIS ── */
+.draft-st{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:#64748b;opacity:0;transform:translateY(3px);transition:all .3s;margin-right:6px;white-space:nowrap;}
+.draft-st.on{opacity:1;transform:none;}
+.draft-st i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2);}
+#draftBar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;margin-bottom:14px;border-radius:16px;
+  background:linear-gradient(135deg,#ecfeff,#f0f9ff);border:1px solid #a5f3fc;box-shadow:0 8px 22px -14px rgba(8,145,178,.7);animation:riseIn .35s cubic-bezier(.2,.8,.2,1);}
+#draftBar .db-ic{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#22d3ee,#0e7490);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+#draftBar b{display:block;font-size:13.5px;color:#0c4a6e;}
+#draftBar span{font-size:12px;color:#0e7490;}
+#draftBar button{border:none;border-radius:10px;padding:7px 14px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;}
+#draftBar .db-ok{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;}
+#draftBar .db-x{background:#fff;color:#b91c1c;border:1px solid #fecaca;}
+@media print{#draftBar,.draft-st{display:none!important;}}
+
+/* ── DIALOG KONFIRMASI CUSTOM ── */
+.uic-bg{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:rgba(9,30,45,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fadeBg .18s ease;}
+.uic-bg.out{opacity:0;transition:opacity .18s;}
+.uic-card{width:100%;max-width:400px;background:#fff;border-radius:22px;padding:26px 24px 20px;text-align:center;
+  box-shadow:0 30px 70px -18px rgba(2,32,51,.5);animation:uicPop .26s cubic-bezier(.2,1.3,.3,1);}
+@keyframes uicPop{from{opacity:0;transform:scale(.9) translateY(8px);}to{opacity:1;transform:none;}}
+.uic-bg.out .uic-card{transform:scale(.96);transition:transform .18s;}
+.uic-ic{width:58px;height:58px;margin:0 auto 14px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:27px;
+  background:linear-gradient(135deg,#ecfeff,#cffafe);box-shadow:0 10px 24px -12px rgba(8,145,178,.7);}
+.uic-card.danger .uic-ic{background:linear-gradient(135deg,#fef2f2,#fee2e2);box-shadow:0 10px 24px -12px rgba(220,38,38,.7);}
+.uic-title{font-weight:800;font-size:17px;color:#0f172a;letter-spacing:-.01em;}
+.uic-msg{margin-top:8px;font-size:13.5px;color:#475569;line-height:1.55;white-space:pre-line;}
+.uic-btns{display:flex;gap:10px;margin-top:22px;}
+.uic-btns button{flex:1;padding:11px 14px;border-radius:12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;border:1.5px solid transparent;transition:all .15s;}
+.uic-btns button:active{transform:scale(.97);}
+.uic-no{background:#f1f5f9;color:#334155;}
+.uic-no:hover{background:#e2e8f0;}
+.uic-yes{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;box-shadow:0 8px 18px -8px rgba(8,145,178,.8);}
+.uic-yes:hover{filter:brightness(1.07);}
+.uic-card.danger .uic-yes{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 8px 18px -8px rgba(220,38,38,.8);}
+.uic-btns button:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(8,145,178,.25);}
+@media print{.uic-bg{display:none!important;}}
+
+/* ── BAR SETELAH SIMPAN + TOMBOL JENIS YANG DIANTREKAN ── */
+#afterSaveBar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;margin-bottom:14px;border-radius:16px;
+  background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1px solid #bbf7d0;box-shadow:0 8px 22px -14px rgba(22,163,74,.7);animation:riseIn .35s cubic-bezier(.2,.8,.2,1);}
+#afterSaveBar .as-ic{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+#afterSaveBar b{display:block;font-size:13.5px;color:#14532d;}
+#afterSaveBar span{font-size:12px;color:#15803d;}
+#afterSaveBar button{border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;}
+#afterSaveBar .as-go{padding:9px 16px;font-size:13px;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 8px 18px -8px rgba(5,150,105,.8);}
+#afterSaveBar .as-go:hover{filter:brightness(1.06);}
+#afterSaveBar .as-x{background:none;color:#64748b;font-size:18px;padding:2px 6px;}
+.dtype-btn.queued{border-color:#10b981!important;color:#059669!important;animation:qPulse 1s ease-in-out infinite;}
+@keyframes qPulse{50%{box-shadow:0 0 0 4px rgba(16,185,129,.25);}}
+@media print{#afterSaveBar{display:none!important;}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800">
 
 <!-- ====== HEADER ====== -->
 <header class="sticky top-0 z-50 shadow-lg" style="background:linear-gradient(135deg,#0e7490,#0c4a6e);">
   <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 h-14">
-    <div class="font-bold text-white text-base flex-shrink-0 tracking-tight">📊 Admin Penjualan</div>
-    <div class="text-cyan-300 text-xs hidden sm:block truncate flex-1" id="headerCompany"></div>
+    <div class="brand-logo flex-shrink-0"><span class="bl-ic">📊</span><span>Admin Penjualan<small id="headerCompany"></small></span></div>
+    <div class="flex-1"></div>
     <span id="syncBadge" class="text-xs" style="color:#94a3b8;">• Lokal</span>
-    <button onclick="fbSync()" title="Sync Supabase" class="text-white/40 hover:text-white/80 ml-1 text-sm transition">⟳</button>
-    <button onclick="runSbDiagnostics()" title="Diagnosa sync Supabase" class="text-white/40 hover:text-white/80 ml-1 text-sm transition">🩺</button>
+    <button id="syncBtn" onclick="this.classList.add('spin');Promise.resolve(fbSync()).finally(()=>setTimeout(()=>this.classList.remove('spin'),400))" title="Sync Supabase" class="hdr-ic text-sm">⟳</button>
+    <button onclick="runSbDiagnostics()" title="Diagnosa sync Supabase" class="hdr-ic text-sm">🩺</button>
+    <button id="notifBell" onclick="toggleNotif(event)" title="Notifikasi tagihan" class="hdr-ic"><span class="bell-ic">🔔</span><span id="notifCount" style="display:none"></span></button>
     <nav class="flex gap-1 overflow-x-auto">
       <button class="nav-btn active" data-tab="form" onclick="gotoTab('form')">📝 Buat Dokumen</button>
       <button class="nav-btn" data-tab="customer" onclick="gotoTab('customer')">👥 Customer</button>
@@ -197,6 +638,7 @@ input[type=number]{-moz-appearance:textfield;}
     <button class="dtype-btn"        data-dt="penawaran"  onclick="setDocType('penawaran')">💰 Penawaran Harga</button>
     <button class="dtype-btn"        data-dt="proforma"   onclick="setDocType('proforma')">📄 Proforma Invoice</button>
     <div class="flex-1"></div>
+    <span id="draftStatus" class="draft-st" title="Isi form disimpan otomatis di perangkat ini sampai dokumen disimpan"></span>
     <button class="btn btn-s btn-sm" onclick="resetForm()">↺ Form Baru</button>
   </div>
 
@@ -666,7 +1108,7 @@ input[type=number]{-moz-appearance:textfield;}
         <option value="">Semua Jatuh Tempo</option>
         <option value="late">🔴 Terlambat</option>
         <option value="today">🟠 Jatuh Tempo Hari Ini</option>
-        <option value="soon">🟡 Segera (≤7 hari)</option>
+        <option value="soon">🟡 Mendekati (H-1 s/d H-3)</option>
         <option value="ok">🟢 Belum Jatuh Tempo</option>
       </select>
       <!-- Dari - sampai tanggal -->
@@ -693,6 +1135,8 @@ input[type=number]{-moz-appearance:textfield;}
       <button onclick="bulkDeleteSelected()" class="btn btn-xs" style="background:#dc2626;color:#fff;border:none;font-weight:700;">🗑️ Hapus Terpilih</button>
       <button onclick="clearRiwSelection()" class="btn btn-xs" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);">Batal Pilih</button>
     </div>
+    <!-- Banner ringkasan jatuh tempo (diisi renderDueBanner) -->
+    <div id="riwDueBanner"></div>
     <div id="riwTableWrap" style="overflow-x:clip;"></div>
   </div>
 </div>
@@ -876,6 +1320,35 @@ input[type=number]{-moz-appearance:textfield;}
 <div id="printArea"></div>
 
 <script>
+
+// ═══ DIALOG KONFIRMASI (pengganti "This page says" bawaan browser) ═══
+// uiConfirm({title,icon,ok,cancel,danger}, pesan) -> Promise<true/false>
+function uiConfirm(opt,msg){
+  if(typeof opt==='string'){ msg=opt; opt={}; }
+  opt=opt||{};
+  return new Promise(res=>{
+    const prev=document.activeElement;
+    const w=document.createElement('div'); w.className='uic-bg';
+    const esc_=t=>String(t??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    w.innerHTML=`<div class="uic-card ${opt.danger?'danger':''}" role="dialog" aria-modal="true">
+      <div class="uic-ic">${opt.icon||(opt.danger?'⚠️':'❓')}</div>
+      <div class="uic-title">${esc_(opt.title||'Konfirmasi')}</div>
+      <div class="uic-msg">${esc_(msg||'')}</div>
+      <div class="uic-btns"><button class="uic-no">${esc_(opt.cancel||'Batal')}</button><button class="uic-yes">${esc_(opt.ok||'Ya, lanjutkan')}</button></div>
+    </div>`;
+    let done=false;
+    const close=v=>{ if(done) return; done=true; document.removeEventListener('keydown',key,true);
+      w.classList.add('out'); setTimeout(()=>w.remove(),180); try{ prev&&prev.focus&&prev.focus(); }catch(e){} res(v); };
+    const key=e=>{ if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); close(false); }
+                   else if(e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); close(true); } };
+    w.addEventListener('mousedown',e=>{ if(e.target===w) close(false); });
+    w.querySelector('.uic-no').onclick=()=>close(false);
+    w.querySelector('.uic-yes').onclick=()=>close(true);
+    document.addEventListener('keydown',key,true);
+    document.body.appendChild(w);
+    setTimeout(()=>w.querySelector(opt.danger?'.uic-no':'.uic-yes').focus(),30);
+  });
+}
 // ╔════════════════════════════════════════════════════════════╗
 // ║  KONFIGURASI CETAK — Ubah nilai di sini sesuai kebutuhan  ║
 // ╚════════════════════════════════════════════════════════════╝
@@ -939,6 +1412,15 @@ async function safeFetch(input, init){
   if(init && init.headers && typeof Headers!=='undefined' && init.headers instanceof Headers){
     const o={}; init.headers.forEach((v,k)=>{ o[k]=v; }); init={...init, headers:o};
   }
+  if(!(init&&init.signal) && typeof AbortController!=='undefined'){
+    const ac=new AbortController(); const tt=setTimeout(()=>ac.abort(),30000);
+    init={...(init||{}), signal:ac.signal};
+    try{ return await fetch(input, init); }
+    catch(e){
+      if(e && (e.name==='DataCloneError' || /could not be cloned/i.test(e.message||''))){ const cf=getCleanFetch(); if(cf) return cf(input, init); }
+      throw e;
+    }finally{ clearTimeout(tt); }
+  }
   try{ return await fetch(input, init); }
   catch(e){
     if(e && (e.name==='DataCloneError' || /could not be cloned/i.test(e.message||''))){
@@ -997,7 +1479,9 @@ function scheduleUiRefresh(){
 // hanya dokumen yang berubah/baru yang diunduh penuh; customer (kecil) ditarik penuh.
 // Begitu Realtime tersambung lagi, polling berhenti otomatis.
 var _rtStatus={}; var _pollBusy=false; // var: aman dipakai setSyncBadge() sebelum baris ini dijalankan
-function rtHealthy(){ return ['customers','documents','products','prices','price_dates'].every(t=>_rtStatus[t]==='SUBSCRIBED'); }
+// Cukup dokumen & customer yang wajib realtime. Katalog (produk/harga) jarang berubah dan
+// ikut tersinkron saat sync penuh -- dulu kalau 1 tabel katalog gagal, SEMUA dianggap mati.
+function rtHealthy(){ return ['customers','documents'].every(t=>_rtStatus[t]==='SUBSCRIBED'); }
 async function pollLight(){
   if(_pollBusy||!$sb) return;
   _pollBusy=true;
@@ -1014,7 +1498,7 @@ async function pollLight(){
     const serverIds=new Set(), need=[];
     meta.forEach(r=>{
       const id=String(r.id); serverIds.add(id);
-      if(pendD.has(id)) return;
+      if(pendD.has(id) || tombHas('documents',id)) return;
       const l=localById.get(id);
       if(!l){ need.push(id); return; }
       if((r.u||null)!==(l.updatedAt||null) || (r.s||null)!==(l.savedAt||null)) need.push(id);
@@ -1031,14 +1515,14 @@ async function pollLight(){
     }
     if(meta.length){
       const n0=ST.documents.length;
-      ST.documents=ST.documents.filter(d=>{ const id=String(d.id); return serverIds.has(id)||pendD.has(id)||!seenD.has(id); });
+      ST.documents=ST.documents.filter(d=>{ const id=String(d.id); if(tombHas('documents',id)) return false; return serverIds.has(id)||pendD.has(id)||!seenD.has(id); });
       if(ST.documents.length!==n0) changed=true;
     }
     // customer: kecil, tarik penuh
     const fC=await sbGetAll('customers');
     const pendC=obPendingIds('customers'), seenC=seenLoad('customers'), srvC=new Set(fC.map(x=>String(x._fid)));
     fC.forEach(fc=>{
-      if(pendC.has(String(fc._fid))) return;
+      if(pendC.has(String(fc._fid)) || tombHas('customers',fc._fid)) return;
       const i=ST.customers.findIndex(x=>String(x.id)===String(fc._fid));
       if(i<0){ ST.customers.push(fc); changed=true; }
       else if(JSON.stringify({...ST.customers[i],...fc})!==JSON.stringify(ST.customers[i])){ Object.assign(ST.customers[i],fc); changed=true; }
@@ -1053,12 +1537,52 @@ async function pollLight(){
   }catch(e){ console.warn('Sync cadangan gagal:',e&&e.message||e); setSyncBadge('error'); }
   finally{ _pollBusy=false; }
 }
-setInterval(()=>{ if($sb && !rtHealthy() && document.visibilityState==='visible') pollLight(); },20000);
+// Cek CEPAT tiap 5 detik: cuma dokumen yang berubah 15 menit terakhir (id + cap waktu, sangat
+// ringan), lalu unduh penuh hanya yang berbeda. Cek LENGKAP (termasuk hapus & customer) tiap 60 dtk.
+let _quickBusy=false;
+async function pollQuick(){
+  if(_quickBusy||_pollBusy||!$sb) return;
+  _quickBusy=true;
+  try{
+    const since=new Date(Date.now()-15*60000).toISOString();
+    const {data,error}=await $sb.from('documents').select('id,u:payload->>updatedAt,s:payload->>savedAt')
+      .or(`payload->>updatedAt.gt."${since}",payload->>savedAt.gt."${since}"`).limit(500);
+    if(error) throw error;
+    const pendD=obPendingIds('documents'), localById=new Map(ST.documents.map(d=>[String(d.id),d])), need=[];
+    (data||[]).forEach(r=>{ const id=String(r.id); if(pendD.has(id)||tombHas('documents',id)) return;
+      const l=localById.get(id); if(!l || (r.u||null)!==(l.updatedAt||null) || (r.s||null)!==(l.savedAt||null)) need.push(id); });
+    if(need.length){
+      const {data:rows,error:e2}=await $sb.from('documents').select('id,payload').in('id',need.slice(0,100));
+      if(e2) throw e2;
+      (rows||[]).forEach(row=>{ const d={...(row.payload||{}),_fid:row.id};
+        const j=ST.documents.findIndex(x=>String(x.id)===String(row.id));
+        if(j>=0) Object.assign(ST.documents[j],d); else ST.documents.push(d); seenAdd('documents',row.id); });
+      scheduleUiRefresh();
+    }
+    setSyncBadge('poll');
+  }catch(e){ console.warn('Cek cepat gagal:',e&&e.message||e); }
+  finally{ _quickBusy=false; }
+}
+let _lastFullPoll=0;
+setInterval(()=>{
+  if(!$sb || rtHealthy() || document.visibilityState!=='visible') return;
+  if(Date.now()-_lastFullPoll>60000){ _lastFullPoll=Date.now(); pollLight(); } else pollQuick();
+},5000);
+// 3) Sambung ulang Realtime otomatis (tiap 2 menit selama masih mati) -- tanpa notifikasi berulang
+let _rtRetryAt=Date.now(); window._rtQuiet=false;
+setInterval(()=>{
+  if(!$sb || rtHealthy() || document.visibilityState!=='visible') return;
+  if(Date.now()-_rtRetryAt<120000) return;
+  _rtRetryAt=Date.now(); window._rtQuiet=true;
+  try{ startSbListeners(); }catch(e){}
+  setTimeout(()=>{ window._rtQuiet=false; },20000);
+},15000);
+window.addEventListener('online',()=>{ _rtRetryAt=0; });
 
 function startSbListeners(){
   if (!$sb) return;
   stopSbListeners();
-  setSyncBadge('syncing');
+  if(!window._rtQuiet) setSyncBadge('syncing');
 
   const attach = (table, mergeOne, removeOne, optional) => {
     const ch = $sb.channel('rt-' + table)
@@ -1074,6 +1598,7 @@ function startSbListeners(){
         } else {
           const fid = String(payload.new.id);
           if (pend.has(fid)) return;
+          if (tombHas(table, fid)) return;   // dokumen yg sudah dihapus diupload ulang laptop lain -> abaikan
           seenAdd(table, fid);
           const data = { ...(payload.new.payload || {}), _fid: fid };
           mergeOne(data);
@@ -1086,8 +1611,8 @@ function startSbListeners(){
         _rtStatus[table]=status;
         if (status === 'SUBSCRIBED') { setSyncBadge('ok'); }
         else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          setSyncBadge('error');
-          if (!_sbErrShown) {
+          setSyncBadge(window._rtQuiet?'poll':'error');
+          if (!_sbErrShown && !window._rtQuiet) {
             _sbErrShown = true;
             toast('⚠ Real-time sync mati (' + table + '): ' + status, 'err');
             setTimeout(()=>{ _sbErrShown=false; }, 15000);
@@ -1120,7 +1645,7 @@ function startSbListeners(){
   // Preferensi tampilan (TTD, U.P., kelompok per bulan, urutan, desimal, dll) -- OPSIONAL:
   // kalau tabel app_settings belum dibuat, bagian lain tetap jalan normal.
   attach('app_settings',
-    d => { if (d._fid==='prefs') applyPrefs(d); },
+    d => { if (d._fid==='prefs') applyPrefs(d); else if (String(d._fid).startsWith('tomb_')) tombMerge(String(d._fid).slice(5), d.ids, !!d._replace); },
     () => {},
     true
   );
@@ -1164,11 +1689,11 @@ function applyPrefs(p){
     }
     if(p.v===PREFS_V && (p.sortMode==='date'||p.sortMode==='saved') && (_riwSort.col==='saved'||_riwSort.col==='date')) _riwSort={col:p.sortMode,dir:-1};
     if(typeof p.priceDecimal==='boolean'){
-      ST._priceFmtOn=p.priceDecimal; localStorage.setItem('sap_pricedecimal',p.priceDecimal?'1':'0');
+      ST._priceFmtOn=p.priceDecimal; lsSet('sap_pricedecimal',p.priceDecimal?'1':'0');
       const b=g('btnPriceFmt'); if(b) b.textContent=',000 Desimal: '+(p.priceDecimal?'ON':'OFF');
     }
-    if(typeof p.copyDisc==='boolean') localStorage.setItem('sap_copydisc',p.copyDisc?'1':'0');
-    if(p.sheetsLoc==='id'||p.sheetsLoc==='en') localStorage.setItem('sap_sheetsloc',p.sheetsLoc);
+    if(typeof p.copyDisc==='boolean') lsSet('sap_copydisc',p.copyDisc?'1':'0');
+    if(p.sheetsLoc==='id'||p.sheetsLoc==='en') lsSet('sap_sheetsloc',p.sheetsLoc);
     try{ localStorage.setItem('sap_s',JSON.stringify(ST.settings)); }catch(e){}
   } finally { _applyingPrefs=false; }
   // gambar ulang hanya tab yang sedang dilihat
@@ -1204,21 +1729,54 @@ function setSyncBadge(st) {
     error:  {t:'⚠ Gagal sync', c:'#ef4444'},
     off:    {t:'• Lokal',      c:'#94a3b8'},
     pending:{t:'⟳ '+obLoad().length+' menunggu kirim', c:'#f59e0b'},
-    poll:   {t:'⟳ Sync tiap 20 dtk (realtime mati)', c:'#f59e0b'}
+    poll:   {t:'⟳ Sync tiap 5 dtk (realtime mati)', c:'#f59e0b'}
   }[st] || {};
   if (st==='ok' && obLoad().length) { el.textContent='⟳ '+obLoad().length+' menunggu kirim'; el.style.color='#f59e0b'; return; }
   el.textContent = m.t || ''; el.style.color = m.c || '';
 }
 
 // Push produk & harga ke Supabase, di-debounce agar tidak spam.
-let _sbPushT;
+// DULU: setiap simpan dokumen mengirim ulang SEMUA produk (±700) & SEMUA harga khusus
+// (±2.000) satu per satu -> simpan lambat, laptop lain banjir notifikasi realtime, dan
+// harga lama dari laptop ini bisa menimpa harga baru dari laptop lain.
+// SEKARANG: hanya produk yang ada di dokumen itu yang dikirim, sekaligus 1 permintaan.
+// (Harga khusus sudah dikirim per item oleh recordCustPrice.)
+let _sbPushT; const _dirtyProducts=new Set();
+function markProductDirty(name){ if(name) _dirtyProducts.add(String(name).toLowerCase()); }
 function scheduleFbSync(){
   clearTimeout(_sbPushT);
   _sbPushT = setTimeout(()=>{
-    if (!$sb) return;
-    ST.products.forEach(p => { if (p.name) fbSet('products', pKey(p.name), sbClean(p)); });
-    Object.entries(ST.prices).forEach(([k,v]) => { if (v != null) fbSet('prices', pKey(k), {k,v}); });
+    if (!$sb || !_dirtyProducts.size) return;
+    const rows=ST.products.filter(p=>p.name && _dirtyProducts.has(p.name.toLowerCase())).map(p=>({id:pKey(p.name),payload:sbClean(p)}));
+    _dirtyProducts.clear();
+    fbSetMany('products',rows);
   }, 500);
+}
+// Kirim banyak baris sekaligus (1 permintaan per 200 baris). Gagal -> masuk antrean kirim.
+async function fbSetMany(table,rows){
+  if(!rows||!rows.length) return;
+  if(!$sb){ rows.forEach(r=>obPush({t:'set',table,id:String(r.id),payload:r.payload})); return; }
+  for(let i=0;i<rows.length;i+=200){
+    const chunk=rows.slice(i,i+200).map(r=>({id:String(r.id),payload:r.payload}));
+    let error=null;
+    try{ ({error}=await $sb.from(table).upsert(chunk,{onConflict:'id'})); }catch(e){ error=e; }
+    if(error){ console.warn('SB setMany '+table+':',error.message||error); chunk.forEach(r=>obPush({t:'set',table,id:r.id,payload:r.payload})); setSyncBadge('error'); }
+    else chunk.forEach(r=>{ obRemove(table,r.id); });
+  }
+}
+// Produk/harga yang cuma ada di laptop ini (belum pernah terkirim) -> kirim SEKALI,
+// tanpa menimpa yang sudah ada di server. Dipanggil setelah sync penuh.
+function pushMissingCatalog(fP,fPr,fPd){
+  try{
+    if(!$sb) return;
+    const sp=new Set((fP||[]).map(x=>String(x._fid))), spr=new Set((fPr||[]).map(x=>String(x._fid))), spd=new Set((fPd||[]).map(x=>String(x._fid)));
+    const mp=(ST.products||[]).filter(p=>p&&p.name&&!sp.has(pKey(p.name))).map(p=>({id:pKey(p.name),payload:sbClean(p)}));
+    const mpr=Object.entries(ST.prices||{}).filter(([k,v])=>v!=null&&!spr.has(pKey(k))).map(([k,v])=>({id:pKey(k),payload:{k,v}}));
+    const mpd=Object.entries(ST.priceDates||{}).filter(([k,v])=>v!=null&&!spd.has(pKey(k))).map(([k,v])=>({id:pKey(k),payload:{k,v}}));
+    if(fP&&fP.length) fbSetMany('products',mp);
+    if(fPr&&fPr.length) fbSetMany('prices',mpr);
+    if(fPd&&fPd.length) fbSetMany('price_dates',mpd);
+  }catch(e){ console.warn('pushMissingCatalog',e); }
 }
 
 // ── OUTBOX: antrean kirim ke Supabase yang AMAN dari gagal/offline ────────────
@@ -1237,6 +1795,7 @@ async function flushOutbox(){
   _obBusy=true;
   try{
     for(const op of obLoad()){
+      if(op.t==='set' && tombHas(op.table,op.id)){ obSave(obLoad().filter(x=>!(x.table===op.table&&x.id===op.id&&x.t==='set'))); continue; }
       let error=null;
       try{
         if(op.t==='set') ({error}=await $sb.from(op.table).upsert({id:op.id,payload:op.payload}));
@@ -1258,7 +1817,10 @@ window.addEventListener('online',()=>{ flushOutbox().then(()=>fbSync({silent:tru
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState!=='visible') return;
   flushOutbox();
-  if(Date.now()-_lastSyncAt>60000) fbSync({silent:true});
+  // Dulu: tiap balik ke tab (>1 menit) unduh ulang SELURUH database (±3,5 MB).
+  // Sekarang: cek ringan (cuma id + waktu ubah), sync penuh paling sering tiap 15 menit.
+  if(Date.now()-_lastSyncAt>15*60000) fbSync({silent:true});
+  else if(Date.now()-(window._lastLightAt||0)>60000){ window._lastLightAt=Date.now(); pollLight(); }
 });
 function refreshSyncBadge(){ const n=obLoad().length; if(n>0) setSyncBadge('pending'); }
 
@@ -1268,6 +1830,71 @@ function seenLoad(t){ try{ return new Set(JSON.parse(localStorage.getItem('sap_s
 function seenSave(t,set){ try{ localStorage.setItem('sap_seen_'+t,JSON.stringify([...set])); }catch(e){} }
 function seenAdd(t,id){ const x=seenLoad(t); if(!x.has(String(id))){ x.add(String(id)); seenSave(t,x);} }
 function seenDel(t,id){ const x=seenLoad(t); if(x.delete(String(id))) seenSave(t,x); }
+
+// ── DAFTAR HITAM DOKUMEN/CUSTOMER YANG SUDAH DIHAPUS (tombstone) ─────────────
+// BUG LAMA: dokumen yang dihapus bisa "hidup lagi". Hapus -> tanda "pernah ada di
+// server" ikut dihapus -> kalau cache lokal (localStorage, sudah hampir penuh) atau
+// laptop lain masih menyimpan salinan lama, saat sync dokumen itu dianggap "belum
+// pernah terkirim" lalu DIUPLOAD ULANG. Sekarang setiap id yang dihapus dicatat di
+// sini (lokal + dibagikan ke laptop lain lewat app_settings baris 'tomb_<tabel>'),
+// dan id itu TIDAK PERNAH diupload/ditampilkan lagi. Struktur DB tidak berubah.
+const TOMB_TABLES=['documents','customers'], TOMB_DAYS=180;
+var _tombs={};
+function tombGet(t){
+  if(!_tombs[t]){ try{ _tombs[t]=JSON.parse(localStorage.getItem('sap_tomb_'+t)||'{}')||{}; }catch(e){ _tombs[t]={}; } }
+  return _tombs[t];
+}
+function tombSaveLocal(t){
+  const m=tombGet(t), lim=Date.now()-TOMB_DAYS*86400000;
+  Object.keys(m).forEach(k=>{ if(m[k]<lim) delete m[k]; });
+  try{ localStorage.setItem('sap_tomb_'+t,JSON.stringify(m)); }catch(e){}
+}
+function tombHas(t,id){ return TOMB_TABLES.includes(t) && Object.prototype.hasOwnProperty.call(tombGet(t),String(id)); }
+function tombPurgeState(t){
+  if(t==='documents') ST.documents=ST.documents.filter(d=>!tombHas('documents',d.id));
+  if(t==='customers') ST.customers=ST.customers.filter(c=>!tombHas('customers',c.id));
+  // buang juga antrean kirim (outbox) utk id yg sudah dihapus
+  try{ const a=obLoad(); const n=a.filter(x=>!(x.t==='set' && tombHas(x.table,x.id))); if(n.length!==a.length) obSave(n); }catch(e){}
+}
+let _tombPushT={};
+function tombAdd(t,ids){
+  const m=tombGet(t), now=Date.now();
+  ids.forEach(id=>{ m[String(id)]=now; });
+  tombSaveLocal(t); tombPurgeState(t);
+  clearTimeout(_tombPushT[t]);
+  _tombPushT[t]=setTimeout(()=>{ if(!window._prefsTableMissing) fbSet('app_settings','tomb_'+t,{ids:tombGet(t),_at:Date.now()}); },800);
+}
+// Keluarkan id dari daftar hitam (dipakai saat restore backup). Daftar bersama di
+// app_settings ditulis ulang tanpa id tsb; laptop lain menyesuaikan saat sync berikutnya.
+function tombForget(t,ids){
+  const m=tombGet(t); let ch=false;
+  (ids||[]).forEach(id=>{ if(id!=null && (String(id) in m)){ delete m[String(id)]; ch=true; } });
+  if(!ch) return;
+  try{ localStorage.setItem('sap_tomb_'+t,JSON.stringify(m)); }catch(e){}
+  if(!window._prefsTableMissing) fbSet('app_settings','tomb_'+t,{ids:m,_at:Date.now(),_replace:true});
+}
+// gabungkan daftar hitam dari laptop lain (baris app_settings 'tomb_<tabel>')
+function tombMerge(t,remote,replace){
+  if(!remote||typeof remote!=='object') return false;
+  const m=tombGet(t); let ch=false;
+  if(replace){ Object.keys(m).forEach(k=>{ if(!(k in remote)){ delete m[k]; ch=true; } }); }
+  Object.keys(remote).forEach(k=>{ if(!(k in m)){ m[k]=remote[k]; ch=true; } });
+  if(ch){ tombSaveLocal(t); tombPurgeState(t); }
+  return ch;
+}
+async function tombPull(){
+  if(!$sb) return;
+  try{
+    const rows=await sbGetAll('app_settings');
+    TOMB_TABLES.forEach(t=>{ const r=rows.find(x=>x._fid==='tomb_'+t); if(r) tombMerge(t,r.ids,!!r._replace); });
+  }catch(e){}
+}
+// Hapus ulang di server dokumen yg ada di daftar hitam tapi masih muncul (mis. diupload
+// ulang laptop lain versi lama) -- diam-diam, tanpa toast.
+async function tombReDelete(t,ids){
+  if(!$sb||!ids.length) return;
+  for(let i=0;i<ids.length;i+=100){ try{ await $sb.from(t).delete().in('id',ids.slice(i,i+100)); }catch(e){} }
+}
 
 async function fbSet(table, id, data) {
   const sid=String(id), payload=sbClean(data);
@@ -1310,23 +1937,37 @@ async function fbSetLive(table, id, data, label) {
 
 async function fbDel(table, id) {
   const sid=String(id);
+  if (TOMB_TABLES.includes(table)) tombAdd(table,[sid]);   // catat dulu -> tidak akan diupload ulang
   seenDel(table,sid);
   if (!$sb) { obPush({t:'del',table,id:sid}); return; }
   let error=null;
   try{ ({error} = await $sb.from(table).delete().eq('id', sid)); }catch(e){ error=e; }
   if (error) { console.warn('SB del (' + table + '):', error.message); obPush({t:'del',table,id:sid}); setSyncBadge('error'); }
-  else obRemove(table,sid);
+  else { obRemove(table,sid); fbVerifyDeleted(table,[sid]); }
+}
+// Supabase TIDAK memberi error kalau hapus ditolak izin (RLS) -- hasilnya cuma 0 baris
+// terhapus. Cek ulang: kalau barisnya masih ada, beri tahu user dengan jelas.
+async function fbVerifyDeleted(table,ids){
+  try{
+    const {data,error}=await $sb.from(table).select('id').in('id',ids.slice(0,100));
+    if(!error && data && data.length){
+      data.forEach(r=>obPush({t:'del',table,id:String(r.id)}));
+      toast('⚠ Server Supabase menolak hapus ('+data.length+' baris masih ada). Cek izin DELETE (RLS) tabel '+table+'. Di laptop ini sudah disembunyikan.','err');
+    }
+  }catch(e){}
 }
 // Hapus banyak sekaligus (hapus massal) -- 1 request per 100 id, bukan 1 per dokumen.
 async function fbDelMany(table, ids) {
-  ids=ids.map(String); ids.forEach(i=>seenDel(table,i));
+  ids=ids.map(String);
+  if (TOMB_TABLES.includes(table)) tombAdd(table,ids);
+  ids.forEach(i=>seenDel(table,i));
   if(!$sb){ ids.forEach(i=>obPush({t:'del',table,id:i})); return; }
   for(let i=0;i<ids.length;i+=100){
     const chunk=ids.slice(i,i+100);
     let error=null;
     try{ ({error}=await $sb.from(table).delete().in('id',chunk)); }catch(e){ error=e; }
     if(error){ console.warn('SB delMany:',error.message); chunk.forEach(c=>obPush({t:'del',table,id:c})); setSyncBadge('error'); }
-    else chunk.forEach(c=>obRemove(table,c));
+    else { chunk.forEach(c=>obRemove(table,c)); fbVerifyDeleted(table,chunk); }
   }
 }
 
@@ -1480,6 +2121,7 @@ async function runSbDiagnostics(){
 
 async function fbSync(opts) {
   const silent = !!(opts && opts.silent);
+  try{ await window._cacheReady; }catch(e){}
   _lastSyncAt = Date.now();
   if (!$sb) {
     setSyncBadge('off');
@@ -1497,14 +2139,19 @@ async function fbSync(opts) {
       sbGetAll('price_dates')
     ]);
 
+    await tombPull();   // daftar dokumen/customer yg sudah dihapus (dari semua laptop)
     const pendC = obPendingIds('customers'), pendD = obPendingIds('documents');
+    tombReDelete('documents', fD.filter(fd=>tombHas('documents',fd._fid)).map(fd=>String(fd._fid)));
+    tombReDelete('customers', fC.filter(fc=>tombHas('customers',fc._fid)).map(fc=>String(fc._fid)));
     fC.forEach(fc => {
+      if (tombHas('customers',fc._fid)) return;
       if (pendC.has(String(fc._fid))) return; // edit lokal belum terkirim -> jangan ditimpa data lama server
       const i = ST.customers.findIndex(x => x.id === fc.id);
       if (i >= 0) Object.assign(ST.customers[i], fc);
       else ST.customers.push(fc);
     });
     fD.forEach(fd => {
+      if (tombHas('documents',fd._fid)) return;
       if (pendD.has(String(fd._fid))) return;
       const i = ST.documents.findIndex(x => x.id === fd.id);
       if (i >= 0) Object.assign(ST.documents[i], fd);
@@ -1521,6 +2168,7 @@ async function fbSync(opts) {
       const keep = [];
       arr.forEach(it => {
         const id = String(it.id);
+        if (tombHas(tbl,id)) return;            // sudah dihapus -> jangan pernah diupload ulang
         if (serverIds.has(id)) keep.push(it);
         else if (pend.has(id)) keep.push(it);
         else if (seen.has(id)) { /* dihapus di tempat lain */ }
@@ -1547,6 +2195,7 @@ async function fbSync(opts) {
     fPr.forEach(fp => { if (fp.k) ST.prices[fp.k] = fp.v; });
     ST.priceDates = ST.priceDates || {};
     fPd.forEach(fp => { if (fp.k) ST.priceDates[fp.k] = fp.v; });
+    setTimeout(()=>pushMissingCatalog(fP,fPr,fPd),3000);   // kirim yg belum ada di server saja
 
     save();
     migrateProductHistory();
@@ -1679,14 +2328,66 @@ const ST = {
 // karena dokumen sudah ribuan), kunci lain (pengaturan, counter nomor) tetap tersimpan, dan
 // proses simpan ke Supabase TIDAK ikut terhenti -- data utama tetap aman di server.
 let _saveWarned=false;
+// ── CACHE LOKAL DI INDEXEDDB ─────────────────────────────────────────────────
+// Dokumen/customer/produk/harga disimpan di IndexedDB (kapasitas jauh lebih besar,
+// ditulis di latar belakang -> tidak bikin layar tersendat). localStorage cuma
+// untuk data kecil (pengaturan, antrean kirim, dll) supaya tidak pernah penuh lagi.
+window._idbCacheOn=false;
+const _cdb=()=>new Promise((res,rej)=>{ try{ const r=indexedDB.open('sap_cache_db',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }catch(e){ rej(e); } });
+async function cacheIdbGet(){ try{ const db=await _cdb(); return await new Promise(res=>{ const q=db.transaction('kv','readonly').objectStore('kv').get('state');
+  q.onsuccess=()=>res(q.result||null); q.onerror=()=>res(null); }); }catch(e){ return null; } }
+let _cacheT=null, _cacheBusy=false, _cacheAgain=false;
+function scheduleCacheWrite(){ clearTimeout(_cacheT); _cacheT=setTimeout(cacheWriteNow,600); }
+async function cacheWriteNow(){
+  if(_cacheBusy){ _cacheAgain=true; return; }
+  _cacheBusy=true;
+  try{
+    const db=await _cdb();
+    const state={at:Date.now(),customers:ST.customers,documents:ST.documents,products:ST.products,prices:ST.prices,priceDates:ST.priceDates};
+    await new Promise((res,rej)=>{ const tx=db.transaction('kv','readwrite'); tx.objectStore('kv').put(state,'state'); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); });
+    if(!window._idbCacheOn){
+      window._idbCacheOn=true;
+      try{ localStorage.setItem('sap_cache_idb','1'); }catch(e){}
+      // bebaskan localStorage dari cache besar -> antrean kirim & pengaturan selalu bisa tersimpan
+      _BIG_KEYS.forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
+    }
+  }catch(e){ console.warn('Cache IndexedDB gagal:',e&&e.message); }
+  finally{ _cacheBusy=false; if(_cacheAgain){ _cacheAgain=false; scheduleCacheWrite(); } }
+}
 function save(){
+  try{ dueBucketsInvalidate(); }catch(e){}
+  scheduleCacheWrite();
+  if(window._idbCacheOn){ try{ ls('sap_s',ST.settings); }catch(e){} return; }
   [['sap_c',ST.customers],['sap_d',ST.documents],['sap_s',ST.settings],
    ['sap_products',ST.products],['sap_prices',ST.prices],['sap_priceDates',ST.priceDates]].forEach(([k,v])=>{
     try{ ls(k,v); }catch(e){
       console.warn('localStorage gagal utk',k,e&&e.message);
-      if(!_saveWarned){ _saveWarned=true; toast('⚠ Cache lokal penuh ('+k+') — data tetap aman di Supabase','err'); }
+      // cache besar akan disimpan di IndexedDB (scheduleCacheWrite) -- tidak perlu peringatan
     }
   });
+}
+// Promise yg selesai setelah cache IndexedDB dimuat -- fbSync & draft menunggu ini dulu
+window._cacheReady=Promise.resolve();
+function loadIdbCache(){
+  const ref={d:ST.documents,c:ST.customers,p:ST.products};
+  window._cacheReady=(async()=>{
+    const c=await cacheIdbGet();
+    if(c && Array.isArray(c.documents)){
+      window._idbCacheOn=true;
+      // pakai cache IndexedDB hanya kalau data di memori belum diubah sejak load()
+      if(ST.documents===ref.d) ST.documents=c.documents;
+      if(ST.customers===ref.c && Array.isArray(c.customers)) ST.customers=c.customers;
+      if(ST.products===ref.p && Array.isArray(c.products)) ST.products=c.products;
+      if(c.prices && typeof c.prices==='object') ST.prices=c.prices;
+      if(c.priceDates && typeof c.priceDates==='object') ST.priceDates=Object.assign({},c.priceDates);
+      _BIG_KEYS.forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
+      try{ rebuildCustDrop(); if(!g('tab-riwayat')?.hidden) renderHistory(); if(!g('tab-customer')?.hidden) renderCustTable(); }catch(e){}
+    }else{
+      scheduleCacheWrite();   // pertama kali: pindahkan cache dari localStorage ke IndexedDB
+    }
+  })().catch(e=>console.warn('load cache IndexedDB:',e));
+  return window._cacheReady;
 }
 function load(){
   try{
@@ -1702,6 +2403,14 @@ function load(){
 }
 function ls(k,v){localStorage.setItem(k,JSON.stringify(v));}
 function lsg(k){const v=localStorage.getItem(k);return v?JSON.parse(v):null;}
+// Tulis localStorage TANPA pernah melempar error. Dulu kalau cache penuh, error di sini
+// menggagalkan saveDocument() di tengah jalan -> dokumen TIDAK terkirim ke Supabase.
+// Cache besar (dokumen, customer, produk, harga) sekarang disimpan di IndexedDB.
+const _BIG_KEYS=new Set(['sap_c','sap_d','sap_products','sap_prices','sap_priceDates']);
+function lsSet(k,v){
+  if(_BIG_KEYS.has(k) && window._idbCacheOn){ scheduleCacheWrite(); return; }
+  try{ localStorage.setItem(k,v); }catch(e){ if(_BIG_KEYS.has(k)) scheduleCacheWrite(); }
+}
 
 // Simpan harga khusus customer::produk BESERTA tanggal transaksinya (utk notifikasi "Harga Khusus").
 function recordCustPrice(custName,name,harga,dateStr){
@@ -1709,8 +2418,8 @@ function recordCustPrice(custName,name,harga,dateStr){
   const key=custName+'::'+name;
   ST.prices[key]=harga;
   ST.priceDates[key]=dateStr||today();
-  localStorage.setItem('sap_prices',JSON.stringify(ST.prices));
-  localStorage.setItem('sap_priceDates',JSON.stringify(ST.priceDates));
+  lsSet('sap_prices',JSON.stringify(ST.prices));
+  lsSet('sap_priceDates',JSON.stringify(ST.priceDates));
   fbSet('prices',pKey(key),{k:key,v:harga});
   fbSet('price_dates',pKey(key),{k:key,v:ST.priceDates[key]});
 }
@@ -1804,7 +2513,7 @@ document.addEventListener('paste',e=>{
     const hasDec=Math.abs(num-Math.round(num))>1e-9;
     let rerender=false;
     if(hasDec && !ST._priceFmtOn){
-      ST._priceFmtOn=true; localStorage.setItem('sap_pricedecimal','1'); rerender=true;
+      ST._priceFmtOn=true; lsSet('sap_pricedecimal','1'); rerender=true;
       const b=g('btnPriceFmt'); if(b) b.textContent=',000 Desimal: ON';
       toast('Angka desimal terdeteksi — mode ,000 Desimal diaktifkan');
     }
@@ -1925,11 +2634,11 @@ async function updateSeqHint(){
 }
 async function syncSeqCounter(){
   const type=ST.docType, docMax=maxSeqFor(type), k=_seqKeys(type);
-  if(!confirm(`Samakan penghitung nomor ${type} ke nomor terakhir di Riwayat (${String(docMax).padStart(4,'0')})?\nNomor berikutnya jadi ${String(docMax+1).padStart(4,'0')}.`)) return;
+  if(!(await uiConfirm({title:'Samakan penghitung nomor?',icon:'🔢',ok:'Ya, samakan'},`Samakan penghitung nomor ${type} ke nomor terakhir di Riwayat (${String(docMax).padStart(4,'0')})?\nNomor berikutnya jadi ${String(docMax+1).padStart(4,'0')}.`))) return;
   if(!ST.settings.seqCounters) ST.settings.seqCounters={};
   ST.settings.seqCounters[k.local]=docMax;
   ST.settings.seqCounters[k.server]=docMax;
-  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  lsSet('sap_s', JSON.stringify(ST.settings));
   if($sb){
     const {error}=await $sb.from('counters').upsert({id:k.server,seq:docMax,company:ST.activeCompany||null,type,updated_at:new Date().toISOString()});
     if(error){ toast('⚠ Counter server gagal diubah: '+error.message,'err'); }
@@ -1944,7 +2653,7 @@ function incDocCounter(type) {
   const key = `${ST.activeCompany||'xx'}_${baseType}`;
   // Sync ke nomor tertinggi di riwayat, lalu increment
   ST.settings.seqCounters[key] = Math.max(maxSeqFor(type), ST.settings.seqCounters[key]||0) + 1;
-  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  lsSet('sap_s', JSON.stringify(ST.settings));
 }
 
 // ── PENOMORAN ATOMIK PER-PROFIL (anti-tabrakan / anti-loncat) ──────
@@ -1970,6 +2679,10 @@ function incDocCounter(type) {
 // belum sempat masuk ke cache lokal via realtime sync). Dipakai supaya
 // pengguna mendapat PERINGATAN/ERROR yang jelas saat mengetik nomor manual
 // yang sudah dipakai, bukan nomor baru dibuat diam-diam.
+// Batasi waktu tunggu supaya tombol Simpan tidak "muter" lama kalau koneksi lambat.
+function withTimeout(promise, ms, fallback, label){
+  let t; return Promise.race([promise, new Promise(res=>{ t=setTimeout(()=>{ console.warn('timeout '+(label||'')); res(fallback); },ms); })]).finally(()=>clearTimeout(t));
+}
 async function docNoExists(no, type, excludeId) {
   no = (no||'').trim();
   if (!no) return false;
@@ -2006,7 +2719,7 @@ async function reserveNextSeq(type) {
     // Offline → fallback lokal
     const next = Math.max(localMax, ST.settings.seqCounters[key]||0) + 1;
     ST.settings.seqCounters[key] = next;
-    localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+    lsSet('sap_s', JSON.stringify(ST.settings));
     return next;
   }
 
@@ -2022,13 +2735,13 @@ async function reserveNextSeq(type) {
     // Fallback lokal
     const next = Math.max(localMax, ST.settings.seqCounters[key]||0) + 1;
     ST.settings.seqCounters[key] = next;
-    localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+    lsSet('sap_s', JSON.stringify(ST.settings));
     return next;
   }
 
   const next = data;
   ST.settings.seqCounters[key] = next;
-  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  lsSet('sap_s', JSON.stringify(ST.settings));
   return next;
 }
 // Validasi langsung (on-blur) saat user selesai mengetik No. Dokumen secara manual,
@@ -2096,7 +2809,7 @@ function onHargaBlur(itemId) {
   let prod = ST.products.find(p => p.name.toLowerCase() === it.nama.toLowerCase());
   if (!prod) { ST.products.push({name:it.nama, lastPrice:it.harga, satuan:it.sat||''}); }
   else { prod.lastPrice = it.harga; if(it.sat) prod.satuan = it.sat; }
-  localStorage.setItem('sap_products', JSON.stringify(ST.products));
+  lsSet('sap_products', JSON.stringify(ST.products));
   // Sync ke Firebase
   const p2=ST.products.find(p=>p.name===it.nama);if(p2)fbSet('products',pKey(p2.name),fbClean(p2));
   // Update harga khusus customer (beserta tanggalnya) + notifikasi
@@ -2112,14 +2825,14 @@ function toggleShowSig(val) {
   ST.settings.showSig = val !== undefined ? val : true;
   const qc = g('qSigToggle'); if(qc) qc.checked = ST.settings.showSig;
   const sc = g('sShowSig');   if(sc) sc.checked = ST.settings.showSig;
-  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  lsSet('sap_s', JSON.stringify(ST.settings));
   pushPrefs();
 }
 
 function toggleShowMaterai(val) {
   ST.settings.showMaterai = val === true;
   const sc = g('sShowMaterai'); if(sc) sc.checked = ST.settings.showMaterai;
-  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  lsSet('sap_s', JSON.stringify(ST.settings));
   save();
   /* settings tersimpan di localStorage — tidak perlu sync ke cloud */
   toast(ST.settings.showMaterai ? '✓ Materai akan ditampilkan saat cetak' : 'Materai disembunyikan saat cetak');
@@ -2173,6 +2886,15 @@ function onStatusChange(){
 }
 
 function setDocType(t){
+  if(window._docSaving){
+    // Masih menyimpan -> jangan ganti jenis dokumen di tengah proses (bisa salah jenis/nomor).
+    // Antrekan: begitu tersimpan, langsung pindah & terisi otomatis.
+    window._pendingDocType=t;
+    document.querySelectorAll('.dtype-btn').forEach(b=>b.classList.toggle('queued',b.dataset.dt===t));
+    toast('⏳ Menyelesaikan simpan… form '+({suratjalan:'Surat Jalan',invoice:'Invoice',penawaran:'Penawaran',proforma:'Proforma'})[t]+' langsung terbuka setelahnya');
+    return;
+  }
+  const _asb=g('afterSaveBar'); if(_asb) _asb.remove();
   ST.docType=t;
   document.querySelectorAll('.dtype-btn').forEach(b=>b.classList.toggle('active',b.dataset.dt===t));
   applyTypeUI();
@@ -2535,9 +3257,9 @@ function migrateProductHistory() {
     });
   });
   if (changed) {
-    localStorage.setItem('sap_products', JSON.stringify(ST.products));
-    localStorage.setItem('sap_prices',   JSON.stringify(ST.prices));
-    localStorage.setItem('sap_priceDates', JSON.stringify(ST.priceDates));
+    lsSet('sap_products', JSON.stringify(ST.products));
+    lsSet('sap_prices',   JSON.stringify(ST.prices));
+    lsSet('sap_priceDates', JSON.stringify(ST.priceDates));
   }
 }
 
@@ -2810,6 +3532,7 @@ function updateHistory(doc) {
     const name = (it.nama||'').trim();
     if (!name) return;
     // Update product list
+    markProductDirty(name);
     let prod = ST.products.find(p => p.name.toLowerCase() === name.toLowerCase());
     if (!prod) {
       ST.products.push({ name, lastPrice: it.harga||0, satuan: it.sat||'', nie: (it.nie||'').trim() });
@@ -2825,8 +3548,8 @@ function updateHistory(doc) {
   });
 
   // 3. Persist ke localStorage
-  localStorage.setItem('sap_products', JSON.stringify(ST.products));
-  localStorage.setItem('sap_prices',   JSON.stringify(ST.prices));
+  lsSet('sap_products', JSON.stringify(ST.products));
+  lsSet('sap_prices',   JSON.stringify(ST.prices));
   save();
   rebuildCustDrop();
   if (_custTouched) fbSet('customers', _custTouched.id, _custTouched); // sync customer instan
@@ -2912,9 +3635,9 @@ function saveCust(){
   toast(`✓ Customer "${name}" ${ST.editCustId?'diperbarui':'ditambahkan'}`);
 }
 
-function delCust(id){
+async function delCust(id){
   const c=ST.customers.find(x=>x.id===id);
-  if(!c||!confirm(`Hapus customer "${c.name}"?`))return;
+  if(!c||!(await uiConfirm({title:'Hapus customer?',icon:'🗑️',ok:'Hapus',danger:true},`Customer "${c.name}" akan dihapus dari database.`)))return;
   ST.customers=ST.customers.filter(x=>x.id!==id);
   save();renderCustTable();rebuildCustDrop();
   fbDel('customers',id);
@@ -3016,7 +3739,7 @@ function toggleNie(){
 // aslinya tetap bilangan bulat, ini murni soal tampilan.
 function togglePriceFmt(){
   ST._priceFmtOn=!ST._priceFmtOn;
-  localStorage.setItem('sap_pricedecimal', ST._priceFmtOn?'1':'0');
+  lsSet('sap_pricedecimal', ST._priceFmtOn?'1':'0');
   const b=g('btnPriceFmt');if(b)b.textContent=',000 Desimal: '+(ST._priceFmtOn?'ON':'OFF');
   renderItems();
   pushPrefs();
@@ -3029,7 +3752,7 @@ function onNieBlur(itemId){
   let prod=ST.products.find(p=>p.name.toLowerCase()===it.nama.toLowerCase());
   if(!prod){prod={name:it.nama,lastPrice:it.harga||0,satuan:it.sat||'',nie:it.nie};ST.products.push(prod);}
   else{prod.nie=it.nie;}
-  localStorage.setItem('sap_products', JSON.stringify(ST.products));
+  lsSet('sap_products', JSON.stringify(ST.products));
   fbSet('products',pKey(prod.name),fbClean(prod));
 }
 function addItem(d){
@@ -3582,6 +4305,9 @@ async function saveDocument(){
   if(!ST.items.some(x=>x.nama)){toast('Minimal 1 item barang/jasa','err');return;}
 
   const btn=document.querySelector('button[onclick="saveDocument()"]');
+  if(window._docSaving) return;          // cegah simpan ganda
+  window._docSaving=true; window._pendingDocType=null;
+  const _savedType=ST.docType;           // jenis dokumen DIKUNCI selama proses simpan
   if(btn) btn.disabled=true; // cegah klik ganda saat menunggu penomoran atomik / validasi
   const btnLbl=g('btnSaveLbl'); const btnLblOrig=btnLbl?btnLbl.textContent:'';
   if(btnLbl) btnLbl.textContent='⏳ Memeriksa nomor...';
@@ -3591,12 +4317,14 @@ async function saveDocument(){
       const doc=collectForm();
       // Validasi: kalau user mengubah No. Dokumen saat edit, pastikan tidak
       // bentrok dengan dokumen LAIN (selain dirinya sendiri).
-      if (await docNoExists(doc.no, doc.type, doc.id)) {
+      const _orig=ST.documents.find(d=>d.id===ST.editId);
+      const _noChanged=!_orig || (_orig.no||'').trim()!==(doc.no||'').trim() || _orig.type!==doc.type;
+      if (_noChanged && await withTimeout(docNoExists(doc.no, doc.type, doc.id), 8000, false, 'cek nomor')) {
         toast(`⚠ No. Dokumen "${doc.no}" sudah digunakan oleh dokumen lain. Silakan gunakan nomor lain.`, 'err');
         return;
       }
       const i=ST.documents.findIndex(d=>d.id===ST.editId);
-      if(i>=0){ST.documents[i]={...doc,savedAt:ST.documents[i].savedAt};}
+      if(i>=0){const _old=ST.documents[i];if(doc.status==='lunas'&&_old.paidAt)doc.paidAt=_old.paidAt; /* tgl bayar dari Tandai Lunas tetap tersimpan */ ST.documents[i]={...doc,savedAt:_old.savedAt};}
       else{ST.documents.push(doc);}
       toast(`✓ Dokumen ${doc.no} berhasil diperbarui`);
       updateHistory(doc);save();
@@ -3616,7 +4344,7 @@ async function saveDocument(){
       const isAutoNo = typedNo === (ST._autoPreviewNo||'').trim();
       if(!isAutoNo){
         if(btnLbl) btnLbl.textContent='⏳ Memeriksa duplikat...';
-        if (await docNoExists(typedNo, ST.docType, null)) {
+        if (await withTimeout(docNoExists(typedNo, ST.docType, null), 8000, false, 'cek nomor')) {
           toast(`❌ No. Dokumen "${typedNo}" SUDAH DIGUNAKAN. Silakan pilih nomor lain atau kosongkan untuk penomoran otomatis.`, 'err');
           return;
         }
@@ -3643,7 +4371,29 @@ async function saveDocument(){
   }finally{
     if(btn) btn.disabled=false;
     if(btnLbl) btnLbl.textContent=btnLblOrig || '💾 Simpan Dokumen';
+    window._docSaving=false;
+    // Jenis dokumen yang diklik SELAMA proses simpan (mis. Surat Jalan) -> jalankan sekarang,
+    // setelah invoice benar2 tersimpan, supaya form SJ langsung terisi data invoice tsb.
+    const _pt=window._pendingDocType; window._pendingDocType=null;
+    document.querySelectorAll('.dtype-btn.queued').forEach(b=>b.classList.remove('queued'));
+    if(_pt && _pt!==ST.docType) setDocType(_pt);
+    else if(_savedType==='invoice' && !ST.editId && ST.lastInvoiceId) showAfterSaveBar();
   }
+}
+// Bar setelah invoice tersimpan: 1 klik buat Surat Jalan (data diambil dari memori, instan)
+function showAfterSaveBar(){
+  const inv=ST.documents.find(d=>d.id===ST.lastInvoiceId && d.type==='invoice'); if(!inv) return;
+  const old=g('afterSaveBar'); if(old) old.remove();
+  const host=g('tab-form'); if(!host) return;
+  const hasSJ=ST.documents.some(d=>d.type==='suratjalan' && (d.invRef||'').trim()===(inv.no||'').trim());
+  const bar=document.createElement('div'); bar.id='afterSaveBar';
+  bar.innerHTML=`<span class="as-ic">✓</span><div style="flex:1;min-width:0;"><b>Invoice ${esc(inv.no)} tersimpan</b><span>${esc(inv.custName||'')}${hasSJ?' · sudah punya Surat Jalan':''}</span></div>
+    <button class="as-go" onclick="g('afterSaveBar')?.remove();setDocType('suratjalan');window.scrollTo({top:0,behavior:'smooth'})">🚚 Buat Surat Jalan</button>
+    <button class="as-x" title="Tutup" onclick="this.closest('#afterSaveBar').remove()">×</button>`;
+  host.prepend(bar);
+  // hilang sendiri begitu mulai mengisi dokumen lain
+  const off=e=>{ if(e.target.closest&&e.target.closest('#afterSaveBar')) return; bar.remove(); document.removeEventListener('input',off,true); };
+  document.addEventListener('input',off,true);
 }
 
 // ── HISTORY ────────────────────────────────────────────────────────
@@ -3783,7 +4533,7 @@ function updateBulkBar(){
 async function bulkDeleteSelected(){
   const ids=[..._riwSelected];
   if(!ids.length) return;
-  if(!confirm(`Hapus ${ids.length} dokumen yang dipilih?\nTidak dapat dibatalkan.`)) return;
+  if(!(await uiConfirm({title:`Hapus ${ids.length} dokumen?`,icon:'🗑️',ok:'Hapus semua',danger:true},`${ids.length} dokumen yang dipilih akan dihapus.\nTidak dapat dibatalkan.`))) return;
   const idSet=new Set(ids);
   ST.documents=ST.documents.filter(d=>!idSet.has(d.id));
   fbDelMany('documents',ids);
@@ -3874,19 +4624,319 @@ function jumpToDoc(no){
   },50);
 }
 
-// Hitung sisa hari jatuh tempo (negatif = terlambat)
+// ── JATUH TEMPO ─────────────────────────────────────────────────────────────
+// Semua di bawah ini HANYA membaca tanggal (extraDate) & status dokumen untuk
+// tampilan. Satu-satunya yang menulis data adalah tombol "Tandai Lunas" -- dan
+// itu cuma mengubah field status (+ paidAt) di dokumen yang sama, persis seperti
+// kalau status diganti lewat form Edit. Tidak ada struktur tabel yang berubah.
+const DUE_SOON_DAYS = 3;   // H-3 -> kuning
+// Hitung sisa hari jatuh tempo (negatif = terlambat). null = tidak perlu dipantau.
 function daysRemaining(extraDate, status) {
-  if (!extraDate || status === 'lunas') return null;
+  if (!extraDate || status === 'lunas' || status === 'batal') return null;
   const today = new Date(); today.setHours(0,0,0,0);
-  const due   = new Date(extraDate); due.setHours(0,0,0,0);
+  const due   = new Date(extraDate+'T00:00:00'); // jam lokal, bukan UTC
+  if (isNaN(due)) return null;
   return Math.round((due - today) / 86400000);
+}
+// 'late' | 'today' (hari H) | 'soon' (H-1 s/d H-3) | 'ok' | null
+function dueLevelOf(d){
+  if(!d || d.type!=='invoice') return null;
+  const dy=daysRemaining(d.extraDate,d.status);
+  if(dy===null) return null;
+  if(dy<0) return 'late';
+  if(dy===0) return 'today';
+  if(dy<=DUE_SOON_DAYS) return 'soon';
+  return 'ok';
 }
 function tempoLabel(days) {
   if (days === null) return '';
-  if (days < 0)  return `<span class="tempo-badge tempo-late">Terlambat ${Math.abs(days)} hari</span>`;
-  if (days === 0) return `<span class="tempo-badge tempo-today">Hari ini</span>`;
-  if (days <= 7)  return `<span class="tempo-badge tempo-soon">Sisa ${days} hari</span>`;
+  if (days < 0)  return `<span class="tempo-badge tempo-late" title="Kalau sebenarnya sudah dibayar, klik ✓ Tandai Lunas">Lewat ${Math.abs(days)} hari</span>`;
+  if (days === 0) return `<span class="tempo-badge tempo-today">⏰ Hari ini</span>`;
+  if (days <= DUE_SOON_DAYS)  return `<span class="tempo-badge tempo-soon" title="Segera jatuh tempo">⚠ ${days} hari lagi</span>`;
   return `<span class="tempo-badge tempo-ok">Sisa ${days} hari</span>`;
+}
+function payQuickBtn(d){
+  const lv=dueLevelOf(d);
+  if(lv!=='late' && lv!=='soon' && lv!=='today') return '';
+  return `<br><button class="pay-quick" onclick="event.stopPropagation();openPayModal(['${d.id}'])" title="Sudah dibayar? Tandai lunas">✓ Tandai Lunas</button>`;
+}
+// Invoice belum lunas milik company aktif, dikelompokkan per level
+var _dueCache={}, _dueCacheT=null;
+function dueBucketsInvalidate(){ _dueCache={}; }
+function dueBuckets(allCompanies){
+  const ck=(allCompanies?'all':(ST.activeCompany||''))+'|'+today()+'|'+(ST.documents||[]).length, now=Date.now();
+  const hit=_dueCache[ck]; if(hit) return hit.v;
+  const v=_dueBucketsCalc(allCompanies); _dueCache[ck]={t:now,v};
+  if(!_dueCacheT) _dueCacheT=setTimeout(()=>{ _dueCache={}; _dueCacheT=null; },0);   // cache cuma berlaku dlm 1 render
+  return v;
+}
+function _dueBucketsCalc(allCompanies){
+  const late=[], today_=[], soon=[];
+  (ST.documents||[]).forEach(d=>{
+    if(!allCompanies && ST.activeCompany && d.company && d.company!==ST.activeCompany) return;
+    const lv=dueLevelOf(d);
+    if(lv==='late') late.push(d); else if(lv==='today') today_.push(d); else if(lv==='soon') soon.push(d);
+  });
+  const byDue=(a,b)=>(a.extraDate||'')<(b.extraDate||'')?-1:(a.extraDate||'')>(b.extraDate||'')?1:(b.total||0)-(a.total||0);
+  late.sort(byDue); soon.sort(byDue); today_.sort((a,b)=>(b.total||0)-(a.total||0));
+  return {late, today:today_, soon};
+}
+function safeLS(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+// "Sudah tampil hari ini?" -- 1x per HARI untuk semua perusahaan. Disimpan di 3 tempat
+// (memori, sessionStorage, localStorage) supaya tetap tercatat walau cache lokal penuh.
+var _onceMem={};
+function onceToday(name){
+  const k='sap_once_'+name, d=today();
+  let seen=_onceMem[k]===d;
+  try{ if(sessionStorage.getItem(k)===d) seen=true; }catch(e){}
+  try{ if(localStorage.getItem(k)===d) seen=true; }catch(e){}
+  if(seen) return false;
+  _onceMem[k]=d;
+  try{ sessionStorage.setItem(k,d); }catch(e){}
+  try{ localStorage.setItem(k,d); }catch(e){}
+  return true;
+}
+const _sumRp=a=>a.reduce((s,d)=>s+(d.total||0),0);
+function _rpShort(n){ n=Math.round(n||0); if(n>=1e9) return 'Rp '+(n/1e9).toLocaleString('id-ID',{maximumFractionDigits:1})+' M'; if(n>=1e6) return 'Rp '+(n/1e6).toLocaleString('id-ID',{maximumFractionDigits:1})+' jt'; return fmtRp(n); }
+function _tglHariIni(){ try{ return new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }catch(e){ return today(); } }
+function _avatar(name){
+  const n=(name||'?').replace(/^(pt\.?|cv\.?|drg\.?|dr\.?|klinik|rs)\s+/i,'').trim()||'?';
+  const ini=n.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  let h=0; for(const c of n) h=(h*31+c.charCodeAt(0))%360;
+  return `<span class="nt-av" style="background:hsl(${h} 70% 92%);color:hsl(${h} 55% 32%);">${esc(ini)}</span>`;
+}
+
+// ── 1) PANEL RINGKASAN DI ATAS TABEL RIWAYAT ─────────────────────────────────
+function renderDueBanner(){
+  const el=g('riwDueBanner'); if(!el) return;
+  const {late,today:td,soon}=dueBuckets();
+  const sig=today()+'|'+(ST.activeCompany||'')+'|'+late.length+'|'+td.length+'|'+soon.length;
+  if((!late.length && !td.length && !soon.length) || safeLS('sap_duebanner_hide')===sig){ el.innerHTML=''; return; }
+  const cur=g('riwTopFilter')?.value||'';
+  const tile=(key,cls,ic,lbl,arr,hint)=>`<button class="dn-tile ${cls}${cur===key?' on':''}${arr.length?'':' zero'}" onclick="setDueFilter('${cur===key?'':key}')" title="${cur===key?'Tampilkan semua':'Tampilkan '+lbl.toLowerCase()}">
+      <span class="dn-ic">${ic}</span>
+      <span class="dn-num" data-count="${arr.length}">${arr.length}</span>
+      <span class="dn-lbl">${lbl}</span>
+      <span class="dn-amt">${arr.length?_rpShort(_sumRp(arr)):hint}</span>
+    </button>`;
+  const chips=td.slice(0,8).map(d=>`<button class="dn-chip" onclick="jumpToDoc('${esc(d.no).replace(/'/g,"\\'")}')" title="Lihat ${esc(d.no)}">${_avatar(d.custName)}<span><b>${esc(d.no)}</b><small>${esc((d.custName||'—').slice(0,28))}</small></span><em>${fmtRp(d.total||0)}</em></button>`).join('');
+  el.innerHTML=`<div class="dn-wrap">
+    <div class="dn-head"><span class="dn-bell${td.length||late.length?' ring':''}">🔔</span><div style="flex:1;min-width:0;"><div class="dn-title">Pengingat Jatuh Tempo</div><div class="dn-date">${_tglHariIni()} · invoice yang masih Belum Lunas</div></div>
+      <button class="due-x" title="Sembunyikan untuk hari ini" onclick="safeLS('sap_duebanner_hide','${sig}');renderDueBanner()">×</button></div>
+    <div class="dn-tiles">
+      ${tile('today','t-today','⏰','Jatuh tempo hari ini',td,'Tidak ada')}
+      ${tile('late','t-late','🔴','Lewat jatuh tempo',late,'Aman')}
+      ${tile('soon','t-soon','⏳',`Mendekati (H-1 s/d H-${DUE_SOON_DAYS})`,soon,'Tidak ada')}
+    </div>
+  </div>`;
+  // angka naik (count-up) HANYA sekali / saat angkanya berubah -- bukan tiap klik filter
+  window._dnLast=window._dnLast||{};
+  el.querySelectorAll('.dn-num').forEach((n,ix)=>{ const to=+n.dataset.count; const k=sig.split('|').slice(0,2).join('|')+'#'+ix;
+    if(window._dnLast[k]===to) return; window._dnLast[k]=to; if(to<2) return; let i=0; const st=Math.max(1,Math.ceil(to/18)); n.textContent='0';
+    const t=setInterval(()=>{ i=Math.min(to,i+st); n.textContent=i; if(i>=to) clearInterval(t); },28); });
+}
+function setDueFilter(v){
+  ['riwType','riwStatus'].forEach(id=>{ const e=g(id); if(e) e.value=''; });
+  const f=g('riwTopFilter'); if(f) f.value=v;
+  if(g('tab-riwayat')?.hidden) gotoTab('riwayat');
+  renderHistory();
+}
+
+// ── 2) LONCENG NOTIFIKASI DI HEADER + PANEL ──────────────────────────────────
+let _ntTab=null;
+function updateNotifBell(){
+  const b=g('notifBell'), c=g('notifCount'); if(!b||!c) return;
+  const {late,today:td,soon}=dueBuckets();
+  const n=late.length+td.length;
+  c.textContent=n>99?'99+':n; c.style.display=n?'':'none';
+  b.classList.toggle('has', n>0); b.classList.toggle('ring', td.length>0);
+  b.title=n?`${td.length} jatuh tempo hari ini · ${late.length} terlambat · ${soon.length} mendekati`:'Tidak ada tagihan jatuh tempo';
+  const base=document.title.replace(/^\(\d+\+?\)\s*/,''), nt=(n?`(${n>99?'99+':n}) `:'')+base; if(document.title!==nt) document.title=nt;
+  if(g('notifPanel')) renderNotifPanel();
+}
+function toggleNotif(ev){
+  if(ev) ev.stopPropagation();
+  const ex=g('notifPanel'); if(ex){ closeNotif(); return; }
+  closeDuePop();
+  const p=document.createElement('div'); p.id='notifPanel'; p.onclick=e=>e.stopPropagation();
+  document.body.appendChild(p); renderNotifPanel();
+  requestAnimationFrame(()=>p.classList.add('show'));
+}
+function closeNotif(){ const p=g('notifPanel'); if(p){ p.classList.remove('show'); setTimeout(()=>p.remove(),220); } }
+document.addEventListener('click',e=>{ if(g('notifPanel') && !e.target.closest('#notifPanel,#notifBell,#payModal')) closeNotif(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeNotif(); closeDuePop(); } });
+function renderNotifPanel(){
+  const p=g('notifPanel'); if(!p) return;
+  const B=dueBuckets();
+  if(!_ntTab) _ntTab=B.today.length?'today':B.late.length?'late':'soon';
+  const tabs=[['today','Hari Ini',B.today],['late','Terlambat',B.late],['soon','Mendekati',B.soon]];
+  const list=B[_ntTab]||[];
+  const item=d=>{ const dy=daysRemaining(d.extraDate,d.status);
+    return `<div class="nt-item lv-${dueLevelOf(d)}">
+      ${_avatar(d.custName)}
+      <div class="nt-main"><div class="nt-no">${esc(d.no)}</div><div class="nt-cust">${esc(d.custName||'—')}</div>
+        <div class="nt-meta">${tempoLabel(dy)}<span>JT ${fmtDate(d.extraDate)}</span></div></div>
+      <div class="nt-side"><div class="nt-amt">${fmtRp(d.total||0)}</div>
+        <div class="nt-act"><button onclick="closeNotif();jumpToDoc('${esc(d.no).replace(/'/g,"\\'")}')" title="Lihat di Riwayat">Lihat</button><button class="ok" onclick="openPayModal(['${d.id}'])" title="Tandai lunas">✓ Lunas</button></div></div>
+    </div>`; };
+  const empty={today:['🎉','Tidak ada yang jatuh tempo hari ini'],late:['✅','Tidak ada invoice terlambat'],soon:['😌',`Tidak ada yang jatuh tempo ${DUE_SOON_DAYS} hari ke depan`]}[_ntTab];
+  const perm=('Notification' in window)?Notification.permission:'unsupported';
+  p.innerHTML=`<div class="nt-head"><div><div class="nt-h1">Notifikasi Tagihan</div><div class="nt-h2">${_tglHariIni()}</div></div><button class="nt-x" onclick="closeNotif()">×</button></div>
+    <div class="nt-sum"><div><b>${fmtRp(_sumRp(B.today)+_sumRp(B.late))}</b><span>perlu ditagih (hari ini + terlambat)</span></div></div>
+    <div class="nt-tabs">${tabs.map(([k,l,a])=>`<button class="${_ntTab===k?'on':''} k-${k}" onclick="_ntTab='${k}';renderNotifPanel()">${l}<i>${a.length}</i></button>`).join('')}</div>
+    <div class="nt-list">${list.length?list.slice(0,60).map(item).join('')+(list.length>60?`<button class="nt-more" onclick="closeNotif();setDueFilter('${_ntTab}')">Lihat ${list.length-60} lainnya di Riwayat →</button>`:''):`<div class="nt-empty"><span>${empty[0]}</span>${empty[1]}</div>`}</div>
+    <div class="nt-foot">
+      ${perm==='default'?`<button onclick="askDesktopNotif()">🔔 Aktifkan notifikasi desktop</button>`:perm==='granted'?`<span class="nt-ok">✓ Notifikasi desktop aktif</span>`:'<span></span>'}
+      <button class="go" onclick="closeNotif();setDueFilter('${_ntTab}')">Buka di Riwayat →</button>
+    </div>`;
+}
+function askDesktopNotif(){
+  if(!('Notification' in window)) return;
+  Notification.requestPermission().then(()=>{ renderNotifPanel(); sendDesktopNotif(true); });
+}
+function sendDesktopNotif(force){
+  try{
+    if(!('Notification' in window) || Notification.permission!=='granted') return;
+    const {late,today:td}=dueBuckets(true); if(!late.length && !td.length) return;
+    if(!force && !onceToday('desknotif')) return;
+    const n=new Notification('🔔 Pengingat Jatuh Tempo',{body:(td.length?`${td.length} invoice jatuh tempo HARI INI (${_rpShort(_sumRp(td))})\n`:'')+(late.length?`${late.length} invoice lewat jatuh tempo (${_rpShort(_sumRp(late))})`:''),tag:'jatuh-tempo'});
+    n.onclick=()=>{ window.focus(); setDueFilter(td.length?'today':'late'); n.close(); };
+  }catch(e){}
+}
+
+// ── 3) KARTU NOTIFIKASI SAAT APLIKASI DIBUKA (1x per HARI, semua perusahaan) ──
+function maybeShowDuePop(){
+  if(!(ST.documents||[]).length) return;
+  const {late,today:td,soon}=dueBuckets(true);
+  if(!late.length && !td.length) return;
+  if(!onceToday('duepop')) return;   // cukup 1x sehari, walau ganti profil perusahaan
+  closeDuePop();
+  const p=document.createElement('div'); p.id='dueToast';
+  const pick=[...td.slice(0,3),...late.slice(0,Math.max(0,4-Math.min(3,td.length)))];
+  const rows=pick.map(d=>{ const dy=daysRemaining(d.extraDate,d.status);
+    return `<button class="dt-row" onclick="closeDuePop();jumpToDoc('${esc(d.no).replace(/'/g,"\\'")}')">${_avatar(d.custName)}<span class="dt-t"><b>${esc((d.custName||'—').slice(0,26))}</b><small>${esc(d.no)} · ${fmtRp(d.total||0)}</small></span>${tempoLabel(dy)}</button>`; }).join('');
+  p.innerHTML=`<div class="dt-glow"></div>
+    <div class="dt-head"><span class="dt-bell">🔔</span><div style="flex:1;"><div class="dt-h1">Pengingat Tagihan Hari Ini</div><div class="dt-h2">${_tglHariIni()}</div></div><button class="dt-x" onclick="closeDuePop()">×</button></div>
+    <div class="dt-stats">
+      <div class="s-today"><b>${td.length}</b><span>Hari ini</span></div>
+      <div class="s-late"><b>${late.length}</b><span>Terlambat</span></div>
+      <div class="s-soon"><b>${soon.length}</b><span>H-1 s/d H-${DUE_SOON_DAYS}</span></div>
+    </div>
+    <div class="dt-list">${rows}</div>
+    <div class="dt-foot"><button class="dt-btn" onclick="closeDuePop();toggleNotif()">Lihat semua notifikasi</button><button class="dt-btn ghost" onclick="closeDuePop()">Nanti</button></div>
+    <div class="dt-bar"></div>`;
+  document.body.appendChild(p);
+  requestAnimationFrame(()=>p.classList.add('show'));
+  p._t=setTimeout(closeDuePop,20000);   // hilang sendiri setelah 20 detik
+  p.addEventListener('mouseenter',()=>{ clearTimeout(p._t); p.classList.add('hold'); });
+  sendDesktopNotif(false);
+}
+function closeDuePop(){ ['dueToast','duePop'].forEach(id=>{ const p=g(id); if(p){ clearTimeout(p._t); p.classList.remove('show'); setTimeout(()=>p.remove(),350); } }); }
+// Cek berkala (tanpa perlu buka tab Riwayat): lonceng, judul tab, kartu harian
+setTimeout(()=>{ try{ updateNotifBell(); maybeShowDuePop(); }catch(e){} },3500);
+setInterval(()=>{ try{ updateNotifBell(); maybeShowDuePop(); }catch(e){} },30000);
+
+// ── MODAL "CEK & TANDAI LUNAS" ─────────────────────────────────────────────
+// ids kosong = tampilkan semua invoice terlambat + mendekati, admin centang mana
+// yang sudah dibayar (cocokkan dgn mutasi bank), lalu simpan sekaligus.
+// ── IMPORT PELUNASAN ───────────────────────────────────────────────────────
+// Terima file .json (format {"items":[{id,no}]}) atau .csv/.txt apa saja yang
+// berisi nomor invoice. Invoice yang ketemu & masih Belum Lunas dibuka di modal
+// Tandai Lunas (sudah tercentang) -> admin cek dulu -> baru disimpan. File TIDAK
+// pernah langsung mengubah data.
+function normDocNo(s){
+  const m=/(\d{2,4})\s*\/\s*(INV|NT|SJ|PI)-([A-Z]+)\s*\/\s*([IVXL]+)\s*\/\s*(\d{4})/i.exec(s||'');
+  return m?`${String(parseInt(m[1],10)).padStart(4,'0')}/${m[2].toUpperCase()}-${m[3].toUpperCase()}/${m[4].toUpperCase()}/${m[5]}`:null;
+}
+function importPelunasan(inp){
+  const f=inp.files&&inp.files[0]; inp.value=''; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const txt=String(rd.result||'');
+    let wantIds=new Set(), wantNos=new Set();
+    try{
+      const j=JSON.parse(txt);
+      (j.items||j||[]).forEach(it=>{ if(it&&it.id) wantIds.add(String(it.id)); const n=normDocNo(it&&it.no||it); if(n) wantNos.add(n); });
+    }catch(e){
+      (txt.match(/\d{2,4}\s*\/\s*(?:INV|NT|SJ|PI)-[A-Z]+\s*\/\s*[IVXL]+\s*\/\s*\d{4}/gi)||[]).forEach(s=>{ const n=normDocNo(s); if(n) wantNos.add(n); });
+    }
+    const hit=new Set(); let already=0; const foundNos=new Set();
+    ST.documents.forEach(d=>{
+      if(d.type!=='invoice') return;
+      const n=normDocNo(d.no);
+      if(!(wantIds.has(String(d.id)) || (n && wantNos.has(n)))) return;
+      if(n) foundNos.add(n);
+      if(d.status==='lunas'){ already++; return; }
+      if(d.status==='batal') return;
+      hit.add(d.id);
+    });
+    const missing=[...wantNos].filter(n=>!foundNos.has(n)).length;
+    if(!hit.size){ toast(`Tidak ada invoice yang perlu ditandai (${already} sudah lunas${missing?`, ${missing} tidak ditemukan`:''})`,'warn'); return; }
+    openPayModal([...hit],{title:`Import Pelunasan · ${f.name}`,
+      note:`<b>${hit.size}</b> invoice Belum Lunas ditemukan di file (sudah tercentang)`+(already?` · ${already} sudah lunas dilewati`:'')+(missing?` · ${missing} nomor tidak ada di aplikasi`:'')+`. Cek dulu, hapus centang yang ragu, lalu simpan.`});
+  };
+  rd.readAsText(f);
+}
+
+function openPayModal(ids,opt){
+  opt=opt||{};
+  const {late,soon}=dueBuckets();
+  let docs, pre;
+  if(ids && ids.length){ const S=new Set(ids); docs=ST.documents.filter(d=>S.has(d.id)).sort((a,b)=>(a.date||'')<(b.date||'')?-1:1); pre=S; }
+  else { docs=[...late,...soon]; pre=new Set(); }
+  if(!docs.length){ toast('Tidak ada invoice yang perlu dicek 👍'); return; }
+  closePayModal();
+  const m=document.createElement('div'); m.id='payModal'; m.className='modal-bg';
+  m.onclick=e=>{ if(e.target===m) closePayModal(); };
+  const rowsHtml=docs.map(d=>{
+    const dy=daysRemaining(d.extraDate,d.status);
+    const on=pre.has(d.id);
+    return `<label class="pay-row${on?' on':''}"><input type="checkbox" class="accent-green-600 pay-cb" value="${d.id}" ${on?'checked':''} onchange="this.closest('.pay-row').classList.toggle('on',this.checked);payModalCount()">
+      <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;" class="font-mono">${esc(d.no)}</div><div style="font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(d.custName||'—')} · JT ${fmtDate(d.extraDate)}</div></div>
+      <div style="text-align:right;"><div style="font-weight:700;font-size:13px;">${fmtRp(d.total||0)}</div>${tempoLabel(dy)}</div></label>`;
+  }).join('');
+  m.innerHTML=`<div class="modal-card" style="max-width:560px;padding:22px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span style="font-size:22px;">✅</span><h3 style="font-weight:800;font-size:16px;flex:1;">${esc(opt.title||'Tandai Invoice Lunas')}</h3><button onclick="closePayModal()" class="due-x">×</button></div>
+    <p style="font-size:12px;color:#64748b;margin-bottom:12px;">${opt.note||'Centang invoice yang <b>sudah dibayar</b> (cek mutasi rekening). Yang tidak dicentang tidak diubah.'}</p>
+    ${docs.length>1?`<label style="font-size:12px;color:#0e7490;font-weight:700;cursor:pointer;display:inline-flex;gap:6px;margin-bottom:8px;"><input type="checkbox" class="accent-cyan-600" ${pre.size===docs.length?'checked':''} onchange="document.querySelectorAll('#payModal .pay-cb').forEach(c=>{c.checked=this.checked;c.closest('.pay-row').classList.toggle('on',this.checked);});payModalCount()"> Pilih semua</label>`:''}
+    <div style="max-height:46vh;overflow:auto;margin-bottom:12px;">${rowsHtml}</div>
+    <div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap;border-top:1px solid #f1f5f9;padding-top:12px;">
+      <div><label class="lbl">Tanggal dibayar</label><input type="date" id="payDate" class="fi" style="width:160px;" value="${today()}"></div>
+      <div style="flex:1;"></div>
+      <button class="btn btn-s btn-sm" onclick="closePayModal()">Batal</button>
+      <button class="btn btn-sm" id="payGo" style="background:#16a34a;color:#fff;border-color:#16a34a;" onclick="confirmPayModal()">Tandai Lunas</button>
+    </div></div>`;
+  document.body.appendChild(m);
+  payModalCount();
+}
+function payModalCount(){
+  const n=document.querySelectorAll('#payModal .pay-cb:checked').length;
+  const b=g('payGo'); if(!b) return;
+  b.textContent=n?`Tandai ${n} Lunas`:'Pilih invoice dulu'; b.disabled=!n; b.style.opacity=n?1:.5;
+}
+function closePayModal(){ const m=g('payModal'); if(m) m.remove(); }
+async function confirmPayModal(){
+  const ids=[...document.querySelectorAll('#payModal .pay-cb:checked')].map(c=>c.value);
+  if(!ids.length) return;
+  const paidAt=g('payDate')?.value||today();
+  const now=new Date().toISOString();
+  const changed=[];
+  ids.forEach(id=>{
+    const doc=ST.documents.find(d=>d.id===id);
+    if(!doc || doc.type!=='invoice' || doc.status==='lunas') return;
+    doc.status='lunas';          // hanya field status...
+    doc.paidAt=paidAt;           // ...+ catatan tgl bayar (field tambahan di payload JSON, kolom DB tidak berubah)
+    doc.updatedAt=now;
+    changed.push(doc);
+  });
+  closePayModal();
+  if(!changed.length) return;
+  dueBucketsInvalidate();
+  save();
+  if(changed.length===1) await fbSetLive('documents',changed[0].id,changed[0],changed[0].no);
+  else { for(const d of changed) await fbSet('documents',d.id,d); toast(`✅ ${changed.length} invoice ditandai lunas & dikirim ke Supabase`); }
+  renderHistory();
+  if(typeof renderCustTable==='function' && !g('tab-customer')?.hidden) renderCustTable();
 }
 
 // ── PENCARIAN RIWAYAT: cocokkan juga NAMA BARANG ───────────────────────────
@@ -3979,6 +5029,7 @@ function renderHistory(){
   const q   = (g('riwQ')?.value||'').trim().toLowerCase();
   setRiwStickyTop();
   updateBulkBar();
+  try{ renderDueBanner(); updateNotifBell(); maybeShowDuePop(); }catch(e){ console.warn('due banner',e); }
   // filter/urutan berubah -> kembali ke halaman pertama
   const _sig=[tf,topF,st,df,dt,q,ST.activeCompany,_riwSort.col,_riwSort.dir].join('|');
   if(_sig!==_riwLastSig){ _riwLastSig=_sig; _riwLimit=RIW_PAGE; }
@@ -3998,8 +5049,8 @@ function renderHistory(){
       if(dy===null) return false;
       if(topF==='late')  return dy<0;
       if(topF==='today') return dy===0;
-      if(topF==='soon')  return dy>0 && dy<=7;
-      if(topF==='ok')    return dy>7;
+      if(topF==='soon')  return dy>0 && dy<=DUE_SOON_DAYS;
+      if(topF==='ok')    return dy>DUE_SOON_DAYS;
       return true;
     })
     .sort((a,b)=>{
@@ -4048,13 +5099,15 @@ function renderHistory(){
       const checked=_riwSelected.has(d.id);
       const tlabel={invoice:'Invoice',proforma:'Proforma',suratjalan:'Surat Jalan',penawaran:'Penawaran'}[d.type]||d.type;
       const totalDisp = d.type==='suratjalan' ? sjQtySummary(d.items) : fmtRp(d.total||0);
-      const rowDiv = `<div data-docno="${esc(d.no)}" style="display:flex;align-items:center;gap:12px;padding:10px 16px 10px 44px;border-top:1px solid #f8fafc;${checked?'background:#ecfeff;':''}">
+      const glv=dueLevelOf(d), gcls=glv==='late'?'grp-late':glv==='today'?'grp-today':glv==='soon'?'grp-soon':'';
+      const rowDiv = `<div data-docno="${esc(d.no)}" class="${gcls}" style="display:flex;align-items:center;gap:12px;padding:10px 16px 10px 44px;border-top:1px solid #f8fafc;${checked?'background:#ecfeff;':''}">
         <input type="checkbox" ${checked?'checked':''} onchange="toggleRiwSelect('${d.id}',this.checked)" class="accent-cyan-600 flex-shrink-0">
         <span class="font-mono font-bold text-sm text-gray-900" style="width:150px;flex-shrink:0;">${riwChevron(d)}${esc(d.no)}</span>
         <span class="badge b-${d.type} flex-shrink-0">${tlabel}</span>
         <span style="flex:1;min-width:0;color:#0f172a;font-weight:600;"><span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(d.custName||'—')}</span>${riwItemsLine(d)}</span>
         <span style="width:120px;flex-shrink:0;color:#475569;font-size:13px;">${riwDateCell(d)}</span>
         <span style="width:130px;flex-shrink:0;text-align:right;font-weight:700;color:#0f172a;">${totalDisp}</span>
+        <span style="width:150px;flex-shrink:0;text-align:right;">${d.type==='invoice'?tempoLabel(daysRemaining(d.extraDate,d.status)):''}</span>
         <button class="btn btn-s btn-xs flex-shrink-0" onclick="editDoc('${d.id}')">✏️</button>
         <button class="btn btn-d btn-xs flex-shrink-0" onclick="delDoc('${d.id}')">🗑️</button>
       </div>`;
@@ -4135,10 +5188,16 @@ function renderHistory(){
     // Baris induk: latar putih polos. Baris turunan (nested): latar emerald
     // lembut + garis tepi kiri, konsisten di SELURUH baris (bukan cuma kolom
     // nomor), supaya satu grup transaksi kelihatan menyatu dari ujung ke ujung.
-    const rowStyle = level>0
+    // Penanda jatuh tempo: merah = lewat, kuning = H-3 s/d hari H (hanya invoice belum lunas)
+    const dueLv = dueLevelOf(d);
+    const dueCls = dueLv==='late'?'row-late':dueLv==='today'?'row-today':dueLv==='soon'?'row-soon':'';
+    const rowStyle = dueLv==='late' ? 'border-left:3px solid #dc2626;'
+      : dueLv==='today' ? 'border-left:3px solid #f97316;'
+      : dueLv==='soon' ? 'border-left:3px solid #eab308;'
+      : level>0
       ? 'background:#f0fdf6;border-left:3px solid #6ee7b7;'
       : 'border-left:3px solid transparent;';
-    return `<tr data-docno="${esc(d.no)}" data-id="${d.id}" data-level="${level}" style="${rowStyle}">
+    return `<tr data-docno="${esc(d.no)}" data-id="${d.id}" data-level="${level}" class="${dueCls}" style="${rowStyle}">
     <td class="font-mono font-bold text-sm text-gray-900" style="padding-left:${noCellPad}px;">${sikuIcon}${riwChevron(d)}${esc(d.no)}${linkIcon}</td>
     <td class="whitespace-nowrap"><span class="badge b-${d.type}">${TL[d.type]||d.type}</span></td>
     <td><span class="font-semibold text-gray-900">${esc(d.custName||'—')}</span><br><span class="text-xs text-slate-500">${esc(d.custPic||'')}</span>${riwItemsLine(d)}</td>
@@ -4149,7 +5208,7 @@ function renderHistory(){
       const SHIP_LABEL={belum_dikirim:'Belum Dikirim',diproses:'Diproses',terkirim:'Terkirim'};
       return `<span class="badge b-${ss}">${SHIP_LABEL[ss]||'Terkirim'}</span>`;
     })():'—'}</td>
-    <td class="whitespace-nowrap">${d.type==='invoice'&&d.extraDate?(()=>{const dy=daysRemaining(d.extraDate,d.status);return`${fmtDate(d.extraDate)}<br>${tempoLabel(dy)}`;})():'—'}</td>
+    <td class="whitespace-nowrap">${d.type==='invoice'&&d.extraDate?(()=>{const dy=daysRemaining(d.extraDate,d.status);return`${fmtDate(d.extraDate)}<br>${tempoLabel(dy)}${payQuickBtn(d)}`;})():'—'}</td>
     <td class="text-right whitespace-nowrap" style="position:relative;">
       <button class="btn btn-s btn-xs mr-1" onclick="event.stopPropagation();editDoc('${d.id}')" title="Edit">✏️</button>
       <button class="btn btn-s btn-xs mr-1" onclick="event.stopPropagation();printDoc('${d.id}')" title="Cetak langsung">🖨️</button>
@@ -4224,7 +5283,7 @@ function renderHistory(){
 // ("15000.5") nilainya salah. Pilih format sesuai Sheets-mu lewat menu ⋮ (default: Indonesia).
 function sheetsLocale(){ return localStorage.getItem('sap_sheetsloc')||'id'; }
 function toggleSheetsLocale(){
-  localStorage.setItem('sap_sheetsloc', sheetsLocale()==='id'?'en':'id');
+  lsSet('sap_sheetsloc', sheetsLocale()==='id'?'en':'id');
   toast('Format angka Sheets: '+(sheetsLocale()==='id'?'Indonesia (koma desimal)':'Inggris (titik desimal)'));
   renderHistory();
   pushPrefs();
@@ -4244,7 +5303,7 @@ function fmtSheetNum(n){
 const SHEETS_DISC_OPTIONS=[5,10,15,20,25];
 function copyDiscOn(){ return localStorage.getItem('sap_copydisc')!=='0'; }
 function toggleCopyDisc(){
-  localStorage.setItem('sap_copydisc', copyDiscOn()?'0':'1');
+  lsSet('sap_copydisc', copyDiscOn()?'0':'1');
   toast('Kolom diskon di "Salin Barang": '+(copyDiscOn()?'IKUT disalin':'TIDAK ikut'));
   renderHistory();
   pushPrefs();
@@ -4346,10 +5405,10 @@ function copyDocToSheets(docId) {
 }
 
 // Konversi Proforma Invoice → Invoice resmi
-function convertToInvoice(id) {
+async function convertToInvoice(id) {
   const doc = ST.documents.find(d => d.id === id);
   if (!doc || doc.type !== 'proforma') return;
-  if (!confirm(`Jadikan "${doc.no}" sebagai Invoice resmi?\n\nProforma akan berubah menjadi Invoice dan tidak bisa dikembalikan.`)) return;
+  if (!(await uiConfirm({title:'Jadikan Invoice resmi?',icon:'🧾',ok:'Ya, jadikan Invoice'},`"${doc.no}" akan berubah dari Proforma menjadi Invoice resmi.\nTidak bisa dikembalikan.`))) return;
   doc.type = 'invoice'; doc.updatedAt = new Date().toISOString();
   if (doc.no && doc.no.startsWith('PI-')) doc.no = doc.no.slice(3); // hapus prefix PI-
   save();
@@ -4391,9 +5450,9 @@ function duplicateDoc(id){
   toast(`📄 Disalin dari ${doc.no} — cek/ubah datanya lalu simpan sebagai dokumen baru`);
 }
 
-function delDoc(id){
+async function delDoc(id){
   const doc=ST.documents.find(d=>d.id===id);
-  if(!doc||!confirm(`Hapus dokumen "${doc.no}"?\nTidak dapat dibatalkan.`))return;
+  if(!doc||!(await uiConfirm({title:'Hapus dokumen?',icon:'🗑️',ok:'Hapus',danger:true},`Dokumen "${doc.no}"${doc.custName?' ('+doc.custName+')':''} akan dihapus.\nTidak dapat dibatalkan.`)))return;
   ST.documents=ST.documents.filter(d=>d.id!==id);
   save();renderHistory();toast(`Dokumen ${doc.no} dihapus`);
     fbDel('documents',id);
@@ -4816,7 +5875,7 @@ function updateLogoSize(px) {
   ST.settings.logoSize = h;
   if(g('sLogoSize'))    g('sLogoSize').value    = h;
   if(g('sLogoSizeNum')) g('sLogoSizeNum').value = h;
-  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  lsSet('sap_s', JSON.stringify(ST.settings));
 }
 function getLogoSizeFor(co) {
   return (ST.settings.logoSizes||{})[co||'_default'] || ST.settings.logoSize || 85;
@@ -4833,7 +5892,7 @@ function updateSigSize(px) {
   ST.settings.sigSize = h;
   if(g('sSigSize'))    g('sSigSize').value    = h;
   if(g('sSigSizeNum')) g('sSigSizeNum').value = h;
-  localStorage.setItem('sap_s', JSON.stringify(ST.settings));
+  lsSet('sap_s', JSON.stringify(ST.settings));
 }
 function getSigSizeFor(co) {
   return (ST.settings.sigSizes||{})[co||'_default'] || ST.settings.sigSize || 70;
@@ -4904,9 +5963,9 @@ function hasUnsavedFormData(){
 // terisi dari penawaran itu (customer, barang, harga, diskon, ongkir, catatan), tanggal
 // hari ini, nomor invoice berikutnya, dan Ref. Penawaran = no. penawaran tsb (jadi di
 // Riwayat invoice-nya otomatis bersarang di bawah penawarannya). Penawaran aslinya tidak diubah.
-function quickCreateInvoiceFromPenawaran(id){
+async function quickCreateInvoiceFromPenawaran(id){
   const pnw=ST.documents.find(d=>d.id===id && d.type==='penawaran'); if(!pnw) return;
-  if(hasUnsavedFormData() && !confirm('Form yang sedang diisi belum disimpan. Buat Invoice dari penawaran dan buang isian yang sekarang?')) return;
+  if(hasUnsavedFormData() && !(await uiConfirm({title:'Form belum disimpan',icon:'📝',ok:'Buang & lanjutkan',danger:true},'Form yang sedang diisi belum disimpan.\nBuat Invoice dari penawaran dan buang isian yang sekarang?'))) return;
   loadDocToForm(pnw);               // isi form dgn data penawaran (sementara masih mode edit)
   ST.editId=null;                   // lepas dari mode edit -> dokumen baru
   g('fDate').value=today();
@@ -4923,10 +5982,10 @@ function quickCreateInvoiceFromPenawaran(id){
   toast(`🧾 Invoice baru dari Penawaran ${pnw.no} — cek datanya lalu simpan`);
 }
 
-function quickCreateSJFromInvoice(invId){
+async function quickCreateSJFromInvoice(invId){
   const inv=ST.documents.find(d=>d.id===invId && d.type==='invoice');
   if(!inv) return;
-  if(hasUnsavedFormData() && !confirm('Form yang sedang diisi belum disimpan. Buat Surat Jalan baru dan buang isian yang sekarang?')){
+  if(hasUnsavedFormData() && !(await uiConfirm({title:'Form belum disimpan',icon:'📝',ok:'Buang & lanjutkan',danger:true},'Form yang sedang diisi belum disimpan.\nBuat Surat Jalan baru dan buang isian yang sekarang?'))){
     return;
   }
   gotoTab('form');
@@ -5002,7 +6061,7 @@ function saveSettings(){
   // If a company profile is active, also save bank/addr to company-specific key
   if(ST.activeCompany){
     const coSave={bankName:upd.bankName,bankAcc:upd.bankAcc,bankHolder:upd.bankHolder,addr:upd.addr,phone:upd.phone,email:upd.email,npwp:upd.npwp,city:upd.city,compName:upd.compName};
-    localStorage.setItem('sap_co_'+ST.activeCompany, JSON.stringify(coSave));
+    lsSet('sap_co_'+ST.activeCompany, JSON.stringify(coSave));
   }
   save();
   g('headerCompany').textContent=ST.settings.compName||'';
@@ -5044,10 +6103,13 @@ function doExport(){
 function doImport(inp){
   const file=inp.files[0];if(!file)return;
   const r=new FileReader();
-  r.onload=e=>{
+  r.onload=async e=>{
     try{
       const p=JSON.parse(e.target.result),d=p.data||p;
-      if(!confirm('Import akan MENGGANTI data saat ini.\nPastikan sudah backup terlebih dahulu.\n\nLanjutkan?')){inp.value='';return;}
+      if(!(await uiConfirm({title:'Import data?',icon:'📥',ok:'Ya, import',danger:true},'Import akan MENGGANTI data saat ini.\nPastikan sudah backup terlebih dahulu.'))){inp.value='';return;}
+      // Restore backup: dokumen/customer yang dipulihkan harus boleh hidup lagi
+      // -> keluarkan id-nya dari daftar hitam hapus (lokal + dibagikan ke laptop lain)
+      try{ tombForget('documents',(d.documents||[]).map(x=>x&&x.id)); tombForget('customers',(d.customers||[]).map(x=>x&&x.id)); }catch(e){}
       if(Array.isArray(d.customers))ST.customers=d.customers;
       if(Array.isArray(d.documents))ST.documents=d.documents;
       if(d.settings&&typeof d.settings==='object')ST.settings=Object.assign({},ST.settings,d.settings);
@@ -5063,9 +6125,9 @@ function doImport(inp){
   r.readAsText(file);
 }
 
-function clearAll(){
-  if(!confirm('Hapus SEMUA data (customer, dokumen, pengaturan)?\nTidak dapat dibatalkan!'))return;
-  if(!confirm('Konfirmasi terakhir: yakin hapus semua?'))return;
+async function clearAll(){
+  if(!(await uiConfirm({title:'Hapus SEMUA data?',icon:'⚠️',ok:'Hapus semua',danger:true},'Semua customer, dokumen, dan pengaturan akan dihapus.\nTidak dapat dibatalkan!')))return;
+  if(!(await uiConfirm({title:'Konfirmasi terakhir',icon:'⚠️',ok:'Ya, hapus semua',danger:true},'Yakin hapus semua data?')))return;
   ST.customers=[];ST.documents=[];
   ST.settings={compName:'',addr:'',phone:'',email:'',npwp:'',city:'',bankName:'',bankAcc:'',bankHolder:'',logo:null,sig:null,showSig:true,showMaterai:false,materaiNominal:'10000'};
   save();rebuildCustDrop();loadSettingsUI();g('headerCompany').textContent='';
@@ -5079,6 +6141,7 @@ g('custModal').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&d
 // ── INIT ───────────────────────────────────────────────────────────
 (function init(){
   load(); // Load lokal dulu (cepat)
+  loadIdbCache(); // lalu cache besar dari IndexedDB (async)
   migrateProductHistory();
   g('headerCompany').textContent=ST.settings.compName||'';
   rebuildCustDrop();
@@ -5104,5 +6167,144 @@ g('custModal').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&d
   }
 })();
 </script>
+
+<button id="toTop" title="Kembali ke atas" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+// ── INTERAKSI TEMA MODERN (hanya tampilan) ──
+(function(){
+  // 1) Penanda tab aktif yang bergeser halus
+  const nav=document.querySelector('header nav');
+  if(nav){
+    const ind=document.createElement('span'); ind.className='nav-ind'; nav.prepend(ind); nav.classList.add('has-ind');
+    const place=()=>{ const a=nav.querySelector('.nav-btn.active'); if(!a){ind.style.width='0';return;}
+      ind.style.left=a.offsetLeft+'px'; ind.style.width=a.offsetWidth+'px'; };
+    new MutationObserver(place).observe(nav,{subtree:true,attributes:true,attributeFilter:['class']});
+    window.addEventListener('resize',place); setTimeout(place,60); if(document.fonts) document.fonts.ready.then(place);
+  }
+  // 2) Efek riak (ripple) saat tombol diklik
+  document.addEventListener('pointerdown',e=>{
+    const b=e.target.closest('.btn,.dtype-btn,.qco-btn,.due-chip'); if(!b||b.disabled) return;
+    const r=b.getBoundingClientRect(), d=Math.max(r.width,r.height), s=document.createElement('span');
+    s.className='rpl'; s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px;`;
+    if(getComputedStyle(b).position==='static') b.style.position='relative';
+    b.style.overflow='hidden'; b.appendChild(s); setTimeout(()=>s.remove(),600);
+  },{passive:true});
+  // 3) Tombol kembali ke atas
+  const tt=document.getElementById('toTop');
+  window.addEventListener('scroll',()=>{ tt&&tt.classList.toggle('show',window.scrollY>600); },{passive:true});
+  // 4) tinggi header berubah (font baru) -> hitung ulang posisi header tabel Riwayat
+  if(document.fonts) document.fonts.ready.then(()=>{ try{ setRiwStickyTop(); }catch(e){} });
+})();
+</script>
+
+<script>
+// ═══ DRAFT OTOMATIS ═══════════════════════════════════════════════════════
+// Isi form yang BELUM disimpan tetap ada walau halaman di-refresh / ditutup.
+// Disimpan di perangkat ini saja (IndexedDB + sessionStorage + localStorage --
+// IndexedDB tetap jalan walau cache localStorage penuh). TIDAK dikirim ke Supabase,
+// tidak memakai nomor dokumen. Draft dihapus otomatis setelah dokumen disimpan
+// atau setelah klik "↺ Form Baru".
+(function(){
+  const KEY='sap_form_draft';
+  let ready=false, restoring=false, T=null, lastAt=null;
+  const idb=()=>new Promise((res,rej)=>{ try{ const r=indexedDB.open('sap_draft_db',1);
+    r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }catch(e){ rej(e); } });
+  async function idbSet(v){ try{ const db=await idb(); await new Promise((res,rej)=>{ const tx=db.transaction('kv','readwrite');
+    if(v==null) tx.objectStore('kv').delete(KEY); else tx.objectStore('kv').put(v,KEY); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }catch(e){} }
+  async function idbGet(){ try{ const db=await idb(); return await new Promise(res=>{ const q=db.transaction('kv','readonly').objectStore('kv').get(KEY);
+    q.onsuccess=()=>res(q.result||null); q.onerror=()=>res(null); }); }catch(e){ return null; } }
+  const hasContent=d=>!!(d && ((d.custName||'').trim() || (d.items||[]).some(it=>(it.nama||'').trim()) || (d.notes||'').trim()));
+  const jam=t=>{ try{ return new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } };
+
+  function snapshot(){
+    let doc; try{ doc=collectForm(); }catch(e){ return null; }
+    return {v:1, at:Date.now(), editId:ST.editId||null, docType:ST.docType, company:ST.activeCompany||'',
+            autoNo:(g('fNo')?.value||'').trim()===(ST._autoPreviewNo||'').trim(), doc};
+  }
+  function setStatus(at){
+    lastAt=at; const el=g('draftStatus'); if(!el) return;
+    if(!at){ el.innerHTML=''; el.classList.remove('on'); return; }
+    el.innerHTML=`<i></i>Draft tersimpan otomatis ${jam(at)}`; el.classList.add('on');
+  }
+  function saveNow(){
+    if(!ready||restoring) return;
+    const s=snapshot(); if(!s) return;
+    if(!hasContent(s.doc)){ if(lastAt) clear(); return; }
+    const js=JSON.stringify(s);
+    try{ sessionStorage.setItem(KEY,js); }catch(e){}
+    try{ localStorage.setItem(KEY,js); }catch(e){}
+    idbSet(s); setStatus(s.at);
+  }
+  function clear(){
+    try{ sessionStorage.removeItem(KEY); }catch(e){} try{ localStorage.removeItem(KEY); }catch(e){}
+    idbSet(null); setStatus(null); const b=g('draftBar'); if(b) b.remove();
+  }
+  window.draftClear=clear;
+  const schedule=()=>{ if(!ready||restoring) return; clearTimeout(T); T=setTimeout(saveNow,500); };
+
+  // pantau semua ketikan / pilihan / klik tombol di tab Buat Dokumen
+  ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{ if(e.target.closest&&e.target.closest('#tab-form')) schedule(); },true));
+  document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('#tab-form button')) schedule(); },true);
+  window.addEventListener('beforeunload',()=>{ clearTimeout(T); saveNow(); });
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'){ clearTimeout(T); saveNow(); } });
+
+  // Form Baru / setelah berhasil simpan -> draft dibuang
+  const _rf=window.resetForm;
+  window.resetForm=function(){ const r=_rf.apply(this,arguments); if(ready && !restoring) clear(); return r; };
+  const _ld=window.loadDocToForm;
+  // Edit/Duplikat dokumen lain saat ada draft baru yg belum disimpan -> konfirmasi dulu
+  async function guardDraft(){
+    if(!ready || restoring || !lastAt || ST.editId) return true;
+    const s=snapshot(); if(!s || !hasContent(s.doc)) return true;
+    const jenis=({invoice:'Invoice',suratjalan:'Surat Jalan',penawaran:'Penawaran',proforma:'Proforma'})[ST.docType]||'Dokumen';
+    return await uiConfirm({title:'Ada draft belum disimpan',icon:'📝',ok:'Buang draft & buka',danger:true},
+      `${jenis}${s.doc.custName?' untuk "'+s.doc.custName+'"':''} BELUM disimpan.\nMembuka dokumen lain akan membuang draft ini.`);
+  }
+  ['editDoc','duplicateDoc'].forEach(fn=>{ const orig=window[fn]; if(typeof orig!=='function') return;
+    window[fn]=async function(){ if(!(await guardDraft())) return; return orig.apply(this,arguments); }; });
+
+  async function restore(){
+    const c=[];
+    try{ const a=sessionStorage.getItem(KEY); if(a) c.push(JSON.parse(a)); }catch(e){}
+    try{ const a=localStorage.getItem(KEY); if(a) c.push(JSON.parse(a)); }catch(e){}
+    const b=await idbGet(); if(b) c.push(b);
+    const d=c.filter(x=>x&&hasContent(x.doc)).sort((a,b)=>b.at-a.at)[0];
+    if(!d){ ready=true; return; }
+    if(d.editId && !ST.documents.some(x=>x.id===d.editId)) d.editId=null;   // dokumen asalnya sudah dihapus
+    if(d.editId){
+      // Dokumen aslinya sudah diubah/disimpan SETELAH draft ini dibuat (mis. di laptop lain)
+      // -> jangan pulihkan, supaya perubahan yang lebih baru tidak tertimpa.
+      const cur=ST.documents.find(x=>x.id===d.editId);
+      const t=Date.parse(cur.updatedAt||cur.savedAt||'')||0;
+      if(t>d.at){ clear(); ready=true; try{ toast('ℹ Draft revisi '+(d.doc.no||'')+' tidak dipulihkan — dokumennya sudah diperbarui setelah itu','warn'); }catch(e){} return; }
+    }
+    restoring=true;
+    try{
+      if(d.company && d.company!==ST.activeCompany && typeof loadCompany==='function') loadCompany(d.company);
+      const _t=window.toast; window.toast=()=>{};
+      try{ _ld({...d.doc, type:d.docType||d.doc.type, id:d.editId||d.doc.id||uid()}); } finally{ window.toast=_t; }
+      if(!d.editId){
+        ST.editId=null;
+        const eb=g('editBanner'); if(eb) eb.style.display='none';
+        if(g('btnSaveLbl')) g('btnSaveLbl').textContent='💾 Simpan Dokumen';
+        if(d.autoNo) g('fNo').value=genNo(ST.docType);   // nomor otomatis -> pakai nomor terbaru
+      }
+      window.scrollTo({top:0});
+    }catch(e){ console.warn('Pulihkan draft gagal:',e); }
+    restoring=false; ready=true; setStatus(d.at);
+    const host=g('tab-form'); if(!host) return;
+    const bar=document.createElement('div'); bar.id='draftBar';
+    bar.innerHTML=`<span class="db-ic">📝</span><div style="flex:1;min-width:0;"><b>Draft yang belum disimpan dipulihkan</b>
+      <span>${d.editId?'Revisi '+esc(d.doc.no||''):({invoice:'Invoice',suratjalan:'Surat Jalan',penawaran:'Penawaran',proforma:'Proforma Invoice'})[d.docType]||'Dokumen'}${d.doc.custName?' · '+esc(d.doc.custName):''} · terakhir diubah ${jam(d.at)}${new Date(d.at).toDateString()!==new Date().toDateString()?' ('+fmtDate(new Date(d.at).toISOString().slice(0,10))+')':''}</span></div>
+      <button class="db-ok" onclick="this.closest('#draftBar').remove()">Lanjutkan</button>
+      <button class="db-x" onclick="uiConfirm({title:'Buang draft?',icon:'🗑️',ok:'Buang draft',danger:true},'Isi form yang belum disimpan akan dikosongkan.').then(y=>{ if(y) resetForm(); })">Buang draft</button>`;
+    host.prepend(bar);
+    try{ toast('📝 Draft yang belum disimpan dipulihkan'); }catch(e){}
+  }
+  setTimeout(()=>{ Promise.resolve(window._cacheReady).catch(()=>{}).then(()=>restore()).catch(()=>{ restoring=false; ready=true; }); },300);
+})();
+</script>
+
 </body>
+
 </html>
